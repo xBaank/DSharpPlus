@@ -343,8 +343,9 @@ namespace DSharpPlus.Lavalink
         {
             this.CurrentState.LastUpdate = newState.Time;
             this.CurrentState.PlaybackPosition = newState.Position;
+            this.CurrentState.IsConnected = newState.IsConnected;
 
-            return this._playerUpdated.InvokeAsync(this, new PlayerUpdateEventArgs(this, newState.Time, newState.Position));
+            return this._playerUpdated.InvokeAsync(this, new PlayerUpdateEventArgs(this, newState.Time, newState.Position, newState.IsConnected));
         }
 
         internal Task InternalPlaybackStartedAsync(string track)

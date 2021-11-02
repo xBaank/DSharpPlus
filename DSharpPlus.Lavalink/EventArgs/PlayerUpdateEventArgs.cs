@@ -46,11 +46,17 @@ namespace DSharpPlus.Lavalink.EventArgs
         /// </summary>
         public LavalinkGuildConnection Player { get; }
 
-        internal PlayerUpdateEventArgs(LavalinkGuildConnection lvl, DateTimeOffset timestamp, TimeSpan position)
+        /// <summary>
+        /// Gets whether the player is connected to the voice gateway.
+        /// </summary>
+        public bool IsConnected { get; }
+
+        internal PlayerUpdateEventArgs(LavalinkGuildConnection lvl, DateTimeOffset timestamp, TimeSpan position, bool connected)
         {
             this.Player = lvl;
             this.Timestamp = timestamp;
             this.Position = position;
+            this.IsConnected = connected;
         }
     }
 }
