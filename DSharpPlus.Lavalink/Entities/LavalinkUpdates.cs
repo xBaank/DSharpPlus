@@ -39,6 +39,9 @@ namespace DSharpPlus.Lavalink.Entities
         public TimeSpan Position => TimeSpan.FromMilliseconds(this._position);
         [JsonProperty("position")]
         private readonly long _position;
+
+        [JsonProperty("connected")]
+        public bool IsConnected;
     }
 
     /// <summary>
@@ -60,6 +63,11 @@ namespace DSharpPlus.Lavalink.Entities
         /// Gets the currently-played track.
         /// </summary>
         public LavalinkTrack CurrentTrack { get; internal set; }
+
+        /// <summary>
+        /// Gets whether the player is currently connected to the voice gateway.
+        /// </summary>
+        public bool IsConnected { get; set; }
     }
 
     internal sealed class LavalinkStats
