@@ -369,9 +369,9 @@ namespace DSharpPlus.Lavalink
             return this._trackStuck.InvokeAsync(this, ea);
         }
 
-        internal Task InternalTrackExceptionAsync(TrackExceptionData e)
+        internal Task InternalTrackExceptionAsync(LavalinkLoadFailedInfo e, string track)
         {
-            var ea = new TrackExceptionEventArgs(this, e.Error, LavalinkUtilities.DecodeTrack(e.Track));
+            var ea = new TrackExceptionEventArgs(this, e, LavalinkUtilities.DecodeTrack(track));
             return this._trackException.InvokeAsync(this, ea);
         }
 

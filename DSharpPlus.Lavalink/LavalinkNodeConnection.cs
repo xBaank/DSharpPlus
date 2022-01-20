@@ -412,8 +412,25 @@ namespace DSharpPlus.Lavalink
                             break;
 
                         case EventType.TrackExceptionEvent:
+                            var severity = LoadFailedSeverity.Common;
+
+                            switch(jsonData["severity"].ToString())
+                            {
+                                case "COMMON":
+                                    severity = LoadFailedSeverity.Common;
+                                    break;
+
+                                case "SUSPICIOUS":
+                                    severity = LoadFailedSeverity.Suspicious;
+                                    break;
+
+                                case "FAULT":
+                                    severity = LoadFailedSeverity.Fault;
+                                    break;
+                            }
+
                             if (this._connectedGuilds.TryGetValue(guildId, out var lvl_evte))
-                                await lvl_evte.InternalTrackExceptionAsync(new TrackExceptionData { Track = jsonData["track"].ToString(), Error = jsonData["error"].ToString() }).ConfigureAwait(false);
+                                await lvl_evte.InternalTrackExceptionAsync(new LavalinkLoadFailedInfo { Message = jsonData["message"].ToString(), Severity = severity }, jsonData["track"].ToString()).ConfigureAwait(false);
                             break;
 
                         case EventType.WebSocketClosedEvent:

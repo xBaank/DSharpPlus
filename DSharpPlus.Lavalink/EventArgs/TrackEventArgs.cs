@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using Emzi0767.Utilities;
 
 namespace DSharpPlus.Lavalink.EventArgs
@@ -169,7 +170,13 @@ namespace DSharpPlus.Lavalink.EventArgs
         /// <summary>
         /// Gets the error that occurred during playback.
         /// </summary>
+        [Obsolete("Please use the Exception property instead.", false)]
         public string Error { get; }
+
+        /// <summary>
+        /// Gets the exception that occurred during playback.
+        /// </summary>
+        public LavalinkLoadFailedInfo Exception { get; }
 
         /// <summary>
         /// Gets the track that got stuck.
@@ -181,9 +188,9 @@ namespace DSharpPlus.Lavalink.EventArgs
         /// </summary>
         public LavalinkGuildConnection Player { get; }
 
-        internal TrackExceptionEventArgs(LavalinkGuildConnection lvl, string error, LavalinkTrack track)
+        internal TrackExceptionEventArgs(LavalinkGuildConnection lvl, LavalinkLoadFailedInfo exception, LavalinkTrack track)
         {
-            this.Error = error;
+            this.Exception = exception;
             this.Track = track;
             this.Player = lvl;
         }
