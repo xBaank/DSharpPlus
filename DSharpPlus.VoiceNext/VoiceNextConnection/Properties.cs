@@ -4,6 +4,7 @@ using System.Threading;
 using DSharpPlus.Entities;
 using DSharpPlus.Net;
 using DSharpPlus.Net.WebSocket;
+using DSharpPlus.VoiceNext.Enums;
 using DSharpPlus.VoiceNext.VoiceGatewayEntities;
 using DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads;
 
@@ -28,7 +29,7 @@ namespace DSharpPlus.VoiceNext
         private bool _disposedValue;
         private DiscordVoiceReadyPayload? _voiceReadyPayload { get; set; }
         private DiscordVoiceHelloPayload? _voiceHelloPayload { get; set; }
-        private string? _selectedProtocol => this._voiceReadyPayload?.Modes[0];
+        private DiscordVoiceProtocol? _selectedProtocol => this._voiceReadyPayload?.Modes[0];
         private UdpClient? _udpClient { get; set; }
         private DiscordVoiceSessionDescriptionPayload? _voiceSessionDescriptionPayload { get; set; }
 

@@ -102,7 +102,7 @@ namespace DSharpPlus.VoiceNext
                             {
                                 Address = this._webSocketEndpoint.Hostname,
                                 Port = (ushort)this._webSocketEndpoint.Port, // Why is this an int...
-                                Mode = this._selectedProtocol!
+                                Mode = this._selectedProtocol!.Value
                             }
                         }
                     }));

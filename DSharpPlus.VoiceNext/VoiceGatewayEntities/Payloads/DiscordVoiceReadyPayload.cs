@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 using System;
+using DSharpPlus.VoiceNext.Enums;
 using Newtonsoft.Json;
 
 namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
@@ -41,7 +42,7 @@ namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
         public ushort Port { get; internal set; }
 
         [JsonProperty("modes", NullValueHandling = NullValueHandling.Ignore)]
-        public string[] Modes { get; internal set; } = null!;
+        public DiscordVoiceProtocol[] Modes { get; internal set; } = null!;
 
         [Obsolete("HeartbeatInterval here is an erroneous field and should be ignored. The correct heartbeat_interval value comes from the Hello payload.")]
         [JsonProperty("heartbeat_interval", NullValueHandling = NullValueHandling.Ignore)]

@@ -50,6 +50,6 @@ namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands
         /// See https://discord.com/developers/docs/topics/voice-connections#establishing-a-voice-udp-connection-encryption-modes for available options.
         /// </summary>
         [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
-        public string Mode { get; internal set; } = null!;
+        public DiscordVoiceProtocol Mode { get; internal set; }
     }
 }
