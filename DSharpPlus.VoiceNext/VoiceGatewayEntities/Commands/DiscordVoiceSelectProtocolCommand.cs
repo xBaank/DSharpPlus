@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using DSharpPlus.VoiceNext.Enums;
 using Newtonsoft.Json;
 
 namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands
@@ -31,7 +32,7 @@ namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands
     public sealed record DiscordVoiceSelectProtocolCommand
     {
         [JsonProperty("protocol", NullValueHandling = NullValueHandling.Ignore)]
-        public string Protocol { get; internal set; } = null!;
+        public string Protocol { get; internal set; } = "udp";
 
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public DiscordVoiceSelectProtocolCommandData Data { get; internal set; } = null!;

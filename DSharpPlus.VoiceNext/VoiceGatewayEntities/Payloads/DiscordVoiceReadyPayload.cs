@@ -34,8 +34,8 @@ namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
         [JsonProperty("ssrc", NullValueHandling = NullValueHandling.Ignore)]
         public uint SSRC { get; internal set; }
 
-        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
-        public string Address { get; internal set; } = null!;
+        [JsonProperty("ip", NullValueHandling = NullValueHandling.Ignore)]
+        public string Ip { get; internal set; } = null!;
 
         [JsonProperty("port", NullValueHandling = NullValueHandling.Ignore)]
         public ushort Port { get; internal set; }

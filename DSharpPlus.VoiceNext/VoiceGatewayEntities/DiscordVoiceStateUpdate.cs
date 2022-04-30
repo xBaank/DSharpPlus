@@ -109,5 +109,22 @@ namespace DSharpPlus.VoiceNext.VoiceGatewayEntities
         /// </summary>
         [JsonProperty("request_to_speak_timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? RequestToSpeakTimestamp { get; internal set; }
+
+        public static implicit operator DiscordVoiceStateUpdate(DiscordVoiceState voiceState) => new()
+        {
+            GuildId = voiceState.GuildId is null ? Optional.FromNoValue<ulong>() : voiceState.GuildId.Value,
+            ChannelId = voiceState.ChannelId,
+            UserId = voiceState.UserId,
+            Member = voiceState.Member,
+            SessionId = voiceState.SessionId,
+            SelfMute = voiceState.IsSelfMuted,
+            SelfDeaf = voiceState.IsSelfDeafened,
+            Mute = voiceState.IsServerMuted,
+            Deaf = voiceState.IsServerDeafened,
+            SelfStream = voiceState.IsSelfStream,
+            SelfVideo = voiceState.IsSelfVideo,
+            Supress = voiceState.IsSuppressed,
+            RequestToSpeakTimestamp = voiceState.RequestToSpeakTimestamp
+        };
     }
 }

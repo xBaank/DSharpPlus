@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
 
 namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
@@ -50,5 +51,12 @@ namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
         /// </remarks>
         [JsonProperty("endpoint", NullValueHandling = NullValueHandling.Ignore)]
         public string? Endpoint { get; internal set; }
+
+        public static implicit operator DiscordVoiceServerUpdatePayload(VoiceServerUpdateEventArgs eventArgs) => new()
+        {
+            Token = eventArgs.VoiceToken,
+            GuildId = eventArgs.Guild.Id,
+            Endpoint = eventArgs.Endpoint
+        };
     }
 }

@@ -26,6 +26,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+using DSharpPlus.Net;
 using DSharpPlus.Net.Abstractions;
 using DSharpPlus.Net.Serialization;
 using DSharpPlus.VoiceNext.VoiceGatewayEntities;
@@ -42,11 +44,18 @@ namespace DSharpPlus.VoiceNext
         internal ConcurrentDictionary<ulong, TaskCompletionSource<DiscordVoiceStateUpdate>> _voiceStateUpdates = new();
         internal ConcurrentDictionary<ulong, TaskCompletionSource<DiscordVoiceServerUpdatePayload>> _voiceServerUpdates = new();
 
+        internal VoiceNextExtension(VoiceNextConfiguration? configuration)
+        {
+            this.Configuration = configuration ?? new();
+        }
+
         protected internal override void Setup(DiscordClient client)
         {
             if (this.Client != null)
                 throw new InvalidOperationException("Extension has already been setup.");
             this.Client = client;
+            this.Client.VoiceServerUpdated += this.HandleVoiceServerUpdateAsync;
+            this.Client.VoiceStateUpdated += this.HandleVoiceStateUpdateAsync;
         }
 
         public async Task<VoiceNextConnection> ConnectAsync(DiscordChannel voiceChannel, bool selfMuted = false, bool selfDeafened = true)
@@ -108,6 +117,80 @@ namespace DSharpPlus.VoiceNext
             var voiceNextConnection = new VoiceNextConnection(this.Client, voiceChannel, this.Configuration, voiceStateUpdateTask, voiceServerUpdateTask);
             await voiceNextConnection.ConnectAsync().ConfigureAwait(false);
             return voiceNextConnection;
+        }
+
+        /// <summary>
+        /// Executed on joining, moving or disconnecting from voice channels.
+        /// </summary>
+        private Task HandleVoiceStateUpdateAsync(DiscordClient client, VoiceStateUpdateEventArgs eventArgs)
+        {
+            if (eventArgs.Guild == null || eventArgs.User == null)
+            {
+                return Task.CompletedTask;
+            }
+            else if (eventArgs.User.Id == client.CurrentUser.Id)
+            {
+                if (eventArgs.After.Channel == null && this._connections.TryRemove(eventArgs.Guild.Id, out var activeConnection))
+                    activeConnection.Dispose();
+                else if (this._connections.TryGetValue(eventArgs.Guild.Id, out var voiceNextConnection))
+                    voiceNextConnection.Channel = eventArgs.Channel;
+                else if (!string.IsNullOrWhiteSpace(eventArgs.SessionId) && eventArgs.Channel != null && this._voiceStateUpdates.TryRemove(eventArgs.Guild.Id, out var voiceStateUpdateEvent))
+                    voiceStateUpdateEvent.SetResult(eventArgs.After);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Executed upon joining a voice channel or when the voice servers have to change.
+        /// </summary>
+        /// <remarks>
+        /// A null endpoint means that the voice server allocated has gone away and is trying to be reallocated. You should attempt to disconnect from the currently connected voice server, and not attempt to reconnect until a new voice server is allocated.
+        /// </remarks>
+        private Task HandleVoiceServerUpdateAsync(DiscordClient client, VoiceServerUpdateEventArgs eventArgs)
+        {
+            if (eventArgs.Guild == null)
+            {
+                return Task.CompletedTask;
+            }
+            else if (this._connections.TryGetValue(eventArgs.Guild.Id, out var voiceNextConnection))
+            {
+                voiceNextConnection._voiceServerUpdate = eventArgs;
+
+                // Setup endpoint
+                if (eventArgs.Endpoint == null)
+                {
+                    return voiceNextConnection.DisconnectAsync();
+                }
+                var endpointIndex = eventArgs.Endpoint.LastIndexOf(':');
+                var endpointPort = 443;
+                string? endpointHost;
+                if (endpointIndex != -1) // Determines if the endpoint is a ip address or a hostname
+                {
+                    endpointHost = eventArgs.Endpoint.Substring(0, endpointIndex);
+                    endpointPort = int.Parse(eventArgs.Endpoint.Substring(endpointIndex + 1));
+                }
+                else
+                {
+                    endpointHost = eventArgs.Endpoint;
+                }
+
+                voiceNextConnection._webSocketEndpoint = new ConnectionEndpoint
+                {
+                    Hostname = endpointHost,
+                    Port = endpointPort
+                };
+
+                voiceNextConnection._shouldResume = false;
+                return voiceNextConnection.ReconnectAsync();
+            }
+            else if (this._voiceServerUpdates.TryRemove(eventArgs.Guild.Id, out var voiceServerUpdateEvent))
+            {
+                voiceServerUpdateEvent.SetResult(eventArgs);
+                return Task.CompletedTask;
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
