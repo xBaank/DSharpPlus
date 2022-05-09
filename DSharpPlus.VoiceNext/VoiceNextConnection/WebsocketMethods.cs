@@ -24,11 +24,13 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net.Abstractions;
 using DSharpPlus.Net.Serialization;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext.Enums;
+using DSharpPlus.VoiceNext.EventArgs;
 using DSharpPlus.VoiceNext.VoiceGatewayEntities;
 using DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands;
 using DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads;
@@ -40,7 +42,7 @@ namespace DSharpPlus.VoiceNext
 {
     public sealed partial class VoiceNextConnection
     {
-        public Task WebsocketOpenedAsync(IWebSocketClient socketClient, SocketEventArgs eventArgs)
+        private Task WebsocketOpenedAsync(IWebSocketClient socketClient, SocketEventArgs eventArgs)
         {
             if (this._shouldResume)
             {
@@ -62,7 +64,7 @@ namespace DSharpPlus.VoiceNext
             return socketClient.SendMessageAsync(DiscordJson.SerializeObject(identifyCommand));
         }
 
-        public async Task WebsocketMessageAsync(IWebSocketClient socketClient, SocketMessageEventArgs eventArgs)
+        private async Task WebsocketMessageAsync(IWebSocketClient socketClient, SocketMessageEventArgs eventArgs)
         {
             if (eventArgs is not SocketTextMessageEventArgs et)
             {
@@ -106,8 +108,6 @@ namespace DSharpPlus.VoiceNext
                             }
                         }
                     }));
-
-                    //TODO: Launch an event whenever sending or receiving udp data
                     return;
                 // This is separate from identify/ready/select protocol. Should be started as soon as possible
                 case DiscordVoiceOpCode.Hello:
@@ -121,14 +121,16 @@ namespace DSharpPlus.VoiceNext
                     this.Client.Logger.LogInformation("Discord Voice Gateway sent session description payload");
                     this._voiceSessionDescriptionPayload = payload["d"].ToDiscordObject<DiscordVoiceSessionDescriptionPayload>();
 
-                    // TODO: Send "ready" payload.
+                    // Create send/receive queues. Fire and forget
+                    await this._voiceReady.InvokeAsync(this, new VoiceReadyEventArgs(this.Channel));
                     break;
                 default:
+                    this.Client.Logger.LogWarning("Discord Voice Gateway sent unknown payload: {0}\n{1}", (DiscordVoiceOpCode)(int)payload["op"]!, payload["d"]);
                     break;
             }
         }
 
-        public async Task HeartbeatLoopAsync()
+        private async Task HeartbeatLoopAsync()
         {
             var secureRandom = new SecureRandom();
             while (this.IsConnected)
@@ -146,7 +148,7 @@ namespace DSharpPlus.VoiceNext
             }
         }
 
-        public Task WebsocketClosedAsync(IWebSocketClient socketClient, SocketCloseEventArgs eventArgs)
+        private Task WebsocketClosedAsync(IWebSocketClient socketClient, SocketCloseEventArgs eventArgs)
         {
             this.IsConnected = false;
             if ((DiscordVoiceCloseEventCode)eventArgs.CloseCode is DiscordVoiceCloseEventCode.SessionNoLongerValid or DiscordVoiceCloseEventCode.SessionTimeout)
@@ -174,7 +176,7 @@ namespace DSharpPlus.VoiceNext
             return Task.CompletedTask;
         }
 
-        public Task WebsocketExceptionAsync(IWebSocketClient socketClient, SocketErrorEventArgs eventArgs)
+        private Task WebsocketExceptionAsync(IWebSocketClient socketClient, SocketErrorEventArgs eventArgs)
         {
             this.Client.Logger.LogError(eventArgs.Exception, "Discord Voice Gateway exception: {0}", eventArgs.Exception.Message);
             return Task.CompletedTask;

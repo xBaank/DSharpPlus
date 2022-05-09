@@ -21,27 +21,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading.Tasks;
+using DSharpPlus.Entities;
+using Emzi0767.Utilities;
 
-namespace DSharpPlus.VoiceNext
+namespace DSharpPlus.VoiceNext.EventArgs
 {
-    public sealed partial class VoiceNextConnection
+    /// <summary>
+    /// Sent when the connection to the voice gateway is ready for use.
+    /// </summary>
+    public sealed class VoiceReadyEventArgs : AsyncEventArgs
     {
-        public Task ConnectAsync()
+        /// <summary>
+        /// Gets the channel that is ready.
+        /// </summary>
+        public DiscordChannel VoiceChannel { get; internal set; }
+
+        internal VoiceReadyEventArgs(DiscordChannel voiceChannel)
         {
-            var gatewayUri = new UriBuilder
-            {
-                Scheme = "wss",
-                Host = this._webSocketEndpoint.Hostname,
-                Query = "encoding=json&v=4"
-            };
-
-            return this._voiceWebsocket.ConnectAsync(gatewayUri.Uri);
+            this.VoiceChannel = voiceChannel;
         }
-
-        public Task ReconnectAsync() => throw new NotImplementedException();
-
-        public Task DisconnectAsync() => throw new NotImplementedException();
     }
 }
