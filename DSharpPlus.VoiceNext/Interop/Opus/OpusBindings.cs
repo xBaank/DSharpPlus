@@ -24,7 +24,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace DSharpPlus.VoiceNext.Interop
+namespace DSharpPlus.VoiceNext.Interop.Opus
 {
     internal static unsafe class OpusBindings
     {
@@ -38,7 +38,7 @@ namespace DSharpPlus.VoiceNext.Interop
         private static extern int opus_encode(IntPtr encoder, byte* pcm, int frameSize, byte* data, int maxDataBytes);
 
         [DllImport("libopus", CallingConvention = CallingConvention.Cdecl)]
-        private static extern OpusError opus_encoder_ctl(IntPtr encoder, OpusControl ctl, int value);
+        private static extern OpusError opus_encoder_ctl(IntPtr encoder, OpusSetFunction ctl, int value);
 
         [DllImport("libopus", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr opus_decoder_create(int sampleRate, int channels, out OpusError error);
@@ -59,7 +59,7 @@ namespace DSharpPlus.VoiceNext.Interop
         private static extern int opus_packet_get_samples_per_frame(byte* data, int samplingRate);
 
         [DllImport("libopus", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int opus_decoder_ctl(IntPtr decoder, OpusControl ctl, out int value);
+        private static extern int opus_decoder_ctl(IntPtr decoder, OpusGetFunction ctl, out int value);
 
         public static IntPtr CreateEncoder(int sampleRate, int channelCount, int application)
         {
@@ -67,7 +67,7 @@ namespace DSharpPlus.VoiceNext.Interop
             return error == OpusError.Ok ? encoder : throw new Exception($"Failed to instantiate Opus encoder: {error} ({(int)error})");
         }
 
-        public static void SetEncoderOption(IntPtr encoder, OpusControl option, int value)
+        public static void SetEncoderOption(IntPtr encoder, OpusSetFunction option, int value)
         {
             var error = OpusError.Ok;
             if ((error = opus_encoder_ctl(encoder, option, value)) != OpusError.Ok)
@@ -151,6 +151,6 @@ namespace DSharpPlus.VoiceNext.Interop
         }
 
         public static void GetLastPacketDuration(IntPtr decoder, out int sampleCount)
-            => opus_decoder_ctl(decoder, OpusControl.GetLastPacketDuration, out sampleCount);
+            => opus_decoder_ctl(decoder, OpusGetFunction.LastPacketDuration, out sampleCount);
     }
 }

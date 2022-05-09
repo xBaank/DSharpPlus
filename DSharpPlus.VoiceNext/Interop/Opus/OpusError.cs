@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DSharpPlus.VoiceNext.Interop
+namespace DSharpPlus.VoiceNext.Interop.Opus
 {
     internal enum OpusError
     {

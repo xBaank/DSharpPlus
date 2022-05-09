@@ -21,16 +21,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DSharpPlus.VoiceNext.Interop
+namespace DSharpPlus.VoiceNext.Interop.Opus
 {
-    internal enum OpusControl : int
+    // grep -r -E "#define OPUS_GET_.*_REQUEST" opus/include/opus_defines.h
+    /// <summary>
+    /// Each enum member represents an Opus function to use with <see cref="OpusBindings"/> (opus_encoder_ctl/opus_decoder_ctl).
+    /// </summary>
+    internal enum OpusGetFunction
     {
-        SetBitrate = 4002,
-        SetBandwidth = 4008,
-        SetInBandFec = 4012,
-        SetPacketLossPercent = 4014,
-        SetSignal = 4024,
-        ResetState = 4028,
-        GetLastPacketDuration = 4039
+        Application = 4001,
+        Bitrate = 4003,
+        MaxBandwidth = 4005,
+        Vbr = 4007,
+        Bandwidth = 4009,
+        Complexity = 4011,
+        InbandFec = 4013,
+        PacketLossPerc = 4015,
+        Dtx = 4017,
+        VbrConstraint = 4021,
+        ForceChannels = 4023,
+        Signal = 4025,
+        Lookahead = 4027,
+        SampleRate = 4029,
+        FinalRange = 4031,
+        Pitch = 4033,
+        /// <remark>
+        /// Should have been 4035.
+        /// </remark>
+        Gain = 4045,
+        LsbDepth = 4037,
+        LastPacketDuration = 4039,
+        ExpertFrameDuration = 4041,
+        PredictionDisabled = 4043,
+        PhaseInversionDisabled = 4047,
+        InDtx = 4049
     }
 }

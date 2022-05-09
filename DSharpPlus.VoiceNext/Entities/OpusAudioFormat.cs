@@ -21,13 +21,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DSharpPlus.VoiceNext.Interop.Opus
+using DSharpPlus.VoiceNext.Interop.Opus;
+
+namespace DSharpPlus.VoiceNext.Entities
 {
-    internal struct OpusPacketMetrics
+    public sealed class OpusAudioFormat
     {
-        public int ChannelCount { get; set; }
-        public int FrameCount { get; set; }
-        public int SamplesPerFrame { get; set; }
-        public int FrameSize { get; set; }
+        public static readonly OpusAudioFormat Default = new(48000, 2, (int)OpusSignal.Auto);
+
+        /// <summary>
+        /// The sample rate of the audio. The minimum should be 24,000Hz per the human hearing range.
+        /// </summary>
+        public int SampleRate { get; }
+
+        /// <summary>
+        /// 1 for mono, 2 for stereo.
+        /// </summary>
+        public int Channels { get; }
+
+        /// <summary>
+        /// What type of audio to encode. Auto will lead to Opus determining the best signal type.
+        /// </summary>
+        public int Application { get; }
+
+        public OpusAudioFormat(int sampleRate, int channels, int application)
+        {
+            this.SampleRate = sampleRate;
+            this.Channels = channels;
+            this.Application = application;
+        }
     }
 }

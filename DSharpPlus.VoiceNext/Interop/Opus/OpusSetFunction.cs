@@ -23,11 +23,28 @@
 
 namespace DSharpPlus.VoiceNext.Interop.Opus
 {
-    internal struct OpusPacketMetrics
+    // grep -r -E "#define OPUS_SET_.*_REQUEST" opus/include/opus_defines.h
+    /// <summary>
+    /// Each enum member represents an Opus function to use with <see cref="OpusBindings"/> (opus_encoder_ctl/opus_decoder_ctl).
+    /// </summary>
+    internal enum OpusSetFunction
     {
-        public int ChannelCount { get; set; }
-        public int FrameCount { get; set; }
-        public int SamplesPerFrame { get; set; }
-        public int FrameSize { get; set; }
+        Application = 4000,
+        Bitrate = 4002,
+        MaxBandwidth = 4004,
+        Vbr = 4006,
+        Bandwidth = 4008,
+        Complexity = 4010,
+        InbandFec = 4012,
+        PacketLossPerc = 4014,
+        Dtx = 4016,
+        VbrConstraint = 4020,
+        ForceChannels = 4022,
+        Signal = 4024,
+        Gain = 4034,
+        LsbDepth = 4036,
+        ExpertFrameDuration = 4040,
+        PredictionDisabled = 4042,
+        PhaseInversionDisabled = 4046
     }
 }

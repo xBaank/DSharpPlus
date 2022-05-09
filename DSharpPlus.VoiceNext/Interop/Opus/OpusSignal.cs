@@ -21,12 +21,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DSharpPlus.VoiceNext.Interop
+namespace DSharpPlus.VoiceNext.Interop.Opus
 {
-    internal enum OpusSignal : int
+    // https://github.com/xiph/opus/blob/ccaaffa9a3ee427e9401c4dcf6462e378d9a4694/include/opus_defines.h#L201-L202
+    // https://github.com/xiph/opus/blob/ccaaffa9a3ee427e9401c4dcf6462e378d9a4694/include/opus_defines.h#L416-L418
+    internal enum OpusSignal
     {
+        /// <summary>
+        /// Auto/default setting.
+        /// </summary>
         Auto = -1000,
-        Voice = 3000,
+
+        /// <summary>
+        /// Signal being encoded is voice.
+        /// </summary>
+        Voice = 3001,
+
+        /// <summary>
+        /// Signal being encoded is music.
+        /// </summary>
         Music = 3002
     }
 }
