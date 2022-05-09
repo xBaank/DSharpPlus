@@ -23,12 +23,11 @@
 
 using System;
 using System.Buffers.Binary;
-using System.Linq;
 using System.Text;
 using DSharpPlus.VoiceNext.JsonConverters;
 using Newtonsoft.Json;
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities
 {
     [JsonConverter(typeof(DiscordIPDiscoveryConverter))]
     public sealed record DiscordIPDiscovery

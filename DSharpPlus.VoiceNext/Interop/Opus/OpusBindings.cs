@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 
 namespace DSharpPlus.VoiceNext.Interop
 {
-    internal static unsafe class Bindings
+    internal static unsafe class OpusBindings
     {
         [DllImport("libopus", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr opus_encoder_create(int samplingRate, int channels, int application, out OpusError error);
@@ -134,7 +134,7 @@ namespace DSharpPlus.VoiceNext.Interop
         {
             int channels, frames, samplesPerFrame;
 
-            fixed(byte* dataPointer = data)
+            fixed (byte* dataPointer = data)
             {
                 frames = opus_packet_get_nb_frames(dataPointer, data.Length);
                 samplesPerFrame = opus_packet_get_samples_per_frame(dataPointer, samplingRate);

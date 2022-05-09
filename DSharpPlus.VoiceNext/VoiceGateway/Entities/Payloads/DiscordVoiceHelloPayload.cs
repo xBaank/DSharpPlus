@@ -21,26 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using Newtonsoft.Json;
 
-namespace DSharpPlus.VoiceNext.Enums
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads
 {
-    [Flags]
-    public enum DiscordVoiceSpeakingIndicators
+    /// <summary>
+    /// In order to maintain your WebSocket connection, you need to continuously send heartbeats at the interval determined in <see cref="Enums.DiscordVoiceOpCode.Hello"/>.
+    /// </summary>
+    public sealed record DiscordVoiceHelloPayload
     {
         /// <summary>
-        /// Normal transmission of voice audio.
+        /// Time to wait between sending heartbeats in milliseconds.
         /// </summary>
-        Microphone = 1 << 0,
-
-        /// <summary>
-        /// Transmission of context audio for video, no speaking indicator.
-        /// </summary>
-        Soundshare = 1 << 1,
-
-        /// <summary>
-        /// Priority speaker, lowering audio of other speakers.
-        /// </summary>
-        Priority = 1 << 2
+        [JsonProperty("heartbeat_interval", NullValueHandling = NullValueHandling.Ignore)]
+        public int HeartbeatInterval { get; internal set; }
     }
 }

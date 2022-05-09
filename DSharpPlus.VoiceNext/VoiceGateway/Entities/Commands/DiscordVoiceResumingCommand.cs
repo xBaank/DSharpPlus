@@ -21,19 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Newtonsoft.Json;
-
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands
 {
     /// <summary>
-    /// Finally, the voice server will respond with a <see cref="VoiceNext.Enums.DiscordVoiceOpCode.SessionDescription"/> that includes the <c>mode</c> and <c>secret_key</c>, a 32 byte array used for encrypting and sending voice data:
+    /// When your client detects that its connection has been severed, it should open a new WebSocket connection. Once the new connection has been opened, your client should send an <see cref="Enums.DiscordVoiceOpCode.Resume"/> payload.
     /// </summary>
-    public sealed record DiscordVoiceSessionDescriptionPayload
+    public sealed record DiscordVoiceResumingCommand
     {
-        [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
-        public string Mode { get; internal set; } = null!;
-
-        [JsonProperty("secret_key", NullValueHandling = NullValueHandling.Ignore)]
-        public byte[] SecretKey { get; internal set; } = null!;
+        public ulong ServerId { get; internal set; }
+        public string SessionId { get; internal set; } = null!;
+        public string Token { get; internal set; } = null!;
     }
 }

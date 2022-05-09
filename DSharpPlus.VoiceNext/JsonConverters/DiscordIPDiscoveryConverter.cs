@@ -24,7 +24,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Text;
-using DSharpPlus.VoiceNext.VoiceGatewayEntities;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities;
 using Newtonsoft.Json;
 
 namespace DSharpPlus.VoiceNext.JsonConverters

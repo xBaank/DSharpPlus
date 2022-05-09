@@ -21,18 +21,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 using Newtonsoft.Json;
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads
 {
     /// <summary>
-    /// In order to maintain your WebSocket connection, you need to continuously send heartbeats at the interval determined in <see cref="VoiceNext.Enums.DiscordVoiceOpCode.Hello"/>.
+    /// The voice server should respond with an <see cref="DiscordVoiceOpCode.Ready"/> payload, which informs us of the SSRC, UDP IP/port, and supported encryption modes the voice server expects.
     /// </summary>
-    public sealed record DiscordVoiceHelloPayload
+    public sealed record DiscordVoiceReadyPayload
     {
-        /// <summary>
-        /// Time to wait between sending heartbeats in milliseconds.
-        /// </summary>
+        [JsonProperty("ssrc", NullValueHandling = NullValueHandling.Ignore)]
+        public uint SSRC { get; internal set; }
+
+        [JsonProperty("ip", NullValueHandling = NullValueHandling.Ignore)]
+        public string Ip { get; internal set; } = null!;
+
+        [JsonProperty("port", NullValueHandling = NullValueHandling.Ignore)]
+        public ushort Port { get; internal set; }
+
+        [JsonProperty("modes", NullValueHandling = NullValueHandling.Ignore)]
+        public DiscordVoiceProtocol[] Modes { get; internal set; } = null!;
+
+        [Obsolete("HeartbeatInterval here is an erroneous field and should be ignored. The correct heartbeat_interval value comes from the Hello payload.")]
         [JsonProperty("heartbeat_interval", NullValueHandling = NullValueHandling.Ignore)]
         public int HeartbeatInterval { get; internal set; }
     }

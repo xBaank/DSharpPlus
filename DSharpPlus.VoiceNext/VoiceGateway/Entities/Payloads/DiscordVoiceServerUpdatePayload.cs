@@ -21,58 +21,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
+using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-namespace DSharpPlus.VoiceNext.Enums
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum DiscordVoiceProtocol
+    /// <summary>
+    /// Sent when a guild's voice server is updated. This is sent when initially connecting to voice, and when the current voice instance fails over to a new server.
+    /// </summary>
+    public sealed record DiscordVoiceServerUpdatePayload
     {
         /// <summary>
-        /// The nonce bytes are the RTP header
+        /// The voice connection token.
+        /// </summary>
+        [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
+        public string Token { get; internal set; } = null!;
+
+        /// <summary>
+        /// The guild this voice server update is for.
+        /// </summary>
+        [JsonProperty("guild_id", NullValueHandling = NullValueHandling.Ignore)]
+        public ulong GuildId { get; internal set; }
+
+        /// <summary>
+        /// The voice server host.
         /// </summary>
         /// <remarks>
-        /// Nonce implementation: Copy the RTP header
+        /// A null endpoint means that the voice server allocated has gone away and is trying to be reallocated. You should attempt to disconnect from the currently connected voice server, and not attempt to reconnect until a new voice server is allocated.
         /// </remarks>
-        [EnumMember(Value = "xsalsa20_poly1305")]
-        Poly1305Normal,
+        [JsonProperty("endpoint", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Endpoint { get; internal set; }
 
-        /// <summary>
-        /// The nonce bytes are 24 bytes appended to the payload of the RTP packet
-        /// </summary>
-        /// <remarks>
-        /// Nonce implementation: Generate 24 random bytes
-        /// </remarks>
-        [EnumMember(Value = "xsalsa20_poly1305_suffix")]
-        Poly1305Suffix,
-
-        /// <summary>
-        /// The nonce bytes are 4 bytes appended to the payload of the RTP packet
-        /// </summary>
-        /// <remarks>
-        /// Nonce implementation: Incremental 4 bytes (32bit) int value
-        /// </remarks>
-        [EnumMember(Value = "xsalsa20_poly1305_lite")]
-        Poly1305Lite,
-
-        /// <summary>
-        /// Undocumented.
-        /// </summary>
-        [EnumMember(Value = "xsalsa20_poly1305_lite_rtpsize")]
-        Poly1305LiteRTPSize,
-
-        /// <summary>
-        /// Undocumented.
-        /// </summary>
-        [EnumMember(Value = "aead_aes256_gcm_rtpsize")]
-        AES256GCM,
-
-        /// <summary>
-        /// Undocumented.
-        /// </summary>
-        [EnumMember(Value = "aead_aes256_gcm")]
-        AES256GCMNoRTP
+        public static implicit operator DiscordVoiceServerUpdatePayload(VoiceServerUpdateEventArgs eventArgs) => new()
+        {
+            Token = eventArgs.VoiceToken,
+            GuildId = eventArgs.Guild.Id,
+            Endpoint = eventArgs.Endpoint
+        };
     }
 }

@@ -27,9 +27,9 @@ using System.Threading;
 using DSharpPlus.Entities;
 using DSharpPlus.Net;
 using DSharpPlus.Net.WebSocket;
-using DSharpPlus.VoiceNext.Enums;
-using DSharpPlus.VoiceNext.VoiceGatewayEntities;
-using DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads;
+using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 
 namespace DSharpPlus.VoiceNext
 {

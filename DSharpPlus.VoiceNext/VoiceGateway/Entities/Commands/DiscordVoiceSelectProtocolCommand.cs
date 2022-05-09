@@ -21,31 +21,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using DSharpPlus.VoiceNext.Enums;
+using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 using Newtonsoft.Json;
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands
 {
     /// <summary>
-    /// The voice server should respond with an <see cref="VoiceNext.Enums.DiscordVoiceOpCode.Ready"/> payload, which informs us of the SSRC, UDP IP/port, and supported encryption modes the voice server expects.
+    /// Once we've fully discovered our external IP and UDP port, we can then tell the voice WebSocket what it is, and start receiving/sending data. We do this using <see cref="DiscordVoiceOpCode.SelectProtocol"/>.
     /// </summary>
-    public sealed record DiscordVoiceReadyPayload
+    public sealed record DiscordVoiceSelectProtocolCommand
     {
-        [JsonProperty("ssrc", NullValueHandling = NullValueHandling.Ignore)]
-        public uint SSRC { get; internal set; }
+        [JsonProperty("protocol", NullValueHandling = NullValueHandling.Ignore)]
+        public string Protocol { get; internal set; } = "udp";
 
-        [JsonProperty("ip", NullValueHandling = NullValueHandling.Ignore)]
-        public string Ip { get; internal set; } = null!;
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public DiscordVoiceSelectProtocolCommandData Data { get; internal set; } = null!;
+    }
+
+    public sealed record DiscordVoiceSelectProtocolCommandData
+    {
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; internal set; } = null!;
 
         [JsonProperty("port", NullValueHandling = NullValueHandling.Ignore)]
         public ushort Port { get; internal set; }
 
-        [JsonProperty("modes", NullValueHandling = NullValueHandling.Ignore)]
-        public DiscordVoiceProtocol[] Modes { get; internal set; } = null!;
-
-        [Obsolete("HeartbeatInterval here is an erroneous field and should be ignored. The correct heartbeat_interval value comes from the Hello payload.")]
-        [JsonProperty("heartbeat_interval", NullValueHandling = NullValueHandling.Ignore)]
-        public int HeartbeatInterval { get; internal set; }
+        /// <summary>
+        /// See https://discord.com/developers/docs/topics/voice-connections#establishing-a-voice-udp-connection-encryption-modes for available options.
+        /// </summary>
+        [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
+        public DiscordVoiceProtocol Mode { get; internal set; }
     }
 }

@@ -21,19 +21,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using DSharpPlus.VoiceNext.JsonConverters;
-using Newtonsoft.Json;
+using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands
 {
-    [JsonConverter(typeof(DiscordVoicePacketConverter))]
-    public sealed record DiscordVoicePacket
+    /// <summary>
+    /// To notify clients that you are speaking or have stopped speaking, send an Opcode 5 Speaking payload:
+    /// </summary>
+    /// <remarks>
+    /// You must send at least one Opcode 5 Speaking payload before sending voice data, or you will be disconnected with an invalid SSRC error.
+    /// </remarks>
+    public sealed record DiscordVoiceSpeakingCommand
     {
-        public byte VersionAndFlags { get; internal set; } = 0x80;
-        public byte PayloadType { get; internal set; } = 0x78;
-        public ushort Sequence { get; internal set; }
-        public uint Timestamp { get; internal set; }
+        public DiscordVoiceSpeakingIndicators Speaking { get; internal set; }
+        public int Delay { get; internal set; }
         public uint SSRC { get; internal set; }
-        public byte[] EncryptedAudio { get; internal set; } = null!;
     }
 }

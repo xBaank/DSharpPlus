@@ -21,35 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using DSharpPlus.VoiceNext.Enums;
 using Newtonsoft.Json;
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads
 {
     /// <summary>
-    /// Once we've fully discovered our external IP and UDP port, we can then tell the voice WebSocket what it is, and start receiving/sending data. We do this using <see cref="VoiceNext.Enums.DiscordVoiceOpCode.SelectProtocol"/>.
+    /// Finally, the voice server will respond with a <see cref="Enums.DiscordVoiceOpCode.SessionDescription"/> that includes the <c>mode</c> and <c>secret_key</c>, a 32 byte array used for encrypting and sending voice data:
     /// </summary>
-    public sealed record DiscordVoiceSelectProtocolCommand
+    public sealed record DiscordVoiceSessionDescriptionPayload
     {
-        [JsonProperty("protocol", NullValueHandling = NullValueHandling.Ignore)]
-        public string Protocol { get; internal set; } = "udp";
-
-        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-        public DiscordVoiceSelectProtocolCommandData Data { get; internal set; } = null!;
-    }
-
-    public sealed record DiscordVoiceSelectProtocolCommandData
-    {
-        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
-        public string Address { get; internal set; } = null!;
-
-        [JsonProperty("port", NullValueHandling = NullValueHandling.Ignore)]
-        public ushort Port { get; internal set; }
-
-        /// <summary>
-        /// See https://discord.com/developers/docs/topics/voice-connections#establishing-a-voice-udp-connection-encryption-modes for available options.
-        /// </summary>
         [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
-        public DiscordVoiceProtocol Mode { get; internal set; }
+        public string Mode { get; internal set; } = null!;
+
+        [JsonProperty("secret_key", NullValueHandling = NullValueHandling.Ignore)]
+        public byte[] SecretKey { get; internal set; } = null!;
     }
 }

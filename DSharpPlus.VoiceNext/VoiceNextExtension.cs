@@ -30,8 +30,8 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Net;
 using DSharpPlus.Net.Abstractions;
 using DSharpPlus.Net.Serialization;
-using DSharpPlus.VoiceNext.VoiceGatewayEntities;
-using DSharpPlus.VoiceNext.VoiceGatewayEntities.Payloads;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads;
 
 namespace DSharpPlus.VoiceNext
 {

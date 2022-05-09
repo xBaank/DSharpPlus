@@ -21,15 +21,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands
+using Newtonsoft.Json;
+
+namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands
 {
     /// <summary>
-    /// When your client detects that its connection has been severed, it should open a new WebSocket connection. Once the new connection has been opened, your client should send an <see cref="VoiceNext.Enums.DiscordVoiceOpCode.Resume"/> payload.
+    /// Once connected to the voice WebSocket endpoint, we can send an <see cref="Enums.DiscordVoiceOpCode.Identify"/> payload.
     /// </summary>
-    public sealed record DiscordVoiceResumingCommand
+    public sealed record DiscordVoiceIdentifyCommand
     {
+        /// <summary>
+        /// Also known as the guild id.
+        /// </summary>
+        [JsonProperty("server_id", NullValueHandling = NullValueHandling.Ignore)]
         public ulong ServerId { get; internal set; }
+
+        [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
+        public ulong UserId { get; internal set; }
+
+        [JsonProperty("session_id", NullValueHandling = NullValueHandling.Ignore)]
         public string SessionId { get; internal set; } = null!;
+
+        [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
         public string Token { get; internal set; } = null!;
     }
 }

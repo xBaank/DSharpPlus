@@ -21,28 +21,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Newtonsoft.Json;
+using System;
 
-namespace DSharpPlus.VoiceNext.VoiceGatewayEntities.Commands
+namespace DSharpPlus.VoiceNext.VoiceGateway.Enums
 {
-    /// <summary>
-    /// Once connected to the voice WebSocket endpoint, we can send an <see cref="Enums.DiscordVoiceOpCode.Identify"/> payload.
-    /// </summary>
-    public sealed record DiscordVoiceIdentifyCommand
+    [Flags]
+    public enum DiscordVoiceSpeakingIndicators
     {
         /// <summary>
-        /// Also known as the guild id.
+        /// Normal transmission of voice audio.
         /// </summary>
-        [JsonProperty("server_id", NullValueHandling = NullValueHandling.Ignore)]
-        public ulong ServerId { get; internal set; }
+        Microphone = 1 << 0,
 
-        [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
-        public ulong UserId { get; internal set; }
+        /// <summary>
+        /// Transmission of context audio for video, no speaking indicator.
+        /// </summary>
+        Soundshare = 1 << 1,
 
-        [JsonProperty("session_id", NullValueHandling = NullValueHandling.Ignore)]
-        public string SessionId { get; internal set; } = null!;
-
-        [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
-        public string Token { get; internal set; } = null!;
+        /// <summary>
+        /// Priority speaker, lowering audio of other speakers.
+        /// </summary>
+        Priority = 1 << 2
     }
 }
