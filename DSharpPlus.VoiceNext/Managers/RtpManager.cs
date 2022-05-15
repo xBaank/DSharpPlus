@@ -76,7 +76,7 @@ namespace DSharpPlus.VoiceNext.Managers
 
         public byte[] CreateRtpHeader(uint timestamp, uint ssrc, Span<byte> encodedAudio, Span<byte> rtpPacket)
         {
-            if (rtpPacket.Length != encodedAudio.Length + 12)
+            if (rtpPacket.Length < encodedAudio.Length + 12)
             {
                 throw new ArgumentException($"{nameof(rtpPacket)}.Length must be {nameof(encodedAudio.Length)} + 12 bytes long.");
             }
@@ -93,25 +93,23 @@ namespace DSharpPlus.VoiceNext.Managers
             BinaryPrimitives.WriteUInt32BigEndian(rtpPacket.Slice(8, 4), ssrc);
             encodedAudio.CopyTo(rtpPacket.Slice(12));
 
+            var nonce = this.GetNonce();
             switch (this.EncryptionType)
             {
                 case "xsalsa20_poly1305":
-                    return rtpPacket.Slice(12).ToArray();
+                    var fullLengthNonce = new byte[SodiumBindings.SodiumNonceSize];
+                    nonce.CopyTo(fullLengthNonce.AsSpan(nonce.Length));
+                    return fullLengthNonce;
                 case "xsalsa20_poly1305_lite":
+                    // TODO: Reword this English monstrosity.
                     if (rtpPacket.Length != 12 + encodedAudio.Length + 4)
-                    {
                         throw new ArgumentException($"{nameof(rtpPacket)}.Length must be 12 + {nameof(encodedAudio.Length)} + 4 bytes long due to the appended 4 bytes from the xsalsa20_poly1305_lite encryption.", nameof(rtpPacket));
-                    }
-                    var nonce = this.GetNonce();
-                    nonce.CopyTo(rtpPacket.Slice(rtpPacket.Length - 4, 4));
+                    nonce.AsSpan(nonce.Length - 4).CopyTo(rtpPacket.Slice(rtpPacket.Length - 4));
                     return nonce;
                 case "xsalsa20_poly1305_suffix":
                     if (rtpPacket.Length != 12 + encodedAudio.Length + 24)
-                    {
                         throw new ArgumentException($"{nameof(rtpPacket)}.Length must be 12 + {nameof(encodedAudio.Length)} + 24 bytes long due to the appended 24 bytes from the xsalsa20_poly1305_suffix encryption.", nameof(rtpPacket));
-                    }
-                    nonce = this.GetNonce();
-                    nonce.CopyTo(rtpPacket.Slice(rtpPacket.Length - 24, 24));
+                    nonce.CopyTo(rtpPacket.Slice(rtpPacket.Length - 24));
                     return nonce;
                 default:
                     throw new NotImplementedException($"Unknown encryption type: {this.EncryptionType}");

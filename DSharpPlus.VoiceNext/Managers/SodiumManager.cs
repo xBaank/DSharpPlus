@@ -36,8 +36,8 @@ namespace DSharpPlus.VoiceNext.Managers
         {
             if (nonce.Length != SodiumBindings.SodiumNonceSize)
                 throw new ArgumentException("Nonce must be of length " + SodiumBindings.SodiumNonceSize, nameof(nonce));
-            else if (source.Length != SodiumBindings.SodiumMacSize + source.Length)
-                throw new ArgumentException("Source must be of length " + (SodiumBindings.SodiumMacSize + source.Length), nameof(source));
+            else if (target.Length != SodiumBindings.SodiumMacSize + source.Length)
+                throw new ArgumentException("Target must be of length " + (SodiumBindings.SodiumMacSize + source.Length), nameof(target));
 
             SodiumBindings.Encrypt(source, target, key, nonce);
         }
@@ -60,38 +60,22 @@ namespace DSharpPlus.VoiceNext.Managers
                 throw new ArgumentException("Nonce must be of length " + SodiumBindings.SodiumNonceSize, nameof(nonce));
 
             // Copy the RTP Header to the beginning of the nonce
-            rtpHeader.CopyTo(nonce);
-
-            // Zero-fill the rest of the buffer
-            for (var i = rtpHeader.Length; i < SodiumBindings.SodiumNonceSize; i++)
-            {
-                nonce[i] = 0;
-            }
+            rtpHeader.CopyTo(nonce.Slice(nonce.Length - 12));
         }
 
         public static void GeneratePoly1305LiteNonce(uint nonce, Span<byte> incrementedNonce)
         {
             if (incrementedNonce.Length != SodiumBindings.SodiumNonceSize)
-            {
-                throw new ArgumentException("Incremented nonce must be of length " + SodiumBindings.SodiumNonceSize, nameof(incrementedNonce));
-            }
+                throw new ArgumentException("Incremented nonce must be a length of " + SodiumBindings.SodiumNonceSize, nameof(incrementedNonce));
 
             // Write the uint to memory
-            BinaryPrimitives.WriteUInt32BigEndian(incrementedNonce, nonce);
-
-            // Zero-fill the rest of the buffer
-            for (var i = 4; i < SodiumBindings.SodiumNonceSize; i++)
-            {
-                incrementedNonce[i] = 0;
-            }
+            BinaryPrimitives.WriteUInt32BigEndian(incrementedNonce.Slice(incrementedNonce.Length - 4), nonce);
         }
 
         public static void GeneratePoly1305SuffixNonce(Span<byte> nonce)
         {
             if (nonce.Length != SodiumBindings.SodiumNonceSize)
-            {
                 throw new ArgumentException("Nonce must be of length " + SodiumBindings.SodiumNonceSize, nameof(nonce));
-            }
 
             var buffer = new byte[nonce.Length];
             CryptoServiceProvider.GetBytes(buffer);

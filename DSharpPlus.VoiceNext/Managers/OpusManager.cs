@@ -43,8 +43,6 @@ namespace DSharpPlus.VoiceNext.Managers
             this._decoderPtr = OpusBindings.CreateDecoder(opusAudioFormat.SampleRate, opusAudioFormat.ChannelCount);
         }
 
-        public uint Encode(byte[] pcm, ref byte[] encodedPcm) => this.Encode(pcm, ref encodedPcm);
-
         public uint Encode(ReadOnlySpan<byte> pcm, ref Span<byte> encodedPcm)
         {
             if (this._disposed)

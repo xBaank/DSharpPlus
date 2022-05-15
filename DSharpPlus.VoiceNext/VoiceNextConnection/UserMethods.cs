@@ -27,6 +27,7 @@ using System.IO;
 using System.Threading.Tasks;
 using DSharpPlus.Net.Abstractions;
 using DSharpPlus.Net.Serialization;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands;
 using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 
@@ -55,6 +56,18 @@ namespace DSharpPlus.VoiceNext
             if (this._isDisposed)
                 throw new ObjectDisposedException(nameof(VoiceNextConnection));
 
+            await this.Client._webSocketClient.SendMessageAsync(DiscordJson.SerializeObject(new GatewayPayload()
+            {
+                OpCode = GatewayOpCode.VoiceStateUpdate,
+                Data = new DiscordVoiceStateUpdate()
+                {
+                    GuildId = this.Guild.Id,
+                    ChannelId = this.Channel.Id,
+                    SelfMute = false,
+                    SelfDeaf = false
+                }
+            }));
+
             // You must send at least one Opcode 5 Speaking payload before sending voice data, or you will be disconnected with an invalid SSRC error. - DDocs
             await this._voiceWebsocket.SendMessageAsync(DiscordJson.SerializeObject(new GatewayPayload()
             {
@@ -67,12 +80,13 @@ namespace DSharpPlus.VoiceNext
                 }
             }));
 
-            var buffer = new byte[4096];
-            var bytesRead = 0;
-            while ((bytesRead = await audioStream.ReadAsync(buffer, bytesRead, Math.Min(int.TryParse(audioStream.Length.ToString(CultureInfo.InvariantCulture), out var audioStreamLength) ? audioStreamLength : int.MaxValue, buffer.Length))) != 0)
+            var buffer = new byte[500 * this.Configuration.OpusAudioFormat.ChannelCount * (this.Configuration.OpusAudioFormat.SampleRate / 1000) * 2];
+            while (audioStream.Position != audioStream.Length)
             {
+                await audioStream.ReadAsync(buffer, 0, buffer.Length);
                 var voicePacket = this.AudioManager!.PrepareVoicePacket(buffer);
                 await this._udpClient!.SendAsync(voicePacket, voicePacket.Length);
+                await Task.Delay(20);
             }
 
             await this._voiceWebsocket.SendMessageAsync(DiscordJson.SerializeObject(new GatewayPayload()

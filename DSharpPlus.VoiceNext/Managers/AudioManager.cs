@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 using System;
+using DSharpPlus.VoiceNext.Interop.Sodium;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads;
 
 namespace DSharpPlus.VoiceNext.Managers
@@ -44,8 +45,8 @@ namespace DSharpPlus.VoiceNext.Managers
 
         public byte[] PrepareVoicePacket(byte[] audioData, byte[]? rtpHeader = null)
         {
-            var encodedAudio = new byte[audioData.Length];
-            _timestamp += this._opusManager.Encode(audioData, ref encodedAudio);
+            var encodedAudio = new Span<byte>(new byte[audioData.Length]);
+            this._timestamp += this._opusManager.Encode(audioData, ref encodedAudio);
 
             var rtpPacket = new byte[this._rtpManager.EncryptionType switch
             {
@@ -56,7 +57,7 @@ namespace DSharpPlus.VoiceNext.Managers
             }];
             var nonce = this._rtpManager.CreateRtpHeader(this._timestamp, this._ssrc, encodedAudio, rtpPacket);
 
-            var encryptedAudio = new byte[encodedAudio.Length];
+            var encryptedAudio = new byte[encodedAudio.Length + SodiumBindings.SodiumMacSize];
             SodiumManager.Encrypt(encodedAudio, this._voiceSessionDescriptionPayload.SecretKey, nonce, encryptedAudio);
 
             return rtpPacket;
