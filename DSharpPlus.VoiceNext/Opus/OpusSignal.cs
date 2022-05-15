@@ -23,28 +23,26 @@
 
 namespace DSharpPlus.VoiceNext.Interop.Opus
 {
-    // grep -r -E "#define OPUS_SET_.*_REQUEST" opus/include/opus_defines.h
+    // https://github.com/xiph/opus/blob/ccaaffa9a3ee427e9401c4dcf6462e378d9a4694/include/opus_defines.h#L201-L202
+    // https://github.com/xiph/opus/blob/ccaaffa9a3ee427e9401c4dcf6462e378d9a4694/include/opus_defines.h#L416-L418
     /// <summary>
-    /// Each enum member represents an Opus function to use with <see cref="OpusBindings"/> (opus_encoder_ctl).
+    /// Otherwise known as the audio type.
     /// </summary>
-    internal enum OpusSetFunction
+    public enum OpusSignal
     {
-        Application = 4000,
-        Bitrate = 4002,
-        MaxBandwidth = 4004,
-        Vbr = 4006,
-        Bandwidth = 4008,
-        Complexity = 4010,
-        InbandFec = 4012,
-        PacketLossPerc = 4014,
-        Dtx = 4016,
-        VbrConstraint = 4020,
-        ForceChannels = 4022,
-        Signal = 4024,
-        Gain = 4034,
-        LsbDepth = 4036,
-        ExpertFrameDuration = 4040,
-        PredictionDisabled = 4042,
-        PhaseInversionDisabled = 4046
+        /// <summary>
+        /// Auto/default setting.
+        /// </summary>
+        Auto = -1000,
+
+        /// <summary>
+        /// Signal being encoded is voice.
+        /// </summary>
+        Voice = 3001,
+
+        /// <summary>
+        /// Signal being encoded is music.
+        /// </summary>
+        Music = 3002
     }
 }

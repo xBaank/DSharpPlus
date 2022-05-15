@@ -42,7 +42,7 @@ namespace DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads
         public ushort Port { get; internal set; }
 
         [JsonProperty("modes", NullValueHandling = NullValueHandling.Ignore)]
-        public DiscordVoiceProtocol[] Modes { get; internal set; } = null!;
+        public string[] Modes { get; internal set; } = null!;
 
         [Obsolete("HeartbeatInterval here is an erroneous field and should be ignored. The correct heartbeat_interval value comes from the Hello payload.")]
         [JsonProperty("heartbeat_interval", NullValueHandling = NullValueHandling.Ignore)]

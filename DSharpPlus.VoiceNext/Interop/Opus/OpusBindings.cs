@@ -63,7 +63,7 @@ namespace DSharpPlus.VoiceNext.Interop.Opus
 
         public static IntPtr CreateEncoder(int sampleRate, int channelCount, int application)
         {
-            var encoder = opus_encoder_create(sampleRate, channelCount, application, out var error);
+            var encoder = opus_encoder_create(sampleRate, channelCount, 2049, out var error);
             return error == OpusError.Ok ? encoder : throw new Exception($"Failed to instantiate Opus encoder: {error} ({(int)error})");
         }
 
@@ -152,5 +152,8 @@ namespace DSharpPlus.VoiceNext.Interop.Opus
 
         public static void GetLastPacketDuration(IntPtr decoder, out int sampleCount)
             => opus_decoder_ctl(decoder, OpusGetFunction.LastPacketDuration, out sampleCount);
+
+        public static void DestroyEncoder(IntPtr encoder) => opus_encoder_destroy(encoder);
+        public static void DestroyDecoder(IntPtr decoder) => opus_decoder_destroy(decoder);
     }
 }

@@ -25,7 +25,7 @@ namespace DSharpPlus.VoiceNext.Interop.Opus
 {
     // grep -r -E "#define OPUS_GET_.*_REQUEST" opus/include/opus_defines.h
     /// <summary>
-    /// Each enum member represents an Opus function to use with <see cref="OpusBindings"/> (opus_encoder_ctl/opus_decoder_ctl).
+    /// Each enum member represents an Opus function to use with <see cref="OpusBindings"/> (opus_decoder_ctl).
     /// </summary>
     internal enum OpusGetFunction
     {

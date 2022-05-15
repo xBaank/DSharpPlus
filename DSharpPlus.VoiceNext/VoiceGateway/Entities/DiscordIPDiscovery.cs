@@ -40,11 +40,8 @@ namespace DSharpPlus.VoiceNext.VoiceGateway.Entities
 
         public static implicit operator DiscordIPDiscovery(Span<byte> ipDiscoverySpan) => new()
         {
-            Type = BinaryPrimitives.ReadUInt16BigEndian(ipDiscoverySpan.Slice(0, 2)),
-            Length = BinaryPrimitives.ReadUInt16BigEndian(ipDiscoverySpan.Slice(2, 2)),
-            SSRC = BinaryPrimitives.ReadUInt32BigEndian(ipDiscoverySpan.Slice(4, 4)),
-            Address = Encoding.UTF8.GetString(ipDiscoverySpan.Slice(8, 64).ToArray()),
-            Port = BinaryPrimitives.ReadUInt16BigEndian(ipDiscoverySpan.Slice(72, 2))
+            Address = Encoding.UTF8.GetString(ipDiscoverySpan.Slice(4, 64).ToArray()).TrimEnd('\0'),
+            Port = BinaryPrimitives.ReadUInt16BigEndian(ipDiscoverySpan.Slice(68, 2))
         };
 
         public static implicit operator byte[](DiscordIPDiscovery ipDiscovery)

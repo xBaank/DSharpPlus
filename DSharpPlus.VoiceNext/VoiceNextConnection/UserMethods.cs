@@ -22,7 +22,13 @@
 // SOFTWARE.
 
 using System;
+using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
+using DSharpPlus.Net.Abstractions;
+using DSharpPlus.Net.Serialization;
+using DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands;
+using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 
 namespace DSharpPlus.VoiceNext
 {
@@ -43,5 +49,42 @@ namespace DSharpPlus.VoiceNext
         public Task ReconnectAsync() => throw new NotImplementedException();
 
         public Task DisconnectAsync() => throw new NotImplementedException();
+
+        public async Task SpeakAsync(Stream audioStream, DiscordVoiceSpeakingIndicators speakingIndicators)
+        {
+            if (this._isDisposed)
+                throw new ObjectDisposedException(nameof(VoiceNextConnection));
+
+            // You must send at least one Opcode 5 Speaking payload before sending voice data, or you will be disconnected with an invalid SSRC error. - DDocs
+            await this._voiceWebsocket.SendMessageAsync(DiscordJson.SerializeObject(new GatewayPayload()
+            {
+                OpCode = (GatewayOpCode)DiscordVoiceOpCode.Speaking,
+                Data = new DiscordVoiceSpeakingCommand()
+                {
+                    Speaking = speakingIndicators,
+                    Delay = 0,
+                    SSRC = this._voiceReadyPayload!.SSRC
+                }
+            }));
+
+            var buffer = new byte[4096];
+            var bytesRead = 0;
+            while ((bytesRead = await audioStream.ReadAsync(buffer, bytesRead, Math.Min(int.TryParse(audioStream.Length.ToString(CultureInfo.InvariantCulture), out var audioStreamLength) ? audioStreamLength : int.MaxValue, buffer.Length))) != 0)
+            {
+                var voicePacket = this.AudioManager!.PrepareVoicePacket(buffer);
+                await this._udpClient!.SendAsync(voicePacket, voicePacket.Length);
+            }
+
+            await this._voiceWebsocket.SendMessageAsync(DiscordJson.SerializeObject(new GatewayPayload()
+            {
+                OpCode = (GatewayOpCode)DiscordVoiceOpCode.Speaking,
+                Data = new DiscordVoiceSpeakingCommand()
+                {
+                    Speaking = 0,
+                    Delay = 0,
+                    SSRC = this._voiceReadyPayload!.SSRC
+                }
+            }));
+        }
     }
 }

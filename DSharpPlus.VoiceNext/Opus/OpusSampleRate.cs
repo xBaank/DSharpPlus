@@ -21,30 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DSharpPlus.VoiceNext.Interop.Opus
+namespace DSharpPlus.VoiceNext.Opus
 {
-    // grep -r -E "#define OPUS_SET_.*_REQUEST" opus/include/opus_defines.h
     /// <summary>
-    /// Each enum member represents an Opus function to use with <see cref="OpusBindings"/> (opus_encoder_ctl).
+    /// Opus allows the following bandwidths during encoding. Opus compression does not depend on the input sample rate; timestamps are measured in 48 kHz units even if the full bandwidth is not used. Likewise, the output sample rate may be freely chosen. For example, audio can be input at 16 kHz yet be set to encode only narrowband audio. - https://en.wikipedia.org/wiki/Opus_(audio_format)#Bandwidth_and_sampling_rate
     /// </summary>
-    internal enum OpusSetFunction
+    public enum OpusSampleRate
     {
-        Application = 4000,
-        Bitrate = 4002,
-        MaxBandwidth = 4004,
-        Vbr = 4006,
-        Bandwidth = 4008,
-        Complexity = 4010,
-        InbandFec = 4012,
-        PacketLossPerc = 4014,
-        Dtx = 4016,
-        VbrConstraint = 4020,
-        ForceChannels = 4022,
-        Signal = 4024,
-        Gain = 4034,
-        LsbDepth = 4036,
-        ExpertFrameDuration = 4040,
-        PredictionDisabled = 4042,
-        PhaseInversionDisabled = 4046
+        NarrowBand = 8000,
+        MediumBand = 12000,
+        WideBand = 16000,
+        SuperWideBand = 24000,
+        FullBand = 48000
     }
 }

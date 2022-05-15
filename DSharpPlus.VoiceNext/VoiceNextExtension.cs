@@ -30,6 +30,7 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Net;
 using DSharpPlus.Net.Abstractions;
 using DSharpPlus.Net.Serialization;
+using DSharpPlus.VoiceNext.Opus;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads;
 
@@ -37,7 +38,7 @@ namespace DSharpPlus.VoiceNext
 {
     public sealed class VoiceNextExtension : BaseExtension
     {
-        public VoiceNextConfiguration Configuration { get; } = new();
+        public VoiceNextConfiguration Configuration { get; }
         public Dictionary<ulong, VoiceNextConnection> Connections => new(this._connections);
         internal ConcurrentDictionary<ulong, VoiceNextConnection> _connections { get; } = new();
 
@@ -46,7 +47,7 @@ namespace DSharpPlus.VoiceNext
 
         internal VoiceNextExtension(VoiceNextConfiguration? configuration)
         {
-            this.Configuration = configuration ?? new();
+            this.Configuration = configuration ?? new(OpusAudioFormat.BestQuality);
         }
 
         protected internal override void Setup(DiscordClient client)

@@ -21,10 +21,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using DSharpPlus.VoiceNext.Opus;
+
 namespace DSharpPlus.VoiceNext
 {
     public sealed class VoiceNextConfiguration
     {
+        public readonly OpusAudioFormat OpusAudioFormat;
 
+        public VoiceNextConfiguration(OpusAudioFormat opusAudioFormat)
+        {
+            this.OpusAudioFormat = opusAudioFormat;
+        }
+
+        public VoiceNextConfiguration(VoiceNextConfiguration otherConfiguration)
+        {
+            this.OpusAudioFormat = otherConfiguration.OpusAudioFormat;
+        }
     }
 }

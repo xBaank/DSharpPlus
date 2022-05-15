@@ -22,14 +22,15 @@
 // SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using DSharpPlus.Entities;
 using DSharpPlus.Net;
 using DSharpPlus.Net.WebSocket;
+using DSharpPlus.VoiceNext.Managers;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads;
-using DSharpPlus.VoiceNext.VoiceGateway.Enums;
 
 namespace DSharpPlus.VoiceNext
 {
@@ -41,6 +42,7 @@ namespace DSharpPlus.VoiceNext
         public VoiceNextConfiguration Configuration { get; }
         public bool IsConnected = false;
         public CancellationToken CancellationToken => this._cancellationTokenSource.Token;
+        public AudioManager? AudioManager { get; private set; }
 
         internal CancellationTokenSource _cancellationTokenSource { get; set; } = new();
         internal DiscordVoiceStateUpdate _voiceStateUpdate { get; }
@@ -49,10 +51,10 @@ namespace DSharpPlus.VoiceNext
         internal IWebSocketClient _voiceWebsocket { get; set; }
         internal bool _shouldResume = false;
 
-        private bool _disposedValue;
+        private bool _isDisposed;
         private DiscordVoiceReadyPayload? _voiceReadyPayload { get; set; }
         private DiscordVoiceHelloPayload? _voiceHelloPayload { get; set; }
-        private DiscordVoiceProtocol? _selectedProtocol => this._voiceReadyPayload?.Modes[0];
+        private string? _selectedProtocol => this._voiceReadyPayload?.Modes.FirstOrDefault(x => x == "xsalsa20_poly1305" || x == "xsalsa20_poly1305_suffix" || x == "xsalsa20_poly1305_lite") ?? this._voiceReadyPayload?.Modes[0];
         private UdpClient? _udpClient { get; set; }
         private DiscordVoiceSessionDescriptionPayload? _voiceSessionDescriptionPayload { get; set; }
 
@@ -108,27 +110,16 @@ namespace DSharpPlus.VoiceNext
 
         private void Dispose(bool disposing)
         {
-            if (!_disposedValue)
+            if (!_isDisposed)
             {
                 if (disposing)
                 {
                     this._cancellationTokenSource.Cancel();
-                    this._cancellationTokenSource.Dispose();
-                    this._voiceWebsocket.Dispose();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                _disposedValue = true;
+                _isDisposed = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~VoiceNextConnection()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

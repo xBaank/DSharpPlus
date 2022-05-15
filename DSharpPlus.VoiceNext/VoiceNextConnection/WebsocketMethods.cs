@@ -22,14 +22,15 @@
 // SOFTWARE.
 
 using System;
+using System.Buffers.Binary;
 using System.Text;
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net.Abstractions;
 using DSharpPlus.Net.Serialization;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext.EventArgs;
+using DSharpPlus.VoiceNext.Managers;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities.Commands;
 using DSharpPlus.VoiceNext.VoiceGateway.Entities.Payloads;
@@ -82,14 +83,13 @@ namespace DSharpPlus.VoiceNext
                     this.IsConnected = true;
 
                     this._udpClient = new(this._voiceReadyPayload.Ip, this._voiceReadyPayload.Port);
-                    var ipDiscovery = new DiscordIPDiscovery()
+                    var ipDiscovery = new byte[70];
+                    BinaryPrimitives.WriteUInt32BigEndian(ipDiscovery, this._voiceReadyPayload.SSRC);
+                    for (var i = 4; i < 70; i++)
                     {
-                        Type = 0x01,
-                        Length = (ushort)(6 + Encoding.UTF8.GetByteCount(this._voiceReadyPayload.Ip)), // SSRC is 2 bytes, Port is 4 bytes, Address is variable
-                        SSRC = this._voiceReadyPayload.SSRC,
-                        Port = this._voiceReadyPayload.Port,
-                        Address = this._voiceReadyPayload.Ip
-                    };
+                        // Zero fill
+                        ipDiscovery[i] = 0;
+                    }
 
                     await this._udpClient.SendAsync(ipDiscovery, ipDiscovery.Length);
                     DiscordIPDiscovery reply = (await this._udpClient.ReceiveAsync()).Buffer.AsSpan();
@@ -104,7 +104,7 @@ namespace DSharpPlus.VoiceNext
                             {
                                 Address = this._webSocketEndpoint.Hostname,
                                 Port = (ushort)this._webSocketEndpoint.Port, // Why is this an int...
-                                Mode = this._selectedProtocol!.Value
+                                Mode = this._selectedProtocol!
                             }
                         }
                     }));
@@ -120,6 +120,9 @@ namespace DSharpPlus.VoiceNext
                 case DiscordVoiceOpCode.SessionDescription:
                     this.Client.Logger.LogInformation("Discord Voice Gateway sent session description payload");
                     this._voiceSessionDescriptionPayload = payload["d"].ToDiscordObject<DiscordVoiceSessionDescriptionPayload>();
+                    this.AudioManager = this._selectedProtocol != null && this._selectedProtocol == "xsalsa20_poly1305_lite"
+                        ? (new(new OpusManager(this.Configuration.OpusAudioFormat), new RtpManager(0), this._voiceSessionDescriptionPayload!, this._voiceReadyPayload!.SSRC))
+                        : (new(new OpusManager(this.Configuration.OpusAudioFormat), new RtpManager(this._selectedProtocol!), this._voiceSessionDescriptionPayload!, this._voiceReadyPayload!.SSRC));
 
                     // Create send/receive queues. Fire and forget
                     await this._voiceReady.InvokeAsync(this, new VoiceReadyEventArgs(this.Channel));
@@ -157,7 +160,7 @@ namespace DSharpPlus.VoiceNext
                 this._shouldResume = false;
             }
 
-            if (!this._disposedValue)
+            if (!this._isDisposed)
             {
                 this._cancellationTokenSource.Cancel();
                 this._cancellationTokenSource = new();
