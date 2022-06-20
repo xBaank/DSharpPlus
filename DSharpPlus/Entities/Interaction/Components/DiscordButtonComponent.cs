@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
 
@@ -61,7 +62,7 @@ namespace DSharpPlus.Entities
         /// <returns>The current component.</returns>
         public DiscordButtonComponent Enable()
         {
-            this.Disabled = false;
+            Disabled = false;
             return this;
         }
 
@@ -71,7 +72,7 @@ namespace DSharpPlus.Entities
         /// <returns>The current component.</returns>
         public DiscordButtonComponent Disable()
         {
-            this.Disabled = true;
+            Disabled = true;
             return this;
         }
 
@@ -80,7 +81,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         internal DiscordButtonComponent()
         {
-            this.Type = ComponentType.Button;
+            Type = ComponentType.Button;
         }
 
 
@@ -90,11 +91,11 @@ namespace DSharpPlus.Entities
         /// <param name="other">The button to copy.</param>
         public DiscordButtonComponent(DiscordButtonComponent other) : this()
         {
-            this.CustomId = other.CustomId;
-            this.Style = other.Style;
-            this.Label = other.Label;
-            this.Disabled = other.Disabled;
-            this.Emoji = other.Emoji;
+            CustomId = other.CustomId;
+            Style = other.Style;
+            Label = other.Label;
+            Disabled = other.Disabled;
+            Emoji = other.Emoji;
         }
 
         /// <summary>
@@ -107,12 +108,12 @@ namespace DSharpPlus.Entities
         /// <param name="emoji">The emoji to add to the button. This is required if <paramref name="label"/> is empty or null.</param>
         public DiscordButtonComponent(ButtonStyle style, string customId, string label, bool disabled = false, DiscordComponentEmoji emoji = null)
         {
-            this.Style = style;
-            this.Label = label;
-            this.CustomId = customId;
-            this.Disabled = disabled;
-            this.Emoji = emoji;
-            this.Type = ComponentType.Button;
+            Style = style;
+            Label = label;
+            CustomId = customId;
+            Disabled = disabled;
+            Emoji = emoji;
+            Type = ComponentType.Button;
         }
     }
 }

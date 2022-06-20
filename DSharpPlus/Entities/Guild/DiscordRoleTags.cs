@@ -47,7 +47,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         [JsonIgnore]
         public bool IsPremiumSubscriber
-            => this._premiumSubscriber.HasValue && this._premiumSubscriber.Value is null;
+            => _premiumSubscriber.HasValue && _premiumSubscriber.Value is null;
 
         [JsonProperty("premium_subscriber", NullValueHandling = NullValueHandling.Include)]
         internal Optional<bool?> _premiumSubscriber = false;

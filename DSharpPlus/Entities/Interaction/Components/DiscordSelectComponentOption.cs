@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using Newtonsoft.Json;
 
 namespace DSharpPlus.Entities
@@ -61,11 +62,11 @@ namespace DSharpPlus.Entities
 
         public DiscordSelectComponentOption(string label, string value, string description = null, bool isDefault = false, DiscordComponentEmoji emoji = null)
         {
-            this.Label = label;
-            this.Value = value;
-            this.Description = description;
-            this.Default = isDefault;
-            this.Emoji = emoji;
+            Label = label;
+            Value = value;
+            Description = description;
+            Default = isDefault;
+            Emoji = emoji;
         }
     }
 }

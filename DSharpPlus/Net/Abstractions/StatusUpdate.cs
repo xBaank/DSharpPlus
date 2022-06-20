@@ -54,7 +54,7 @@ namespace DSharpPlus.Net.Abstractions
         {
             get
             {
-                return this.Status switch
+                return Status switch
                 {
                     UserStatus.Online => "online",
                     UserStatus.Idle => "idle",

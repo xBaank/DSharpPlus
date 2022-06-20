@@ -40,6 +40,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public string EventName { get; internal set; }
 
-        internal ClientErrorEventArgs() : base() { }
+        internal ClientErrorEventArgs()
+        { }
     }
 }

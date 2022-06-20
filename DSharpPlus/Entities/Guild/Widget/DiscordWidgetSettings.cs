@@ -42,7 +42,7 @@ namespace DSharpPlus.Entities
         /// Gets the guild's widget channel.
         /// </summary>
         public DiscordChannel Channel
-            => this.Guild?.GetChannel(this.ChannelId);
+            => Guild?.GetChannel(ChannelId);
 
         /// <summary>
         /// Gets if the guild's widget is enabled.

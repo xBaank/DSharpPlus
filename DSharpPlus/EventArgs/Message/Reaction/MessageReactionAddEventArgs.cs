@@ -43,7 +43,7 @@ namespace DSharpPlus.EventArgs
         /// DM channels in which no prior messages were received or sent.
         /// </remarks>
         public DiscordChannel Channel
-            => this.Message.Channel;
+            => Message.Channel;
 
         /// <summary>
         /// Gets the guild in which the reaction was added.
@@ -61,6 +61,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordEmoji Emoji { get; internal set; }
 
-        internal MessageReactionAddEventArgs() : base() { }
+        internal MessageReactionAddEventArgs()
+        { }
     }
 }

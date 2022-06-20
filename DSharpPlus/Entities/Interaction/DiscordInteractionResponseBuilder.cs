@@ -23,10 +23,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
 
 namespace DSharpPlus.Entities
 {
@@ -60,12 +58,12 @@ namespace DSharpPlus.Entities
         /// </summary>
         public string Content
         {
-            get => this._content;
+            get => _content;
             set
             {
                 if (value != null && value.Length > 2000)
                     throw new ArgumentException("Content length cannot exceed 2000 characters.", nameof(value));
-                this._content = value;
+                _content = value;
             }
         }
         private string _content;
@@ -73,31 +71,31 @@ namespace DSharpPlus.Entities
         /// <summary>
         /// Embeds to send on this interaction response.
         /// </summary>
-        public IReadOnlyList<DiscordEmbed> Embeds => this._embeds;
+        public IReadOnlyList<DiscordEmbed> Embeds => _embeds;
         private readonly List<DiscordEmbed> _embeds = new();
 
         /// <summary>
         /// Files to send on this interaction response.
         /// </summary>
-        public IReadOnlyList<DiscordMessageFile> Files => this._files;
+        public IReadOnlyList<DiscordMessageFile> Files => _files;
         private readonly List<DiscordMessageFile> _files = new();
 
         /// <summary>
         /// Components to send on this interaction response.
         /// </summary>
-        public IReadOnlyList<DiscordActionRowComponent> Components => this._components;
+        public IReadOnlyList<DiscordActionRowComponent> Components => _components;
         private readonly List<DiscordActionRowComponent> _components = new();
 
         /// <summary>
         /// The choices to send on this interaction response. Mutually exclusive with content, embed, and components.
         /// </summary>
-        public IReadOnlyList<DiscordAutoCompleteChoice> Choices => this._choices;
+        public IReadOnlyList<DiscordAutoCompleteChoice> Choices => _choices;
         private readonly List<DiscordAutoCompleteChoice> _choices = new();
 
         /// <summary>
         /// Mentions to send on this interaction response.
         /// </summary>
-        public IEnumerable<IMention> Mentions => this._mentions;
+        public IEnumerable<IMention> Mentions => _mentions;
         private readonly List<IMention> _mentions = new();
 
         /// <summary>
@@ -112,10 +110,10 @@ namespace DSharpPlus.Entities
         /// <param name="builder">The builder to copy.</param>
         public DiscordInteractionResponseBuilder(DiscordMessageBuilder builder)
         {
-            this._content = builder.Content;
-            this._mentions = builder.Mentions;
-            this._embeds.AddRange(builder.Embeds);
-            this._components.AddRange(builder.Components);
+            _content = builder.Content;
+            _mentions = builder.Mentions;
+            _embeds.AddRange(builder.Embeds);
+            _components.AddRange(builder.Components);
         }
 
 
@@ -126,7 +124,7 @@ namespace DSharpPlus.Entities
         /// <returns>The current builder to chain calls with.</returns>
         /// <exception cref="ArgumentException">Thrown when passing more than 5 components.</exception>
         public DiscordInteractionResponseBuilder AddComponents(params DiscordComponent[] components)
-            => this.AddComponents((IEnumerable<DiscordComponent>)components);
+            => AddComponents((IEnumerable<DiscordComponent>)components);
 
         /// <summary>
         /// Appends several rows of components to the message
@@ -137,11 +135,11 @@ namespace DSharpPlus.Entities
         {
             var ara = components.ToArray();
 
-            if (ara.Length + this._components.Count > 5)
+            if (ara.Length + _components.Count > 5)
                 throw new ArgumentException("ActionRow count exceeds maximum of five.");
 
             foreach (var ar in ara)
-                this._components.Add(ar);
+                _components.Add(ar);
 
             return this;
         }
@@ -156,7 +154,7 @@ namespace DSharpPlus.Entities
             if (string.IsNullOrEmpty(title) || title.Length > 256)
                 throw new ArgumentException("Title must be between 1 and 256 characters.");
 
-            this.Title = title;
+            Title = title;
             return this;
         }
 
@@ -170,7 +168,7 @@ namespace DSharpPlus.Entities
             if (string.IsNullOrEmpty(id) || id.Length > 100)
                 throw new ArgumentException("Custom ID must be between 1 and 100 characters.");
 
-            this.CustomId = id;
+            CustomId = id;
             return this;
         }
 
@@ -189,7 +187,7 @@ namespace DSharpPlus.Entities
                 throw new ArgumentException("Cannot add more than 5 components per action row!");
 
             var arc = new DiscordActionRowComponent(compArr);
-            this._components.Add(arc);
+            _components.Add(arc);
             return this;
         }
 
@@ -200,10 +198,10 @@ namespace DSharpPlus.Entities
         /// <returns>The current builder to chain calls with.</returns>
         public DiscordInteractionResponseBuilder AddAutoCompleteChoice(DiscordAutoCompleteChoice choice)
         {
-            if (this._choices.Count >= 25)
+            if (_choices.Count >= 25)
                 throw new ArgumentException("Maximum of 25 choices per response.");
 
-            this._choices.Add(choice);
+            _choices.Add(choice);
             return this;
         }
 
@@ -214,10 +212,10 @@ namespace DSharpPlus.Entities
         /// <returns>The current builder to chain calls with.</returns>
         public DiscordInteractionResponseBuilder AddAutoCompleteChoices(IEnumerable<DiscordAutoCompleteChoice> choices)
         {
-            if (this._choices.Count >= 25 || this._choices.Count + choices.Count() > 25)
+            if (_choices.Count >= 25 || _choices.Count + choices.Count() > 25)
                 throw new ArgumentException("Maximum of 25 choices per response.");
 
-            this._choices.AddRange(choices);
+            _choices.AddRange(choices);
             return this;
         }
 
@@ -227,7 +225,7 @@ namespace DSharpPlus.Entities
         /// <param name="choices">The choices to add.</param>
         /// <returns>The current builder to chain calls with.</returns>
         public DiscordInteractionResponseBuilder AddAutoCompleteChoices(params DiscordAutoCompleteChoice[] choices)
-            => this.AddAutoCompleteChoices((IEnumerable<DiscordAutoCompleteChoice>)choices);
+            => AddAutoCompleteChoices((IEnumerable<DiscordAutoCompleteChoice>)choices);
 
         /// <summary>
         /// Indicates if the interaction response will be text-to-speech.
@@ -235,7 +233,7 @@ namespace DSharpPlus.Entities
         /// <param name="tts">Text-to-speech</param>
         public DiscordInteractionResponseBuilder WithTTS(bool tts)
         {
-            this.IsTTS = tts;
+            IsTTS = tts;
             return this;
         }
 
@@ -245,7 +243,7 @@ namespace DSharpPlus.Entities
         /// <param name="ephemeral">Ephemeral.</param>
         public DiscordInteractionResponseBuilder AsEphemeral(bool ephemeral = true)
         {
-            this.IsEphemeral = ephemeral;
+            IsEphemeral = ephemeral;
             return this;
         }
 
@@ -255,7 +253,7 @@ namespace DSharpPlus.Entities
         /// <param name="content">Content to send.</param>
         public DiscordInteractionResponseBuilder WithContent(string content)
         {
-            this.Content = content;
+            Content = content;
             return this;
         }
 
@@ -266,7 +264,7 @@ namespace DSharpPlus.Entities
         public DiscordInteractionResponseBuilder AddEmbed(DiscordEmbed embed)
         {
             if (embed != null)
-                this._embeds.Add(embed); // Interactions will 400 silently //
+                _embeds.Add(embed); // Interactions will 400 silently //
 
             return this;
         }
@@ -277,7 +275,7 @@ namespace DSharpPlus.Entities
         /// <param name="embeds">Embeds to add.</param>
         public DiscordInteractionResponseBuilder AddEmbeds(IEnumerable<DiscordEmbed> embeds)
         {
-            this._embeds.AddRange(embeds);
+            _embeds.AddRange(embeds);
             return this;
         }
 
@@ -290,16 +288,16 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordInteractionResponseBuilder AddFile(string filename, Stream data, bool resetStreamPosition = false)
         {
-            if (this.Files.Count >= 10)
+            if (Files.Count >= 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
-            if (this._files.Any(x => x.FileName == filename))
+            if (_files.Any(x => x.FileName == filename))
                 throw new ArgumentException("A File with that filename already exists");
 
             if (resetStreamPosition)
-                this._files.Add(new DiscordMessageFile(filename, data, data.Position));
+                _files.Add(new DiscordMessageFile(filename, data, data.Position));
             else
-                this._files.Add(new DiscordMessageFile(filename, data, null));
+                _files.Add(new DiscordMessageFile(filename, data, null));
 
             return this;
         }
@@ -312,16 +310,16 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordInteractionResponseBuilder AddFile(FileStream stream, bool resetStreamPosition = false)
         {
-            if (this.Files.Count >= 10)
+            if (Files.Count >= 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
-            if (this._files.Any(x => x.FileName == stream.Name))
+            if (_files.Any(x => x.FileName == stream.Name))
                 throw new ArgumentException("A File with that filename already exists");
 
             if (resetStreamPosition)
-                this._files.Add(new DiscordMessageFile(stream.Name, stream, stream.Position));
+                _files.Add(new DiscordMessageFile(stream.Name, stream, stream.Position));
             else
-                this._files.Add(new DiscordMessageFile(stream.Name, stream, null));
+                _files.Add(new DiscordMessageFile(stream.Name, stream, null));
 
             return this;
         }
@@ -334,18 +332,18 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordInteractionResponseBuilder AddFiles(Dictionary<string, Stream> files, bool resetStreamPosition = false)
         {
-            if (this.Files.Count + files.Count > 10)
+            if (Files.Count + files.Count > 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
             foreach (var file in files)
             {
-                if (this._files.Any(x => x.FileName == file.Key))
+                if (_files.Any(x => x.FileName == file.Key))
                     throw new ArgumentException("A File with that filename already exists");
 
                 if (resetStreamPosition)
-                    this._files.Add(new DiscordMessageFile(file.Key, file.Value, file.Value.Position));
+                    _files.Add(new DiscordMessageFile(file.Key, file.Value, file.Value.Position));
                 else
-                    this._files.Add(new DiscordMessageFile(file.Key, file.Value, null));
+                    _files.Add(new DiscordMessageFile(file.Key, file.Value, null));
             }
 
 
@@ -358,7 +356,7 @@ namespace DSharpPlus.Entities
         /// <param name="mention">Mention to add.</param>
         public DiscordInteractionResponseBuilder AddMention(IMention mention)
         {
-            this._mentions.Add(mention);
+            _mentions.Add(mention);
             return this;
         }
 
@@ -368,7 +366,7 @@ namespace DSharpPlus.Entities
         /// <param name="mentions">Mentions to add.</param>
         public DiscordInteractionResponseBuilder AddMentions(IEnumerable<IMention> mentions)
         {
-            this._mentions.AddRange(mentions);
+            _mentions.AddRange(mentions);
             return this;
         }
 
@@ -376,21 +374,21 @@ namespace DSharpPlus.Entities
         /// Clears all message components on this builder.
         /// </summary>
         public void ClearComponents()
-            => this._components.Clear();
+            => _components.Clear();
 
         /// <summary>
         /// Allows for clearing the Interaction Response Builder so that it can be used again to send a new response.
         /// </summary>
         public void Clear()
         {
-            this.Content = "";
-            this._embeds.Clear();
-            this.IsTTS = false;
-            this.IsEphemeral = false;
-            this._mentions.Clear();
-            this._components.Clear();
-            this._files.Clear();
-            this._choices.Clear();
+            Content = "";
+            _embeds.Clear();
+            IsTTS = false;
+            IsEphemeral = false;
+            _mentions.Clear();
+            _components.Clear();
+            _files.Clear();
+            _choices.Clear();
         }
     }
 }

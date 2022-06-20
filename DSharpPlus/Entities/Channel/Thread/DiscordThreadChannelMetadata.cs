@@ -22,15 +22,7 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using DSharpPlus.Exceptions;
-using DSharpPlus.Net.Abstractions;
-using DSharpPlus.Net.Models;
 using Newtonsoft.Json;
 
 namespace DSharpPlus.Entities
@@ -66,7 +58,7 @@ namespace DSharpPlus.Entities
         /// Gets the time this thread was created. Only populated for threads created after 2022-01-09 (YYYY-MM-DD).
         /// </summary>
         public DateTimeOffset? CreationTimestamp
-            => !string.IsNullOrWhiteSpace(this.CreateTimestampRaw) && DateTimeOffset.TryParse(this.CreateTimestampRaw, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dto) ?
+            => !string.IsNullOrWhiteSpace(CreateTimestampRaw) && DateTimeOffset.TryParse(CreateTimestampRaw, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dto) ?
                 dto : null;
 
         [JsonProperty("create_timestamp", NullValueHandling = NullValueHandling.Ignore)]

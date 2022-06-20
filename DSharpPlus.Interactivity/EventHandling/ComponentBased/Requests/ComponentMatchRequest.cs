@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,12 +49,12 @@ namespace DSharpPlus.Interactivity.EventHandling
 
         public ComponentMatchRequest(DiscordMessage message, Func<ComponentInteractionCreateEventArgs, bool> predicate, CancellationToken cancellation)
         {
-            this.Message = message;
-            this._predicate = predicate;
-            this._cancellation = cancellation;
-            this._cancellation.Register(() => this.Tcs.TrySetResult(null)); // TrySetCancelled would probably be better but I digress ~Velvet //
+            Message = message;
+            _predicate = predicate;
+            _cancellation = cancellation;
+            _cancellation.Register(() => Tcs.TrySetResult(null)); // TrySetCancelled would probably be better but I digress ~Velvet //
         }
 
-        public bool IsMatch(ComponentInteractionCreateEventArgs args) => this._predicate(args);
+        public bool IsMatch(ComponentInteractionCreateEventArgs args) => _predicate(args);
     }
 }

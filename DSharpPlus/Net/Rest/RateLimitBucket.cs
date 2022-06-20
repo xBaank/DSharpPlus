@@ -58,20 +58,20 @@ namespace DSharpPlus.Net
         /// </summary>
         public string Hash
         {
-            get => Volatile.Read(ref this._hash);
+            get => Volatile.Read(ref _hash);
 
             internal set
             {
-                this._isUnlimited = value.Contains(UNLIMITED_HASH);
+                _isUnlimited = value.Contains(UNLIMITED_HASH);
 
-                if (this.BucketId != null && !this.BucketId.StartsWith(value))
+                if (BucketId != null && !BucketId.StartsWith(value))
                 {
-                    var id = GenerateBucketId(value, this.GuildId, this.ChannelId, this.WebhookId);
-                    this.BucketId = id;
-                    this.RouteHashes.Add(id);
+                    var id = GenerateBucketId(value, GuildId, ChannelId, WebhookId);
+                    BucketId = id;
+                    RouteHashes.Add(id);
                 }
 
-                Volatile.Write(ref this._hash, value);
+                Volatile.Write(ref _hash, value);
             }
         }
 
@@ -91,7 +91,7 @@ namespace DSharpPlus.Net
         /// Gets the number of uses left before pre-emptive rate limit is triggered.
         /// </summary>
         public int Remaining
-            => this._remaining;
+            => _remaining;
 
         /// <summary>
         /// Gets the maximum number of uses within a single bucket.
@@ -106,7 +106,7 @@ namespace DSharpPlus.Net
         /// <summary>
         /// Gets the time interval to wait before the rate limit resets.
         /// </summary>
-        public TimeSpan? ResetAfter { get; internal set; } = null;
+        public TimeSpan? ResetAfter { get; internal set; }
 
         internal DateTimeOffset ResetAfterOffset { get; set; }
 
@@ -151,13 +151,13 @@ namespace DSharpPlus.Net
 
         internal RateLimitBucket(string hash, string guild_id, string channel_id, string webhook_id)
         {
-            this.Hash = hash;
-            this.ChannelId = channel_id;
-            this.GuildId = guild_id;
-            this.WebhookId = webhook_id;
+            Hash = hash;
+            ChannelId = channel_id;
+            GuildId = guild_id;
+            WebhookId = webhook_id;
 
-            this.BucketId = GenerateBucketId(hash, guild_id, channel_id, webhook_id);
-            this.RouteHashes = new ConcurrentBag<string>();
+            BucketId = GenerateBucketId(hash, guild_id, channel_id, webhook_id);
+            RouteHashes = new ConcurrentBag<string>();
         }
 
         /// <summary>
@@ -183,11 +183,11 @@ namespace DSharpPlus.Net
         /// <returns>String representation of this bucket.</returns>
         public override string ToString()
         {
-            var guildId = this.GuildId != string.Empty ? this.GuildId : "guild_id";
-            var channelId = this.ChannelId != string.Empty ? this.ChannelId : "channel_id";
-            var webhookId = this.WebhookId != string.Empty ? this.WebhookId : "webhook_id";
+            var guildId = GuildId != string.Empty ? GuildId : "guild_id";
+            var channelId = ChannelId != string.Empty ? ChannelId : "channel_id";
+            var webhookId = WebhookId != string.Empty ? WebhookId : "webhook_id";
 
-            return $"rate limit bucket [{this.Hash}:{guildId}:{channelId}:{webhookId}] [{this.Remaining}/{this.Maximum}] {(this.ResetAfter.HasValue ? this.ResetAfterOffset : this.Reset)}";
+            return $"rate limit bucket [{Hash}:{guildId}:{channelId}:{webhookId}] [{Remaining}/{Maximum}] {(ResetAfter.HasValue ? ResetAfterOffset : Reset)}";
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace DSharpPlus.Net
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether the object is equal to this <see cref="RateLimitBucket"/>.</returns>
         public override bool Equals(object obj)
-            => this.Equals(obj as RateLimitBucket);
+            => Equals(obj as RateLimitBucket);
 
         /// <summary>
         /// Checks whether this <see cref="RateLimitBucket"/> is equal to another <see cref="RateLimitBucket"/>.
@@ -208,7 +208,7 @@ namespace DSharpPlus.Net
             if (e is null)
                 return false;
 
-            return ReferenceEquals(this, e) ? true : this.BucketId == e.BucketId;
+            return ReferenceEquals(this, e) ? true : BucketId == e.BucketId;
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace DSharpPlus.Net
         /// </summary>
         /// <returns>The hash code for this <see cref="RateLimitBucket"/>.</returns>
         public override int GetHashCode()
-            => this.BucketId.GetHashCode();
+            => BucketId.GetHashCode();
 
         /// <summary>
         /// Sets remaining number of requests to the maximum when the ratelimit is reset
@@ -224,37 +224,37 @@ namespace DSharpPlus.Net
         /// <param name="now"></param>
         internal async Task TryResetLimitAsync(DateTimeOffset now)
         {
-            if (this.ResetAfter.HasValue)
-                this.ResetAfter = this.ResetAfterOffset - now;
+            if (ResetAfter.HasValue)
+                ResetAfter = ResetAfterOffset - now;
 
-            if (this._nextReset == 0)
+            if (_nextReset == 0)
                 return;
 
-            if (this._nextReset > now.UtcTicks)
+            if (_nextReset > now.UtcTicks)
                 return;
 
-            while (Interlocked.CompareExchange(ref this._limitResetting, 1, 0) != 0)
+            while (Interlocked.CompareExchange(ref _limitResetting, 1, 0) != 0)
 #pragma warning restore 420
                 await Task.Yield();
 
-            if (this._nextReset != 0)
+            if (_nextReset != 0)
             {
-                this._remaining = this.Maximum;
-                this._nextReset = 0;
+                _remaining = Maximum;
+                _nextReset = 0;
             }
 
-            this._limitResetting = 0;
+            _limitResetting = 0;
         }
 
         internal void SetInitialValues(int max, int usesLeft, DateTimeOffset newReset)
         {
-            this.Maximum = max;
-            this._remaining = usesLeft;
-            this._nextReset = newReset.UtcTicks;
+            Maximum = max;
+            _remaining = usesLeft;
+            _nextReset = newReset.UtcTicks;
 
-            this._limitValid = true;
-            this._limitTestFinished = null;
-            this._limitTesting = 0;
+            _limitValid = true;
+            _limitTestFinished = null;
+            _limitTesting = 0;
         }
     }
 }

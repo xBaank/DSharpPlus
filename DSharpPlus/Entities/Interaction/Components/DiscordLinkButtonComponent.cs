@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using Newtonsoft.Json;
 
 namespace DSharpPlus.Entities
@@ -59,7 +60,7 @@ namespace DSharpPlus.Entities
 
         internal DiscordLinkButtonComponent()
         {
-            this.Type = ComponentType.Button;
+            Type = ComponentType.Button;
         }
 
         /// <summary>
@@ -71,10 +72,10 @@ namespace DSharpPlus.Entities
         /// <param name="emoji">The emoji to set with this button. This is required if <paramref name="label"/> is null or empty.</param>
         public DiscordLinkButtonComponent(string url, string label, bool disabled = false, DiscordComponentEmoji emoji = null) : this()
         {
-            this.Url = url;
-            this.Label = label;
-            this.Disabled = disabled;
-            this.Emoji = emoji;
+            Url = url;
+            Label = label;
+            Disabled = disabled;
+            Emoji = emoji;
         }
     }
 }

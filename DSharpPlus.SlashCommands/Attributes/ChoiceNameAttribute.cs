@@ -5,7 +5,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Sets the name for this enum choice.
     /// </summary>
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.All)]
     public sealed class ChoiceNameAttribute : Attribute
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace DSharpPlus.SlashCommands
         /// <param name="name">The name for this enum choice.</param>
         public ChoiceNameAttribute(string name)
         {
-            this.Name = name;
+            Name = name;
         }
     }
 }

@@ -58,7 +58,7 @@ namespace DSharpPlus.CommandsNext.Builders
             if (!t.IsModuleCandidateType())
                 throw new ArgumentException("Specified type is not a valid module type.", nameof(t));
 
-            this.Type = t;
+            Type = t;
             return this;
         }
 
@@ -69,19 +69,19 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandModuleBuilder WithLifespan(ModuleLifespan lifespan)
         {
-            this.Lifespan = lifespan;
+            Lifespan = lifespan;
             return this;
         }
 
         internal ICommandModule Build(IServiceProvider services)
         {
-            if (this.Type is null)
-                throw new InvalidOperationException($"A command module cannot be built without a module type, please use the {nameof(this.WithType)} method to set a type.");
+            if (Type is null)
+                throw new InvalidOperationException($"A command module cannot be built without a module type, please use the {nameof(WithType)} method to set a type.");
 
-            return this.Lifespan switch
+            return Lifespan switch
             {
-                ModuleLifespan.Singleton => new SingletonCommandModule(this.Type, services),
-                ModuleLifespan.Transient => new TransientCommandModule(this.Type),
+                ModuleLifespan.Singleton => new SingletonCommandModule(Type, services),
+                ModuleLifespan.Transient => new TransientCommandModule(Type),
                 _ => throw new NotSupportedException("Module lifespans other than transient and singleton are not supported."),
             };
         }

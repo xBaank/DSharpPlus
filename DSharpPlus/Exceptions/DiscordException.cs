@@ -43,7 +43,8 @@ namespace DSharpPlus.Exceptions
         /// </summary>
         public virtual string JsonMessage { get; internal set; }
 
-        public DiscordException() : base() { }
+        public DiscordException()
+        { }
         public DiscordException(string message) : base(message) { }
         public DiscordException(string message, Exception innerException) : base(message, innerException) { }
     }

@@ -32,7 +32,7 @@ namespace DSharpPlus
 
         public ShardedLoggerFactory(ILogger<BaseDiscordClient> instance)
         {
-            this.Logger = instance;
+            Logger = instance;
         }
 
         public void AddProvider(ILoggerProvider provider) => throw new InvalidOperationException("This is a passthrough logger container, it cannot register new providers.");
@@ -41,7 +41,7 @@ namespace DSharpPlus
         {
             return categoryName != typeof(BaseDiscordClient).FullName
                 ? throw new ArgumentException($"This factory can only provide instances of loggers for {typeof(BaseDiscordClient).FullName}.", nameof(categoryName))
-                : this.Logger;
+                : Logger;
         }
 
         public void Dispose()

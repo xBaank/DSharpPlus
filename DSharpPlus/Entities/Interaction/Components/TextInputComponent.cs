@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using Newtonsoft.Json;
 
 namespace DSharpPlus.Entities
@@ -73,7 +74,7 @@ namespace DSharpPlus.Entities
 
         public TextInputComponent()
         {
-            this.Type = ComponentType.FormInput;
+            Type = ComponentType.FormInput;
         }
 
         /// <summary>
@@ -89,15 +90,15 @@ namespace DSharpPlus.Entities
         /// <param name="max_length">The maximum input length. Must be greater than the minimum, if set.</param>
         public TextInputComponent(string label, string customId, string placeholder = null, string value = null, bool required = true, TextInputStyle style = TextInputStyle.Short, int min_length = 0, int? max_length = null)
         {
-            this.CustomId = customId;
-            this.Type = ComponentType.FormInput;
-            this.Label = label;
-            this.Required = required;
-            this.Placeholder = placeholder;
-            this.MinimumLength = min_length;
-            this.MaximumLength = max_length;
-            this.Style = style;
-            this.Value = value;
+            CustomId = customId;
+            Type = ComponentType.FormInput;
+            Label = label;
+            Required = required;
+            Placeholder = placeholder;
+            MinimumLength = min_length;
+            MaximumLength = max_length;
+            Style = style;
+            Value = value;
         }
     }
 }

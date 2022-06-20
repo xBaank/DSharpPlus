@@ -66,6 +66,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public string Nonce { get; set; }
 
-        internal GuildMembersChunkEventArgs() : base() { }
+        internal GuildMembersChunkEventArgs()
+        { }
     }
 }

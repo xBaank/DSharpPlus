@@ -43,7 +43,7 @@ namespace DSharpPlus.Entities
         /// Gets the application's icon.
         /// </summary>
         public override string Icon
-            => !string.IsNullOrWhiteSpace(this.IconHash) ? $"https://cdn.discordapp.com/app-icons/{this.Id.ToString(CultureInfo.InvariantCulture)}/{this.IconHash}.png?size=1024" : null;
+            => !string.IsNullOrWhiteSpace(IconHash) ? $"https://cdn.discordapp.com/app-icons/{Id.ToString(CultureInfo.InvariantCulture)}/{IconHash}.png?size=1024" : null;
 
         /// <summary>
         /// Gets the application's icon hash.
@@ -94,7 +94,7 @@ namespace DSharpPlus.Entities
         /// Gets this application's cover image URL.
         /// </summary>
         public override string CoverImageUrl
-            => $"https://cdn.discordapp.com/app-icons/{this.Id.ToString(CultureInfo.InvariantCulture)}/{this.CoverImageHash}.png?size=1024";
+            => $"https://cdn.discordapp.com/app-icons/{Id.ToString(CultureInfo.InvariantCulture)}/{CoverImageHash}.png?size=1024";
 
         /// <summary>
         /// Gets the team which owns this application.
@@ -133,15 +133,12 @@ namespace DSharpPlus.Entities
                 _ => throw new ArgumentOutOfRangeException(nameof(fmt)),
             };
             var ssize = size.ToString(CultureInfo.InvariantCulture);
-            if (!string.IsNullOrWhiteSpace(this.CoverImageHash))
+            if (!string.IsNullOrWhiteSpace(CoverImageHash))
             {
-                var id = this.Id.ToString(CultureInfo.InvariantCulture);
-                return $"https://cdn.discordapp.com/avatars/{id}/{this.CoverImageHash}.{sfmt}?size={ssize}";
+                var id = Id.ToString(CultureInfo.InvariantCulture);
+                return $"https://cdn.discordapp.com/avatars/{id}/{CoverImageHash}.{sfmt}?size={ssize}";
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
@@ -150,10 +147,10 @@ namespace DSharpPlus.Entities
         /// <returns>This application's assets.</returns>
         public async Task<IReadOnlyList<DiscordApplicationAsset>> GetAssetsAsync()
         {
-            if (this.Assets == null)
-                this.Assets = await this.Discord.ApiClient.GetApplicationAssetsAsync(this).ConfigureAwait(false);
+            if (Assets == null)
+                Assets = await Discord.ApiClient.GetApplicationAssetsAsync(this).ConfigureAwait(false);
 
-            return this.Assets;
+            return Assets;
         }
 
         public string GenerateBotOAuth(Permissions permissions = Permissions.None)
@@ -161,7 +158,7 @@ namespace DSharpPlus.Entities
             permissions &= PermissionMethods.FULL_PERMS;
             // hey look, it's not all annoying and blue :P
             return new QueryUriBuilder("https://discord.com/oauth2/authorize")
-                .AddParameter("client_id", this.Id.ToString(CultureInfo.InvariantCulture))
+                .AddParameter("client_id", Id.ToString(CultureInfo.InvariantCulture))
                 .AddParameter("scope", "bot")
                 .AddParameter("permissions", ((long)permissions).ToString(CultureInfo.InvariantCulture))
                 .ToString();
@@ -172,7 +169,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether the object is equal to this <see cref="DiscordApplication"/>.</returns>
-        public override bool Equals(object obj) => this.Equals(obj as DiscordApplication);
+        public override bool Equals(object obj) => Equals(obj as DiscordApplication);
 
         /// <summary>
         /// Checks whether this <see cref="DiscordApplication"/> is equal to another <see cref="DiscordApplication"/>.
@@ -184,14 +181,14 @@ namespace DSharpPlus.Entities
             if (e is null)
                 return false;
 
-            return ReferenceEquals(this, e) ? true : this.Id == e.Id;
+            return ReferenceEquals(this, e) ? true : Id == e.Id;
         }
 
         /// <summary>
         /// Gets the hash code for this <see cref="DiscordApplication"/>.
         /// </summary>
         /// <returns>The hash code for this <see cref="DiscordApplication"/>.</returns>
-        public override int GetHashCode() => this.Id.GetHashCode();
+        public override int GetHashCode() => Id.GetHashCode();
 
         /// <summary>
         /// Gets whether the two <see cref="DiscordApplication"/> objects are equal.
@@ -264,13 +261,13 @@ namespace DSharpPlus.Entities
         /// Gets the Url of this asset.
         /// </summary>
         public override Uri Url
-            => new($"https://cdn.discordapp.com/app-assets/{this.Application.Id.ToString(CultureInfo.InvariantCulture)}/{this.Id}.png");
+            => new($"https://cdn.discordapp.com/app-assets/{Application.Id.ToString(CultureInfo.InvariantCulture)}/{Id}.png");
 
         internal DiscordApplicationAsset() { }
 
         internal DiscordApplicationAsset(DiscordApplication app)
         {
-            this.Discord = app.Discord;
+            Discord = app.Discord;
         }
 
         /// <summary>
@@ -278,7 +275,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether the object is equal to this <see cref="DiscordApplicationAsset"/>.</returns>
-        public override bool Equals(object obj) => this.Equals(obj as DiscordApplicationAsset);
+        public override bool Equals(object obj) => Equals(obj as DiscordApplicationAsset);
 
         /// <summary>
         /// Checks whether this <see cref="DiscordApplicationAsset"/> is equal to another <see cref="DiscordApplicationAsset"/>.
@@ -290,14 +287,14 @@ namespace DSharpPlus.Entities
             if (e is null)
                 return false;
 
-            return ReferenceEquals(this, e) ? true : this.Id == e.Id;
+            return ReferenceEquals(this, e) ? true : Id == e.Id;
         }
 
         /// <summary>
         /// Gets the hash code for this <see cref="DiscordApplication"/>.
         /// </summary>
         /// <returns>The hash code for this <see cref="DiscordApplication"/>.</returns>
-        public override int GetHashCode() => this.Id.GetHashCode();
+        public override int GetHashCode() => Id.GetHashCode();
 
         /// <summary>
         /// Gets whether the two <see cref="DiscordApplicationAsset"/> objects are equal.
@@ -332,15 +329,15 @@ namespace DSharpPlus.Entities
         /// Gets the URL of this asset.
         /// </summary>
         public override Uri Url
-            => this._url.Value;
+            => _url.Value;
 
         private readonly Lazy<Uri> _url;
 
         public DiscordSpotifyAsset()
         {
-            this._url = new Lazy<Uri>(() =>
+            _url = new Lazy<Uri>(() =>
             {
-                var ids = this.Id.Split(':');
+                var ids = Id.Split(':');
                 var id = ids[1];
                 return new Uri($"https://i.scdn.co/image/{id}");
             });
@@ -350,7 +347,7 @@ namespace DSharpPlus.Entities
     /// <summary>
     /// Determines the type of the asset attached to the application.
     /// </summary>
-    public enum ApplicationAssetType : int
+    public enum ApplicationAssetType
     {
         /// <summary>
         /// Unknown type. This indicates something went terribly wrong.

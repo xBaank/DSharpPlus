@@ -37,15 +37,15 @@ namespace DSharpPlus.Test
         public TestBotHelpFormatter(CommandContext ctx)
             : base(ctx)
         {
-            this.Content = new StringBuilder();
+            Content = new StringBuilder();
         }
 
         public override BaseHelpFormatter WithCommand(Command command)
         {
-            this.Content.Append(command.Description ?? "No description provided.").Append("\n\n");
+            Content.Append(command.Description ?? "No description provided.").Append("\n\n");
 
             if (command.Aliases.Count > 0)
-                this.Content.Append("Aliases: ").Append(string.Join(", ", command.Aliases)).Append("\n\n");
+                Content.Append("Aliases: ").Append(string.Join(", ", command.Aliases)).Append("\n\n");
 
             if (command.Overloads.Count > 0)
             {
@@ -61,12 +61,12 @@ namespace DSharpPlus.Test
                     sb.Append('\n');
 
                     foreach (var arg in ovl.Arguments)
-                        sb.Append(arg.Name).Append(" (").Append(this.CommandsNext.GetUserFriendlyTypeName(arg.Type)).Append("): ").Append(arg.Description ?? "No description provided.").Append('\n');
+                        sb.Append(arg.Name).Append(" (").Append(CommandsNext.GetUserFriendlyTypeName(arg.Type)).Append("): ").Append(arg.Description ?? "No description provided.").Append('\n');
 
                     sb.Append('\n');
                 }
 
-                this.Content.Append("Arguments:\n").Append(sb);
+                Content.Append("Arguments:\n").Append(sb);
             }
 
             return this;
@@ -74,10 +74,10 @@ namespace DSharpPlus.Test
 
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
-            if (this.Content.Length == 0)
-                this.Content.Append("Displaying all available commands.\n\n");
+            if (Content.Length == 0)
+                Content.Append("Displaying all available commands.\n\n");
             else
-                this.Content.Append("Subcommands:\n");
+                Content.Append("Subcommands:\n");
 
             if (subcommands?.Any() == true)
             {
@@ -87,13 +87,13 @@ namespace DSharpPlus.Test
                     sb.Append(xc.Name.PadRight(ml, ' '))
                         .Append("  ")
                         .Append(string.IsNullOrWhiteSpace(xc.Description) ? "" : xc.Description).Append('\n');
-                this.Content.Append(sb);
+                Content.Append(sb);
             }
 
             return this;
         }
 
         public override CommandHelpMessage Build()
-            => new CommandHelpMessage($"```less\n{this.Content.ToString().Trim()}\n```");
+            => new CommandHelpMessage($"```less\n{Content.ToString().Trim()}\n```");
     }
 }

@@ -67,7 +67,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         [JsonIgnore]
         public Optional<DiscordColor> Color
-            => this._colorLazy.Value;
+            => _colorLazy.Value;
 
         [JsonProperty("color", NullValueHandling = NullValueHandling.Include)]
         internal Optional<int> _color;
@@ -118,7 +118,7 @@ namespace DSharpPlus.Entities
 
         internal DiscordEmbed()
         {
-            this._colorLazy = new Lazy<Optional<DiscordColor>>(() => this._color.HasValue ? Optional.FromValue<DiscordColor>(this._color.Value) : Optional.FromNoValue<DiscordColor>());
+            _colorLazy = new Lazy<Optional<DiscordColor>>(() => _color.HasValue ? Optional.FromValue<DiscordColor>(_color.Value) : Optional.FromNoValue<DiscordColor>());
         }
     }
 }

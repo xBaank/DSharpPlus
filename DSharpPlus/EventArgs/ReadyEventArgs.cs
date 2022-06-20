@@ -28,6 +28,7 @@ namespace DSharpPlus.EventArgs
     /// </summary>
     public sealed class ReadyEventArgs : DiscordEventArgs
     {
-        internal ReadyEventArgs() : base() { }
+        internal ReadyEventArgs()
+        { }
     }
 }

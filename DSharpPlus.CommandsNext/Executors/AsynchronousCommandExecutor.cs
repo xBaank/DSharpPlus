@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 namespace DSharpPlus.CommandsNext.Executors
 {
     /// <summary>
-    /// Executes commands using <see cref="Task.Run(Func{Task})"/>.
+    /// Executes commands using <see cref="Task.Run(System.Func{System.Threading.Tasks.Task}())"/>.
     /// </summary>
     public sealed class AsynchronousCommandExecutor : ICommandExecutor
     {

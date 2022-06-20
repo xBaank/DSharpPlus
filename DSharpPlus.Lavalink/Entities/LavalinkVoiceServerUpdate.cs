@@ -40,9 +40,9 @@ namespace DSharpPlus.Lavalink.Entities
 
         internal LavalinkVoiceServerUpdate(VoiceServerUpdateEventArgs vsu)
         {
-            this.Token = vsu.VoiceToken;
-            this.GuildId = vsu.Guild.Id.ToString(CultureInfo.InvariantCulture);
-            this.Endpoint = vsu.Endpoint;
+            Token = vsu.VoiceToken;
+            GuildId = vsu.Guild.Id.ToString(CultureInfo.InvariantCulture);
+            Endpoint = vsu.Endpoint;
         }
     }
 
@@ -57,8 +57,8 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkVoiceUpdate(VoiceStateUpdateEventArgs vstu, VoiceServerUpdateEventArgs vsrvu)
             : base("voiceUpdate", vstu.Guild.Id.ToString(CultureInfo.InvariantCulture))
         {
-            this.SessionId = vstu.SessionId;
-            this.Event = new LavalinkVoiceServerUpdate(vsrvu);
+            SessionId = vstu.SessionId;
+            Event = new LavalinkVoiceServerUpdate(vsrvu);
         }
     }
 }

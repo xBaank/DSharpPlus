@@ -33,7 +33,5 @@ namespace DSharpPlus.EventArgs
     /// </summary>
     public abstract class DiscordEventArgs : AsyncEventArgs
     {
-        protected DiscordEventArgs()
-        { }
     }
 }

@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace DSharpPlus.Test
             if (!response.TimedOut)
             {
                 var inter = response.Result.Interaction;
-                var embed = this.ModalSubmittedEmbed(ctx.User, inter, response.Result.Values);
+                var embed = ModalSubmittedEmbed(ctx.User, inter, response.Result.Values);
                 await inter.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
             }
             else
@@ -77,7 +78,7 @@ namespace DSharpPlus.Test
             if (!response.TimedOut)
             {
                 var inter = response.Result.Interaction;
-                var embed = this.ModalSubmittedEmbed(ctx.User, inter, response.Result.Values);
+                var embed = ModalSubmittedEmbed(ctx.User, inter, response.Result.Values);
                 await inter.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
             }
             else
@@ -99,7 +100,7 @@ namespace DSharpPlus.Test
             if (!response.TimedOut)
             {
                 var inter = response.Result.Interaction;
-                var embed = this.ModalSubmittedEmbed(ctx.User, inter, response.Result.Values);
+                var embed = ModalSubmittedEmbed(ctx.User, inter, response.Result.Values);
                 await inter.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
             }
             else

@@ -5,7 +5,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Marks this method as a context menu.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public sealed class ContextMenuAttribute : Attribute
     {
         /// <summary>
@@ -34,9 +34,9 @@ namespace DSharpPlus.SlashCommands
             if (type == ApplicationCommandType.SlashCommand)
                 throw new ArgumentException("Context menus cannot be of type SlashCommand.");
 
-            this.Type = type;
-            this.Name = name;
-            this.DefaultPermission = defaultPermission;
+            Type = type;
+            Name = name;
+            DefaultPermission = defaultPermission;
         }
     }
 }

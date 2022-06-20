@@ -178,10 +178,10 @@ namespace DSharpPlus.Net.Abstractions
         public bool HasEmbed { get; set; }
 
         public bool ShouldSerializeContent()
-            => this.HasContent;
+            => HasContent;
 
         public bool ShouldSerializeEmbed()
-            => this.HasEmbed;
+            => HasEmbed;
     }
 
     internal sealed class RestChannelMessageCreatePayload : RestChannelMessageEditPayload

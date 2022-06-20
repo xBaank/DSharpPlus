@@ -45,6 +45,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordGuild Guild { get; internal set; }
 
-        internal ChannelUpdateEventArgs() : base() { }
+        internal ChannelUpdateEventArgs()
+        { }
     }
 }

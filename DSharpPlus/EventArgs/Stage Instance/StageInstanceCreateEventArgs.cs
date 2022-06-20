@@ -39,12 +39,12 @@ namespace DSharpPlus.EventArgs
         /// Gets the guild the stage instance was created in.
         /// </summary>
         public DiscordGuild Guild
-            => this.StageInstance.Guild;
+            => StageInstance.Guild;
 
         /// <summary>
         /// Gets the channel the stage instance was created in.
         /// </summary>
         public DiscordChannel Channel
-            => this.StageInstance.Channel;
+            => StageInstance.Channel;
     }
 }

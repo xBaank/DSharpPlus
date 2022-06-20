@@ -50,6 +50,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordEmoji Emoji { get; internal set; }
 
-        internal MessageReactionRemoveEmojiEventArgs() : base() { }
+        internal MessageReactionRemoveEmojiEventArgs()
+        { }
     }
 }

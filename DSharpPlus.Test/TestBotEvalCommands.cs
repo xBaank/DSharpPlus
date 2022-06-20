@@ -96,15 +96,15 @@ namespace DSharpPlus.Test
 
         public TestVariables(DiscordMessage msg, DiscordClient client, CommandContext ctx)
         {
-            this.Client = client;
+            Client = client;
 
-            this.Message = msg;
-            this.Channel = msg.Channel;
-            this.Guild = this.Channel.Guild;
-            this.User = this.Message.Author;
-            if (this.Guild != null)
-                this.Member = this.Guild.GetMemberAsync(this.User.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-            this.Context = ctx;
+            Message = msg;
+            Channel = msg.Channel;
+            Guild = Channel.Guild;
+            User = Message.Author;
+            if (Guild != null)
+                Member = Guild.GetMemberAsync(User.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+            Context = ctx;
         }
 
         public DiscordClient Client;

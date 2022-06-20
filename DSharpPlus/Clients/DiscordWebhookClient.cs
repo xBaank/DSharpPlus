@@ -74,7 +74,7 @@ namespace DSharpPlus
         /// Creates a new webhook client.
         /// </summary>
         public DiscordWebhookClient()
-            : this(null, null)
+            : this(null)
         { }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace DSharpPlus
         public DiscordWebhookClient(IWebProxy proxy = null, TimeSpan? timeout = null, bool useRelativeRateLimit = true,
             ILoggerFactory loggerFactory = null, LogLevel minimumLogLevel = LogLevel.Information, string logTimestampFormat = "yyyy-MM-dd HH:mm:ss zzz")
         {
-            this._minimumLogLevel = minimumLogLevel;
-            this._logTimestampFormat = logTimestampFormat;
+            _minimumLogLevel = minimumLogLevel;
+            _logTimestampFormat = logTimestampFormat;
 
             if (loggerFactory == null)
             {
@@ -98,13 +98,13 @@ namespace DSharpPlus
                 loggerFactory.AddProvider(new DefaultLoggerProvider(this));
             }
 
-            this.Logger = loggerFactory.CreateLogger<DiscordWebhookClient>();
+            Logger = loggerFactory.CreateLogger<DiscordWebhookClient>();
 
             var parsedTimeout = timeout ?? TimeSpan.FromSeconds(10);
 
-            this._apiclient = new DiscordApiClient(proxy, parsedTimeout, useRelativeRateLimit, this.Logger);
-            this._hooks = new List<DiscordWebhook>();
-            this.Webhooks = new ReadOnlyCollection<DiscordWebhook>(this._hooks);
+            _apiclient = new DiscordApiClient(proxy, parsedTimeout, useRelativeRateLimit, Logger);
+            _hooks = new List<DiscordWebhook>();
+            Webhooks = new ReadOnlyCollection<DiscordWebhook>(_hooks);
         }
 
         /// <summary>
@@ -119,11 +119,11 @@ namespace DSharpPlus
                 throw new ArgumentNullException(nameof(token));
             token = token.Trim();
 
-            if (this._hooks.Any(x => x.Id == id))
+            if (_hooks.Any(x => x.Id == id))
                 throw new InvalidOperationException("This webhook is registered with this client.");
 
-            var wh = await this._apiclient.GetWebhookWithTokenAsync(id, token).ConfigureAwait(false);
-            this._hooks.Add(wh);
+            var wh = await _apiclient.GetWebhookWithTokenAsync(id, token).ConfigureAwait(false);
+            _hooks.Add(wh);
 
             return wh;
         }
@@ -148,7 +148,7 @@ namespace DSharpPlus
                 throw new ArgumentException("Invalid webhook URL supplied.", nameof(url));
 
             var token = tokenraw.Value;
-            return this.AddWebhookAsync(id, token);
+            return AddWebhookAsync(id, token);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace DSharpPlus
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
-            if (this._hooks.Any(x => x.Id == id))
+            if (_hooks.Any(x => x.Id == id))
                 throw new ArgumentException("This webhook is already registered with this client.");
 
             var wh = await client.ApiClient.GetWebhookAsync(id).ConfigureAwait(false);
@@ -182,7 +182,7 @@ namespace DSharpPlus
             //    User = wh.User,
             //    Discord = null
             //};
-            this._hooks.Add(wh);
+            _hooks.Add(wh);
 
             return wh;
         }
@@ -197,7 +197,7 @@ namespace DSharpPlus
             if (webhook == null)
                 throw new ArgumentNullException(nameof(webhook));
 
-            if (this._hooks.Any(x => x.Id == webhook.Id))
+            if (_hooks.Any(x => x.Id == webhook.Id))
                 throw new ArgumentException("This webhook is already registered with this client.");
 
             // see line 128-131 for explanation
@@ -214,7 +214,7 @@ namespace DSharpPlus
             //    User = webhook.User,
             //    Discord = null
             //};
-            this._hooks.Add(webhook);
+            _hooks.Add(webhook);
 
             return webhook;
         }
@@ -226,11 +226,11 @@ namespace DSharpPlus
         /// <returns>The unregistered webhook.</returns>
         public DiscordWebhook RemoveWebhook(ulong id)
         {
-            if (!this._hooks.Any(x => x.Id == id))
+            if (!_hooks.Any(x => x.Id == id))
                 throw new ArgumentException("This webhook is not registered with this client.");
 
-            var wh = this.GetRegisteredWebhook(id);
-            this._hooks.Remove(wh);
+            var wh = GetRegisteredWebhook(id);
+            _hooks.Remove(wh);
             return wh;
         }
 
@@ -240,7 +240,7 @@ namespace DSharpPlus
         /// <param name="id">ID of the registered webhook to retrieve.</param>
         /// <returns>The requested webhook.</returns>
         public DiscordWebhook GetRegisteredWebhook(ulong id)
-            => this._hooks.FirstOrDefault(xw => xw.Id == id);
+            => _hooks.FirstOrDefault(xw => xw.Id == id);
 
         /// <summary>
         /// Broadcasts a message to all registered webhooks.
@@ -252,7 +252,7 @@ namespace DSharpPlus
             var deadhooks = new List<DiscordWebhook>();
             var messages = new Dictionary<DiscordWebhook, DiscordMessage>();
 
-            foreach (var hook in this._hooks)
+            foreach (var hook in _hooks)
             {
                 try
                 {
@@ -265,16 +265,16 @@ namespace DSharpPlus
             }
 
             // Removing dead webhooks from collection
-            foreach (var xwh in deadhooks) this._hooks.Remove(xwh);
+            foreach (var xwh in deadhooks) _hooks.Remove(xwh);
 
             return messages;
         }
 
         ~DiscordWebhookClient()
         {
-            this._hooks.Clear();
-            this._hooks = null;
-            this._apiclient.Rest.Dispose();
+            _hooks.Clear();
+            _hooks = null;
+            _apiclient.Rest.Dispose();
         }
     }
 }

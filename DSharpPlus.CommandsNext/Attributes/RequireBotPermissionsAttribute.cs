@@ -29,7 +29,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Defines that usage of this command is only possible when the bot is granted a specific permission.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
     public sealed class RequireBotPermissionsAttribute : CheckBaseAttribute
     {
         /// <summary>
@@ -49,14 +49,14 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <param name="ignoreDms">Sets this check's behaviour in DMs. True means the check will always pass in DMs, whereas false means that it will always fail.</param>
         public RequireBotPermissionsAttribute(Permissions permissions, bool ignoreDms = true)
         {
-            this.Permissions = permissions;
-            this.IgnoreDms = ignoreDms;
+            Permissions = permissions;
+            IgnoreDms = ignoreDms;
         }
 
         public override async Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
             if (ctx.Guild == null)
-                return this.IgnoreDms;
+                return IgnoreDms;
 
             var bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id).ConfigureAwait(false);
             if (bot == null)
@@ -70,7 +70,7 @@ namespace DSharpPlus.CommandsNext.Attributes
             if ((pbot & Permissions.Administrator) != 0)
                 return true;
 
-            return (pbot & this.Permissions) == this.Permissions;
+            return (pbot & Permissions) == Permissions;
         }
     }
 }

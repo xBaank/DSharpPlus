@@ -28,7 +28,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Gives this command, group, or argument a description, which is used when listing help.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Parameter)]
     public sealed class DescriptionAttribute : Attribute
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <param name="description"></param>
         public DescriptionAttribute(string description)
         {
-            this.Description = description;
+            Description = description;
         }
     }
 }

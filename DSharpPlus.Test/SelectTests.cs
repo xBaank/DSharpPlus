@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
@@ -50,7 +51,7 @@ namespace DSharpPlus.Test
                 new DiscordSelectComponentOption("Label 3", "the third option", emoji: new DiscordComponentEmoji("⬛")),
             };
 
-            var select = new DiscordSelectComponent("yert", "Dropdowns!", opts, true, 0, 1);
+            var select = new DiscordSelectComponent("yert", "Dropdowns!", opts, true, 0);
 
             var btn1 = new DiscordButtonComponent(ButtonStyle.Primary, "no1", "Button 1!", true);
             var btn2 = new DiscordButtonComponent(ButtonStyle.Secondary, "no2", "Button 2!", true);
@@ -83,7 +84,7 @@ namespace DSharpPlus.Test
                 new DiscordSelectComponentOption("Label 3", "the third option", emoji: new DiscordComponentEmoji("⬛")),
             };
 
-            var select = new DiscordSelectComponent("yert", "Dropdowns!", opts, false);
+            var select = new DiscordSelectComponent("yert", "Dropdowns!", opts);
 
             var btn1 = new DiscordButtonComponent(ButtonStyle.Primary, "no1", "Button 1!", true);
             var btn2 = new DiscordButtonComponent(ButtonStyle.Secondary, "no2", "Button 2!", true);

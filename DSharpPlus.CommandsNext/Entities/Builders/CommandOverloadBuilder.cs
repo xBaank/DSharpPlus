@@ -81,7 +81,7 @@ namespace DSharpPlus.CommandsNext.Builders
             if (!method.IsCommandCandidate(out var prms))
                 throw new ArgumentException("Specified method is not suitable for a command.", nameof(method));
 
-            this.InvocationTarget = target;
+            InvocationTarget = target;
 
             // create the argument array
             var ea = new ParameterExpression[prms.Length + 1];
@@ -91,7 +91,7 @@ namespace DSharpPlus.CommandsNext.Builders
 
             var pri = method.GetCustomAttribute<PriorityAttribute>();
             if (pri != null)
-                this.Priority = pri.Priority;
+                Priority = pri.Priority;
 
             var i = 2;
             var args = new List<CommandArgument>(prms.Length - 1);
@@ -150,9 +150,9 @@ namespace DSharpPlus.CommandsNext.Builders
             var ec = Expression.Call(iep, method, ea.Skip(1));
             var el = Expression.Lambda(ec, ea);
 
-            this.ArgumentSet = setb.ToString();
-            this.Arguments = new ReadOnlyCollection<CommandArgument>(args);
-            this.Callable = el.Compile();
+            ArgumentSet = setb.ToString();
+            Arguments = new ReadOnlyCollection<CommandArgument>(args);
+            Callable = el.Compile();
         }
 
         /// <summary>
@@ -162,19 +162,19 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandOverloadBuilder WithPriority(int priority)
         {
-            this.Priority = priority;
+            Priority = priority;
 
             return this;
         }
 
         internal CommandOverload Build()
         {
-            var ovl = new CommandOverload()
+            var ovl = new CommandOverload
             {
-                Arguments = this.Arguments,
-                Priority = this.Priority,
-                Callable = this.Callable,
-                InvocationTarget = this.InvocationTarget
+                Arguments = Arguments,
+                Priority = Priority,
+                Callable = Callable,
+                InvocationTarget = InvocationTarget
             };
 
             return ovl;

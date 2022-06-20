@@ -33,23 +33,23 @@ namespace DSharpPlus.Net.Abstractions
         public ulong GuildId { get; }
 
         [JsonProperty("query", NullValueHandling = NullValueHandling.Ignore)]
-        public string Query { get; set; } = null;
+        public string Query { get; set; }
 
         [JsonProperty("limit")]
-        public int Limit { get; set; } = 0;
+        public int Limit { get; set; }
 
         [JsonProperty("presences", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? Presences { get; set; } = null;
+        public bool? Presences { get; set; }
 
         [JsonProperty("user_ids", NullValueHandling = NullValueHandling.Ignore)]
-        public IEnumerable<ulong> UserIds { get; set; } = null;
+        public IEnumerable<ulong> UserIds { get; set; }
 
         [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
         public string Nonce { get; internal set; }
 
         public GatewayRequestGuildMembers(DiscordGuild guild)
         {
-            this.GuildId = guild.Id;
+            GuildId = guild.Id;
         }
     }
 }

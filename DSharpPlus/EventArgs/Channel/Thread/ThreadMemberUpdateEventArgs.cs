@@ -40,6 +40,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordThreadChannel Thread { get; internal set; }
 
-        internal ThreadMemberUpdateEventArgs() : base() { }
+        internal ThreadMemberUpdateEventArgs()
+        { }
     }
 }

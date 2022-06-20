@@ -42,8 +42,6 @@ namespace DSharpPlus.Net.Abstractions
 
         [JsonProperty("members", NullValueHandling = NullValueHandling.Include)]
         public IEnumerable<TransportTeamMember> Members { get; set; }
-
-        internal TransportTeam() { }
     }
 
     internal sealed class TransportTeamMember
@@ -59,7 +57,5 @@ namespace DSharpPlus.Net.Abstractions
 
         [JsonProperty("user", NullValueHandling = NullValueHandling.Include)]
         public TransportUser User { get; set; }
-
-        internal TransportTeamMember() { }
     }
 }

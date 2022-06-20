@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using DSharpPlus.Entities;
 
 namespace DSharpPlus.EventArgs
@@ -32,7 +33,7 @@ namespace DSharpPlus.EventArgs
         /// <summary>
         /// The guild the event is scheduled for.
         /// </summary>
-        public DiscordGuild Guild => this.Event.Guild;
+        public DiscordGuild Guild => Event.Guild;
 
         /// <summary>
         /// The event that was unsubscribed from.
@@ -43,6 +44,7 @@ namespace DSharpPlus.EventArgs
         /// The user that unsubscribed from the event.
         /// </summary>
         public DiscordUser User { get; internal set; }
-        internal ScheduledGuildEventUserRemoveEventArgs() : base() {}
+        internal ScheduledGuildEventUserRemoveEventArgs()
+        {}
     }
 }

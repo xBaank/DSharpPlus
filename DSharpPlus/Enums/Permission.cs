@@ -359,7 +359,7 @@ namespace DSharpPlus
     /// <summary>
     /// Defines a readable name for this permission.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public sealed class PermissionStringAttribute : Attribute
     {
         /// <summary>
@@ -373,7 +373,7 @@ namespace DSharpPlus
         /// <param name="str">Readable name for this permission.</param>
         public PermissionStringAttribute(string str)
         {
-            this.String = str;
+            String = str;
         }
     }
 }

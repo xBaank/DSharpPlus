@@ -59,7 +59,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         /// <param name="reason">Reason as to why this overwrite gets deleted.</param>
         /// <returns></returns>
-        public Task DeleteAsync(string reason = null) => this.Discord.ApiClient.DeleteChannelPermissionAsync(this._channel_id, this.Id, reason);
+        public Task DeleteAsync(string reason = null) => Discord.ApiClient.DeleteChannelPermissionAsync(_channel_id, Id, reason);
 
         /// <summary>
         /// Updates this channel overwrite.
@@ -73,7 +73,7 @@ namespace DSharpPlus.Entities
         /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
         public Task UpdateAsync(Permissions? allow = null, Permissions? deny = null, string reason = null)
-            => this.Discord.ApiClient.EditChannelPermissionsAsync(this._channel_id, this.Id, allow ?? this.Allowed, deny ?? this.Denied, this.Type.ToString().ToLowerInvariant(), reason);
+            => Discord.ApiClient.EditChannelPermissionsAsync(_channel_id, Id, allow ?? Allowed, deny ?? Denied, Type.ToString().ToLowerInvariant(), reason);
         #endregion
 
         /// <summary>
@@ -86,9 +86,9 @@ namespace DSharpPlus.Entities
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
         public async Task<DiscordMember> GetMemberAsync()
         {
-            return this.Type != OverwriteType.Member
-                ? throw new ArgumentException(nameof(this.Type), "This overwrite is for a role, not a member.")
-                : await (await this.Discord.ApiClient.GetChannelAsync(this._channel_id).ConfigureAwait(false)).Guild.GetMemberAsync(this.Id).ConfigureAwait(false);
+            return Type != OverwriteType.Member
+                ? throw new ArgumentException(nameof(Type), "This overwrite is for a role, not a member.")
+                : await (await Discord.ApiClient.GetChannelAsync(_channel_id).ConfigureAwait(false)).Guild.GetMemberAsync(Id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -100,9 +100,9 @@ namespace DSharpPlus.Entities
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
         public async Task<DiscordRole> GetRoleAsync()
         {
-            return this.Type != OverwriteType.Role
-                ? throw new ArgumentException(nameof(this.Type), "This overwrite is for a member, not a role.")
-                : (await this.Discord.ApiClient.GetChannelAsync(this._channel_id).ConfigureAwait(false)).Guild.GetRole(this.Id);
+            return Type != OverwriteType.Role
+                ? throw new ArgumentException(nameof(Type), "This overwrite is for a member, not a role.")
+                : (await Discord.ApiClient.GetChannelAsync(_channel_id).ConfigureAwait(false)).Guild.GetRole(Id);
         }
 
         internal DiscordOverwrite() { }
@@ -114,9 +114,9 @@ namespace DSharpPlus.Entities
         /// <returns>Whether given permissions are allowed, denied, or not set.</returns>
         public PermissionLevel CheckPermission(Permissions permission)
         {
-            if ((this.Allowed & permission) != 0)
+            if ((Allowed & permission) != 0)
                 return PermissionLevel.Allowed;
-            return (this.Denied & permission) != 0 ? PermissionLevel.Denied : PermissionLevel.Unset;
+            return (Denied & permission) != 0 ? PermissionLevel.Denied : PermissionLevel.Unset;
         }
     }
 }

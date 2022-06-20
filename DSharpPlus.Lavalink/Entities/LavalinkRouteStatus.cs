@@ -33,7 +33,7 @@ namespace DSharpPlus.Lavalink.Entities
         /// </summary>
         [JsonIgnore]
         public LavalinkRoutePlannerType? Class
-            => this.GetLavalinkRoutePlannerType(this.ClassInternal);
+            => GetLavalinkRoutePlannerType(ClassInternal);
 
         /// <summary>
         /// Gets the details of the route planner.

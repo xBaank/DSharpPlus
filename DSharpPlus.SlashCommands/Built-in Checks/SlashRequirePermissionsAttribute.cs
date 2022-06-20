@@ -6,7 +6,7 @@ namespace DSharpPlus.SlashCommands.Attributes
     /// <summary>
     /// Defines that usage of this slash command is restricted to members with specified permissions. This check also verifies that the bot has the same permissions.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
     public sealed class SlashRequirePermissionsAttribute : SlashCheckBaseAttribute
     {
         /// <summary>
@@ -26,8 +26,8 @@ namespace DSharpPlus.SlashCommands.Attributes
         /// <param name="ignoreDms">Sets this check's behaviour in DMs. True means the check will always pass in DMs, whereas false means that it will always fail.</param>
         public SlashRequirePermissionsAttribute(Permissions permissions, bool ignoreDms = true)
         {
-            this.Permissions = permissions;
-            this.IgnoreDms = ignoreDms;
+            Permissions = permissions;
+            IgnoreDms = ignoreDms;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace DSharpPlus.SlashCommands.Attributes
         public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
         {
             if (ctx.Guild == null)
-                return this.IgnoreDms;
+                return IgnoreDms;
 
             var usr = ctx.Member;
             if (usr == null)
@@ -52,10 +52,10 @@ namespace DSharpPlus.SlashCommands.Attributes
             var botok = ctx.Guild.OwnerId == bot.Id;
 
             if (!usrok)
-                usrok = (pusr & Permissions.Administrator) != 0 || (pusr & this.Permissions) == this.Permissions;
+                usrok = (pusr & Permissions.Administrator) != 0 || (pusr & Permissions) == Permissions;
 
             if (!botok)
-                botok = (pbot & Permissions.Administrator) != 0 || (pbot & this.Permissions) == this.Permissions;
+                botok = (pbot & Permissions.Administrator) != 0 || (pbot & Permissions) == Permissions;
 
             return usrok && botok;
         }

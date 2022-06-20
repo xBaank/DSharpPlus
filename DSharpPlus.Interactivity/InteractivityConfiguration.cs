@@ -61,7 +61,7 @@ namespace DSharpPlus.Interactivity
         /// <summary>
         /// How to handle buttons after pagination ends.
         /// </summary>
-        public ButtonPaginationBehavior ButtonBehavior { internal get; set; } = new();
+        public ButtonPaginationBehavior ButtonBehavior { internal get; set; }
 
         /// <summary>
         /// How to handle pagination. Defaults to WrapAround.
@@ -96,19 +96,19 @@ namespace DSharpPlus.Interactivity
         /// <param name="other">Configuration the properties of which are to be copied.</param>
         public InteractivityConfiguration(InteractivityConfiguration other)
         {
-            this.AckPaginationButtons = other.AckPaginationButtons;
-            this.PaginationButtons = other.PaginationButtons;
-            this.ButtonBehavior = other.ButtonBehavior;
-            this.PaginationBehaviour = other.PaginationBehaviour;
-            this.PaginationDeletion = other.PaginationDeletion;
-            this.ResponseBehavior = other.ResponseBehavior;
-            this.PaginationEmojis = other.PaginationEmojis;
-            this.ResponseMessage = other.ResponseMessage;
-            this.PollBehaviour = other.PollBehaviour;
-            this.Timeout = other.Timeout;
+            AckPaginationButtons = other.AckPaginationButtons;
+            PaginationButtons = other.PaginationButtons;
+            ButtonBehavior = other.ButtonBehavior;
+            PaginationBehaviour = other.PaginationBehaviour;
+            PaginationDeletion = other.PaginationDeletion;
+            ResponseBehavior = other.ResponseBehavior;
+            PaginationEmojis = other.PaginationEmojis;
+            ResponseMessage = other.ResponseMessage;
+            PollBehaviour = other.PollBehaviour;
+            Timeout = other.Timeout;
 
-            if (this.ResponseBehavior is InteractionResponseBehavior.Respond && string.IsNullOrWhiteSpace(this.ResponseMessage))
-                throw new ArgumentException($"{nameof(this.ResponseMessage)} cannot be null, empty, or whitespace when {nameof(this.ResponseBehavior)} is set to respond.");
+            if (ResponseBehavior is InteractionResponseBehavior.Respond && string.IsNullOrWhiteSpace(ResponseMessage))
+                throw new ArgumentException($"{nameof(ResponseMessage)} cannot be null, empty, or whitespace when {nameof(ResponseBehavior)} is set to respond.");
         }
     }
 }

@@ -34,12 +34,12 @@ namespace DSharpPlus.Net.Models
         /// </summary>
         public Optional<string> Name
         {
-            internal get => this._name;
+            internal get => _name;
             set
             {
                 if (value.Value.Length > 32)
                     throw new ArgumentException("Application command name cannot exceed 32 characters.", nameof(value));
-                this._name = value;
+                _name = value;
             }
         }
         private Optional<string> _name;
@@ -49,12 +49,12 @@ namespace DSharpPlus.Net.Models
         /// </summary>
         public Optional<string> Description
         {
-            internal get => this._description;
+            internal get => _description;
             set
             {
                 if (value.Value.Length > 100)
                     throw new ArgumentException("Application command description cannot exceed 100 characters.", nameof(value));
-                this._description = value;
+                _description = value;
             }
         }
         private Optional<string> _description;

@@ -220,28 +220,22 @@ namespace DSharpPlus.CommandsNext
 
                         break;
                     }
-                    else
-                    {
-                        if (argString == null)
-                            break;
-
-                        argValue = argString.Substring(foundAt).Trim();
-                        argValue = argValue == "" ? null : argValue;
-                        foundAt = argString.Length;
-
-                        rawArgumentList.Add(argValue);
+                    if (argString == null)
                         break;
-                    }
-                }
-                else
-                {
-                    argValue = ExtractNextArgument(argString, ref foundAt);
+
+                    argValue = argString.Substring(foundAt).Trim();
+                    argValue = argValue == "" ? null : argValue;
+                    foundAt = argString.Length;
+
                     rawArgumentList.Add(argValue);
+                    break;
                 }
+                argValue = ExtractNextArgument(argString, ref foundAt);
+                rawArgumentList.Add(argValue);
 
                 if (argValue == null && !arg.IsOptional && !arg.IsCatchAll)
                     return new ArgumentBindingResult(new ArgumentException("Not enough arguments supplied to the command."));
-                else if (argValue == null)
+                if (argValue == null)
                     rawArgumentList.Add(null);
             }
 
@@ -271,16 +265,13 @@ namespace DSharpPlus.CommandsNext
                     args[start + 2] = array;
                     break;
                 }
-                else
+                try
                 {
-                    try
-                    {
-                        args[i + 2] = rawArgumentList[i] != null ? await ctx.CommandsNext.ConvertArgument(rawArgumentList[i], ctx, arg.Type).ConfigureAwait(false) : arg.DefaultValue;
-                    }
-                    catch (Exception ex)
-                    {
-                        return new ArgumentBindingResult(ex);
-                    }
+                    args[i + 2] = rawArgumentList[i] != null ? await ctx.CommandsNext.ConvertArgument(rawArgumentList[i], ctx, arg.Type).ConfigureAwait(false) : arg.DefaultValue;
+                }
+                catch (Exception ex)
+                {
+                    return new ArgumentBindingResult(ex);
                 }
             }
 

@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using Newtonsoft.Json;
 
@@ -58,13 +59,13 @@ namespace DSharpPlus.Entities
         /// The guild this event is scheduled for.
         /// </summary>
         [JsonIgnore]
-        public DiscordGuild Guild => (this.Discord as DiscordClient).InternalGetCachedGuild(this.GuildId);
+        public DiscordGuild Guild => (Discord as DiscordClient).InternalGetCachedGuild(GuildId);
 
         /// <summary>
         /// The channel this event is scheduled for, if applicable.
         /// </summary>
         [JsonIgnore]
-        public DiscordChannel Channel => this.ChannelId.HasValue ? this.Guild.GetChannel(this.ChannelId.Value) : null;
+        public DiscordChannel Channel => ChannelId.HasValue ? Guild.GetChannel(ChannelId.Value) : null;
 
         /// <summary>
         /// The id of the channel this event is scheduled in, if any.

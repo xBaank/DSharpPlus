@@ -6,7 +6,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Defines allowed channel types for a channel parameter.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public class ChannelTypesAttribute : Attribute
     {
         /// <summary>
@@ -20,7 +20,7 @@ namespace DSharpPlus.SlashCommands
         /// <param name="channelTypes">The channel types to allow.</param>
         public ChannelTypesAttribute(params ChannelType[] channelTypes)
         {
-            this.ChannelTypes = channelTypes;
+            ChannelTypes = channelTypes;
         }
     }
 }

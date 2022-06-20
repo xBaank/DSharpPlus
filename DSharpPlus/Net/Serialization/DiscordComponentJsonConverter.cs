@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
@@ -50,7 +51,7 @@ namespace DSharpPlus.Net.Serialization
                 ComponentType.Button => new DiscordButtonComponent(),
                 ComponentType.Select => new DiscordSelectComponent(),
                 ComponentType.FormInput => new TextInputComponent(),
-                _ => new DiscordComponent() { Type = type.Value }
+                _ => new DiscordComponent { Type = type.Value }
             };
 
             // Populate the existing component with the values in the JObject. This avoids a recursive JsonConverter loop

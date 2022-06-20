@@ -63,10 +63,10 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <param name="bucketType">Type of cooldown bucket. This allows controlling whether the bucket will be cooled down per user, guild, channel, or globally.</param>
         public CooldownAttribute(int maxUses, double resetAfter, CooldownBucketType bucketType)
         {
-            this.MaxUses = maxUses;
-            this.Reset = TimeSpan.FromSeconds(resetAfter);
-            this.BucketType = bucketType;
-            this.Buckets = new ConcurrentDictionary<string, CommandCooldownBucket>();
+            MaxUses = maxUses;
+            Reset = TimeSpan.FromSeconds(resetAfter);
+            BucketType = bucketType;
+            Buckets = new ConcurrentDictionary<string, CommandCooldownBucket>();
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <returns>Requested cooldown bucket, or null if one wasn't present.</returns>
         public CommandCooldownBucket GetBucket(CommandContext ctx)
         {
-            var bid = this.GetBucketId(ctx, out _, out _, out _);
-            this.Buckets.TryGetValue(bid, out var bucket);
+            var bid = GetBucketId(ctx, out _, out _, out _);
+            Buckets.TryGetValue(bid, out var bucket);
             return bucket;
         }
 
@@ -88,7 +88,7 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <returns>Remaining cooldown, or zero if no cooldown is active.</returns>
         public TimeSpan GetRemainingCooldown(CommandContext ctx)
         {
-            var bucket = this.GetBucket(ctx);
+            var bucket = GetBucket(ctx);
             if (bucket is null)
                 return TimeSpan.Zero;
 
@@ -106,17 +106,17 @@ namespace DSharpPlus.CommandsNext.Attributes
         private string GetBucketId(CommandContext ctx, out ulong userId, out ulong channelId, out ulong guildId)
         {
             userId = 0ul;
-            if ((this.BucketType & CooldownBucketType.User) != 0)
+            if ((BucketType & CooldownBucketType.User) != 0)
                 userId = ctx.User.Id;
 
             channelId = 0ul;
-            if ((this.BucketType & CooldownBucketType.Channel) != 0)
+            if ((BucketType & CooldownBucketType.Channel) != 0)
                 channelId = ctx.Channel.Id;
-            if ((this.BucketType & CooldownBucketType.Guild) != 0 && ctx.Guild == null)
+            if ((BucketType & CooldownBucketType.Guild) != 0 && ctx.Guild == null)
                 channelId = ctx.Channel.Id;
 
             guildId = 0ul;
-            if (ctx.Guild != null && (this.BucketType & CooldownBucketType.Guild) != 0)
+            if (ctx.Guild != null && (BucketType & CooldownBucketType.Guild) != 0)
                 guildId = ctx.Guild.Id;
 
             var bid = CommandCooldownBucket.MakeId(userId, channelId, guildId);
@@ -128,11 +128,11 @@ namespace DSharpPlus.CommandsNext.Attributes
             if (help)
                 return true;
 
-            var bid = this.GetBucketId(ctx, out var usr, out var chn, out var gld);
-            if (!this.Buckets.TryGetValue(bid, out var bucket))
+            var bid = GetBucketId(ctx, out var usr, out var chn, out var gld);
+            if (!Buckets.TryGetValue(bid, out var bucket))
             {
-                bucket = new CommandCooldownBucket(this.MaxUses, this.Reset, usr, chn, gld);
-                this.Buckets.AddOrUpdate(bid, bucket, (k, v) => bucket);
+                bucket = new CommandCooldownBucket(MaxUses, Reset, usr, chn, gld);
+                Buckets.AddOrUpdate(bid, bucket, (k, v) => bucket);
             }
 
             return await bucket.DecrementUseAsync().ConfigureAwait(false);
@@ -142,7 +142,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Defines how are command cooldowns applied.
     /// </summary>
-    public enum CooldownBucketType : int
+    public enum CooldownBucketType
     {
         /// <summary>
         /// Denotes that the command will have its cooldown applied per-user.
@@ -194,7 +194,7 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// Gets the remaining number of uses before the cooldown is triggered.
         /// </summary>
         public int RemainingUses
-            => Volatile.Read(ref this._remaining_uses);
+            => Volatile.Read(ref _remaining_uses);
 
         private int _remaining_uses;
 
@@ -228,15 +228,15 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <param name="guildId">ID of the guild with which this cooldown is associated.</param>
         internal CommandCooldownBucket(int maxUses, TimeSpan resetAfter, ulong userId = 0, ulong channelId = 0, ulong guildId = 0)
         {
-            this._remaining_uses = maxUses;
-            this.MaxUses = maxUses;
-            this.ResetsAt = DateTimeOffset.UtcNow + resetAfter;
-            this.Reset = resetAfter;
-            this.UserId = userId;
-            this.ChannelId = channelId;
-            this.GuildId = guildId;
-            this.BucketId = MakeId(userId, channelId, guildId);
-            this.UsageSemaphore = new SemaphoreSlim(1, 1);
+            _remaining_uses = maxUses;
+            MaxUses = maxUses;
+            ResetsAt = DateTimeOffset.UtcNow + resetAfter;
+            Reset = resetAfter;
+            UserId = userId;
+            ChannelId = channelId;
+            GuildId = guildId;
+            BucketId = MakeId(userId, channelId, guildId);
+            UsageSemaphore = new SemaphoreSlim(1, 1);
         }
 
         /// <summary>
@@ -245,28 +245,28 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <returns>Whether decrement succeded or not.</returns>
         internal async Task<bool> DecrementUseAsync()
         {
-            await this.UsageSemaphore.WaitAsync().ConfigureAwait(false);
+            await UsageSemaphore.WaitAsync().ConfigureAwait(false);
 
             // if we're past reset time...
             var now = DateTimeOffset.UtcNow;
-            if (now >= this.ResetsAt)
+            if (now >= ResetsAt)
             {
                 // ...do the reset and set a new reset time
-                Interlocked.Exchange(ref this._remaining_uses, this.MaxUses);
-                this.ResetsAt = now + this.Reset;
+                Interlocked.Exchange(ref _remaining_uses, MaxUses);
+                ResetsAt = now + Reset;
             }
 
             // check if we have any uses left, if we do...
             var success = false;
-            if (this.RemainingUses > 0)
+            if (RemainingUses > 0)
             {
                 // ...decrement, and return success...
-                Interlocked.Decrement(ref this._remaining_uses);
+                Interlocked.Decrement(ref _remaining_uses);
                 success = true;
             }
 
             // ...otherwise just fail
-            this.UsageSemaphore.Release();
+            UsageSemaphore.Release();
             return success;
         }
 
@@ -274,14 +274,14 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// Returns a string representation of this command cooldown bucket.
         /// </summary>
         /// <returns>String representation of this command cooldown bucket.</returns>
-        public override string ToString() => $"Command bucket {this.BucketId}";
+        public override string ToString() => $"Command bucket {BucketId}";
 
         /// <summary>
         /// Checks whether this <see cref="CommandCooldownBucket"/> is equal to another object.
         /// </summary>
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether the object is equal to this <see cref="CommandCooldownBucket"/>.</returns>
-        public override bool Equals(object obj) => obj is CommandCooldownBucket cooldownBucket && this.Equals(cooldownBucket);
+        public override bool Equals(object obj) => obj is CommandCooldownBucket cooldownBucket && Equals(cooldownBucket);
 
         /// <summary>
         /// Checks whether this <see cref="CommandCooldownBucket"/> is equal to another <see cref="CommandCooldownBucket"/>.
@@ -295,7 +295,7 @@ namespace DSharpPlus.CommandsNext.Attributes
 
             return ReferenceEquals(this, other)
                 ? true
-                : this.UserId == other.UserId && this.ChannelId == other.ChannelId && this.GuildId == other.GuildId;
+                : UserId == other.UserId && ChannelId == other.ChannelId && GuildId == other.GuildId;
         }
 
         /// <summary>
@@ -306,9 +306,9 @@ namespace DSharpPlus.CommandsNext.Attributes
         {
             var hash = 13;
 
-            hash = (hash * 7) + this.UserId.GetHashCode();
-            hash = (hash * 7) + this.ChannelId.GetHashCode();
-            hash = (hash * 7) + this.GuildId.GetHashCode();
+            hash = (hash * 7) + UserId.GetHashCode();
+            hash = (hash * 7) + ChannelId.GetHashCode();
+            hash = (hash * 7) + GuildId.GetHashCode();
 
             return hash;
         }

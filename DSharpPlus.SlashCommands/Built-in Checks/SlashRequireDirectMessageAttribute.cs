@@ -1,13 +1,13 @@
-﻿using DSharpPlus.Entities;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
 
 namespace DSharpPlus.SlashCommands.Attributes
 {
     /// <summary>
     /// Defines that this slash command is only usable within a direct message channel.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
     public sealed class SlashRequireDirectMessageAttribute : SlashCheckBaseAttribute
     {
         /// <summary>

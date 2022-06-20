@@ -20,8 +20,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
@@ -41,7 +41,7 @@ namespace DSharpPlus.EventArgs
 
         internal ModalSubmitEventArgs(DiscordInteraction interaction)
         {
-            this.Interaction = interaction;
+            Interaction = interaction;
 
             var dict = new Dictionary<string, string>();
 
@@ -49,7 +49,7 @@ namespace DSharpPlus.EventArgs
                 if (component.Components.First() is TextInputComponent input)
                     dict.Add(input.CustomId, input.Value);
 
-            this.Values = dict;
+            Values = dict;
         }
     }
 }

@@ -40,6 +40,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordRole Role { get; internal set; }
 
-        internal GuildRoleDeleteEventArgs() : base() { }
+        internal GuildRoleDeleteEventArgs()
+        { }
     }
 }

@@ -38,8 +38,8 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkConfigureResume(string key, int timeout)
             : base("configureResuming")
         {
-            this.Key = key;
-            this.Timeout = timeout;
+            Key = key;
+            Timeout = timeout;
         }
     }
 
@@ -58,7 +58,7 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkPlay(LavalinkGuildConnection lvl, LavalinkTrack track)
             : base("play", lvl.GuildIdString)
         {
-            this.Track = track.TrackString;
+            Track = track.TrackString;
         }
     }
 
@@ -76,9 +76,9 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkPlayPartial(LavalinkGuildConnection lvl, LavalinkTrack track, TimeSpan start, TimeSpan stop)
             : base("play", lvl.GuildIdString)
         {
-            this.Track = track.TrackString;
-            this.StartTime = (long)start.TotalMilliseconds;
-            this.StopTime = (long)stop.TotalMilliseconds;
+            Track = track.TrackString;
+            StartTime = (long)start.TotalMilliseconds;
+            StopTime = (long)stop.TotalMilliseconds;
         }
     }
 
@@ -90,7 +90,7 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkPause(LavalinkGuildConnection lvl, bool pause)
             : base("pause", lvl.GuildIdString)
         {
-            this.Pause = pause;
+            Pause = pause;
         }
     }
 
@@ -109,7 +109,7 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkSeek(LavalinkGuildConnection lvl, TimeSpan position)
             : base("seek", lvl.GuildIdString)
         {
-            this.Position = (long)position.TotalMilliseconds;
+            Position = (long)position.TotalMilliseconds;
         }
     }
 
@@ -121,7 +121,7 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkVolume(LavalinkGuildConnection lvl, int volume)
             : base("volume", lvl.GuildIdString)
         {
-            this.Volume = volume;
+            Volume = volume;
         }
     }
 
@@ -133,7 +133,7 @@ namespace DSharpPlus.Lavalink.Entities
         public LavalinkEqualizer(LavalinkGuildConnection lvl, IEnumerable<LavalinkBandAdjustment> bands)
             : base("equalizer", lvl.GuildIdString)
         {
-            this.Bands = bands;
+            Bands = bands;
         }
     }
 }

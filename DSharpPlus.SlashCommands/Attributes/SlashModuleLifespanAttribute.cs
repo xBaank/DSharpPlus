@@ -5,7 +5,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Defines this slash command module's lifespan. Module lifespans are transient by default.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     public sealed class SlashModuleLifespanAttribute : Attribute
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace DSharpPlus.SlashCommands
         /// <param name="lifespan">The lifespan of the module. Module lifespans are transient by default.</param>
         public SlashModuleLifespanAttribute(SlashModuleLifespan lifespan)
         {
-            this.Lifespan = lifespan;
+            Lifespan = lifespan;
         }
     }
 

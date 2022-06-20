@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using Newtonsoft.Json;
 
@@ -53,7 +54,7 @@ namespace DSharpPlus.Entities
         /// <param name="id">The Id of the emoji to use. Any valid emoji Id can be passed.</param>
         public DiscordComponentEmoji(ulong id)
         {
-            this.Id = id;
+            Id = id;
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace DSharpPlus.Entities
         {
             if (!DiscordEmoji.IsValidUnicode(name))
                 throw new ArgumentException("Only unicode emojis can be passed.");
-            this.Name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -73,8 +74,8 @@ namespace DSharpPlus.Entities
         /// <param name="emoji">The emoji to use.</param>
         public DiscordComponentEmoji(DiscordEmoji emoji)
         {
-            this.Id = emoji.Id;
-            this.Name = emoji.Name; // Name is ignored if the Id is present. //
+            Id = emoji.Id;
+            Name = emoji.Name; // Name is ignored if the Id is present. //
         }
     }
 }

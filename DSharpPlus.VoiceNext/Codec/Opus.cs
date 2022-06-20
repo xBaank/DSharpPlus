@@ -39,12 +39,12 @@ namespace DSharpPlus.VoiceNext.Codec
             if (!audioFormat.IsValid())
                 throw new ArgumentException("Invalid audio format specified.", nameof(audioFormat));
 
-            this.AudioFormat = audioFormat;
-            this.Encoder = Interop.OpusCreateEncoder(this.AudioFormat);
+            AudioFormat = audioFormat;
+            Encoder = Interop.OpusCreateEncoder(AudioFormat);
 
             // Set appropriate encoder options
             var sig = OpusSignal.Auto;
-            switch (this.AudioFormat.VoiceApplication)
+            switch (AudioFormat.VoiceApplication)
             {
                 case VoiceApplication.Music:
                     sig = OpusSignal.Music;
@@ -54,12 +54,12 @@ namespace DSharpPlus.VoiceNext.Codec
                     sig = OpusSignal.Voice;
                     break;
             }
-            Interop.OpusSetEncoderOption(this.Encoder, OpusControl.SetSignal, (int)sig);
-            Interop.OpusSetEncoderOption(this.Encoder, OpusControl.SetPacketLossPercent, 15);
-            Interop.OpusSetEncoderOption(this.Encoder, OpusControl.SetInBandFec, 1);
-            Interop.OpusSetEncoderOption(this.Encoder, OpusControl.SetBitrate, 131072);
+            Interop.OpusSetEncoderOption(Encoder, OpusControl.SetSignal, (int)sig);
+            Interop.OpusSetEncoderOption(Encoder, OpusControl.SetPacketLossPercent, 15);
+            Interop.OpusSetEncoderOption(Encoder, OpusControl.SetInBandFec, 1);
+            Interop.OpusSetEncoderOption(Encoder, OpusControl.SetBitrate, 131072);
 
-            this.ManagedDecoders = new List<OpusDecoder>();
+            ManagedDecoders = new List<OpusDecoder>();
         }
 
         public void Encode(ReadOnlySpan<byte> pcm, ref Span<byte> target)
@@ -67,14 +67,14 @@ namespace DSharpPlus.VoiceNext.Codec
             if (pcm.Length != target.Length)
                 throw new ArgumentException("PCM and Opus buffer lengths need to be equal.", nameof(target));
 
-            var duration = this.AudioFormat.CalculateSampleDuration(pcm.Length);
-            var frameSize = this.AudioFormat.CalculateFrameSize(duration);
-            var sampleSize = this.AudioFormat.CalculateSampleSize(duration);
+            var duration = AudioFormat.CalculateSampleDuration(pcm.Length);
+            var frameSize = AudioFormat.CalculateFrameSize(duration);
+            var sampleSize = AudioFormat.CalculateSampleSize(duration);
 
             if (pcm.Length != sampleSize)
                 throw new ArgumentException("Invalid PCM sample size.", nameof(target));
 
-            Interop.OpusEncode(this.Encoder, pcm, frameSize, ref target);
+            Interop.OpusEncode(Encoder, pcm, frameSize, ref target);
         }
 
         public void Decode(OpusDecoder decoder, ReadOnlySpan<byte> opus, ref Span<byte> target, bool useFec, out AudioFormat outputFormat)
@@ -82,8 +82,8 @@ namespace DSharpPlus.VoiceNext.Codec
             //if (target.Length != this.AudioFormat.CalculateMaximumFrameSize())
             //    throw new ArgumentException("PCM target buffer size needs to be equal to maximum buffer size for specified audio format.", nameof(target));
 
-            Interop.OpusGetPacketMetrics(opus, this.AudioFormat.SampleRate, out var channels, out var frames, out var samplesPerFrame, out var frameSize);
-            outputFormat = this.AudioFormat.ChannelCount != channels ? new AudioFormat(this.AudioFormat.SampleRate, channels, this.AudioFormat.VoiceApplication) : this.AudioFormat;
+            Interop.OpusGetPacketMetrics(opus, AudioFormat.SampleRate, out var channels, out var frames, out var samplesPerFrame, out var frameSize);
+            outputFormat = AudioFormat.ChannelCount != channels ? new AudioFormat(AudioFormat.SampleRate, channels, AudioFormat.VoiceApplication) : AudioFormat;
 
             if (decoder.AudioFormat.ChannelCount != channels)
                 decoder.Initialize(outputFormat);
@@ -104,33 +104,33 @@ namespace DSharpPlus.VoiceNext.Codec
 
         public OpusDecoder CreateDecoder()
         {
-            lock (this.ManagedDecoders)
+            lock (ManagedDecoders)
             {
                 var managedDecoder = new OpusDecoder(this);
-                this.ManagedDecoders.Add(managedDecoder);
+                ManagedDecoders.Add(managedDecoder);
                 return managedDecoder;
             }
         }
 
         public void DestroyDecoder(OpusDecoder decoder)
         {
-            lock (this.ManagedDecoders)
+            lock (ManagedDecoders)
             {
-                if (!this.ManagedDecoders.Contains(decoder))
+                if (!ManagedDecoders.Contains(decoder))
                     return;
 
-                this.ManagedDecoders.Remove(decoder);
+                ManagedDecoders.Remove(decoder);
                 decoder.Dispose();
             }
         }
 
         public void Dispose()
         {
-            Interop.OpusDestroyEncoder(this.Encoder);
+            Interop.OpusDestroyEncoder(Encoder);
 
-            lock (this.ManagedDecoders)
+            lock (ManagedDecoders)
             {
-                foreach (var decoder in this.ManagedDecoders)
+                foreach (var decoder in ManagedDecoders)
                     decoder.Dispose();
             }
         }
@@ -149,11 +149,11 @@ namespace DSharpPlus.VoiceNext.Codec
         internal Opus Opus { get; }
         internal IntPtr Decoder { get; private set; }
 
-        private volatile bool _isDisposed = false;
+        private volatile bool _isDisposed;
 
         internal OpusDecoder(Opus managedOpus)
         {
-            this.Opus = managedOpus;
+            Opus = managedOpus;
         }
 
         /// <summary>
@@ -164,12 +164,12 @@ namespace DSharpPlus.VoiceNext.Codec
         /// <param name="outputFormat"></param>
         internal void Initialize(AudioFormat outputFormat)
         {
-            if (this.Decoder != IntPtr.Zero)
-                Interop.OpusDestroyDecoder(this.Decoder);
+            if (Decoder != IntPtr.Zero)
+                Interop.OpusDestroyDecoder(Decoder);
 
-            this.AudioFormat = outputFormat;
+            AudioFormat = outputFormat;
 
-            this.Decoder = Interop.OpusCreateDecoder(outputFormat);
+            Decoder = Interop.OpusCreateDecoder(outputFormat);
         }
 
         /// <summary>
@@ -177,12 +177,12 @@ namespace DSharpPlus.VoiceNext.Codec
         /// </summary>
         public void Dispose()
         {
-            if (this._isDisposed)
+            if (_isDisposed)
                 return;
 
-            this._isDisposed = true;
-            if (this.Decoder != IntPtr.Zero)
-                Interop.OpusDestroyDecoder(this.Decoder);
+            _isDisposed = true;
+            if (Decoder != IntPtr.Zero)
+                Interop.OpusDestroyDecoder(Decoder);
         }
     }
 
@@ -199,7 +199,7 @@ namespace DSharpPlus.VoiceNext.Codec
         AllocationFailure = -7
     }
 
-    internal enum OpusControl : int
+    internal enum OpusControl
     {
         SetBitrate = 4002,
         SetBandwidth = 4008,
@@ -210,7 +210,7 @@ namespace DSharpPlus.VoiceNext.Codec
         GetLastPacketDuration = 4039
     }
 
-    internal enum OpusSignal : int
+    internal enum OpusSignal
     {
         Auto = -1000,
         Voice = 3001,

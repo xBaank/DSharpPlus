@@ -44,7 +44,7 @@ namespace DSharpPlus.CommandsNext.Converters
         public DefaultHelpFormatter(CommandContext ctx)
             : base(ctx)
         {
-            this.EmbedBuilder = new DiscordEmbedBuilder()
+            EmbedBuilder = new DiscordEmbedBuilder()
                 .WithTitle("Help")
                 .WithColor(0x007FFF);
         }
@@ -56,15 +56,15 @@ namespace DSharpPlus.CommandsNext.Converters
         /// <returns>This help formatter.</returns>
         public override BaseHelpFormatter WithCommand(Command command)
         {
-            this.Command = command;
+            Command = command;
 
-            this.EmbedBuilder.WithDescription($"{Formatter.InlineCode(command.Name)}: {command.Description ?? "No description provided."}");
+            EmbedBuilder.WithDescription($"{Formatter.InlineCode(command.Name)}: {command.Description ?? "No description provided."}");
 
             if (command is CommandGroup cgroup && cgroup.IsExecutableWithoutSubcommands)
-                this.EmbedBuilder.WithDescription($"{this.EmbedBuilder.Description}\n\nThis group can be executed as a standalone command.");
+                EmbedBuilder.WithDescription($"{EmbedBuilder.Description}\n\nThis group can be executed as a standalone command.");
 
             if (command.Aliases.Count > 0)
-                this.EmbedBuilder.AddField("Aliases", string.Join(", ", command.Aliases.Select(Formatter.InlineCode)), false);
+                EmbedBuilder.AddField("Aliases", string.Join(", ", command.Aliases.Select(Formatter.InlineCode)));
 
             if (command.Overloads.Count > 0)
             {
@@ -80,12 +80,12 @@ namespace DSharpPlus.CommandsNext.Converters
                     sb.Append("`\n");
 
                     foreach (var arg in ovl.Arguments)
-                        sb.Append('`').Append(arg.Name).Append(" (").Append(this.CommandsNext.GetUserFriendlyTypeName(arg.Type)).Append(")`: ").Append(arg.Description ?? "No description provided.").Append('\n');
+                        sb.Append('`').Append(arg.Name).Append(" (").Append(CommandsNext.GetUserFriendlyTypeName(arg.Type)).Append(")`: ").Append(arg.Description ?? "No description provided.").Append('\n');
 
                     sb.Append('\n');
                 }
 
-                this.EmbedBuilder.AddField("Arguments", sb.ToString().Trim(), false);
+                EmbedBuilder.AddField("Arguments", sb.ToString().Trim());
             }
 
             return this;
@@ -98,7 +98,7 @@ namespace DSharpPlus.CommandsNext.Converters
         /// <returns>This help formatter.</returns>
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
-            this.EmbedBuilder.AddField(this.Command is not null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(x => Formatter.InlineCode(x.Name))), false);
+            EmbedBuilder.AddField(Command is not null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(x => Formatter.InlineCode(x.Name))));
 
             return this;
         }
@@ -109,10 +109,10 @@ namespace DSharpPlus.CommandsNext.Converters
         /// <returns>Data for the help message.</returns>
         public override CommandHelpMessage Build()
         {
-            if (this.Command is null)
-                this.EmbedBuilder.WithDescription("Listing all top-level commands and groups. Specify a command to see more information.");
+            if (Command is null)
+                EmbedBuilder.WithDescription("Listing all top-level commands and groups. Specify a command to see more information.");
 
-            return new CommandHelpMessage(embed: this.EmbedBuilder.Build());
+            return new CommandHelpMessage(embed: EmbedBuilder.Build());
         }
     }
 }

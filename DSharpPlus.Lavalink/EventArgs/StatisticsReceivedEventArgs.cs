@@ -39,7 +39,7 @@ namespace DSharpPlus.Lavalink.EventArgs
 
         internal StatisticsReceivedEventArgs(LavalinkStatistics stats)
         {
-            this.Statistics = stats;
+            Statistics = stats;
         }
     }
 }

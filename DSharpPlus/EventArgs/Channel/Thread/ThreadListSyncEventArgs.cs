@@ -51,6 +51,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordGuild Guild { get; internal set; }
 
-        internal ThreadListSyncEventArgs() : base() { }
+        internal ThreadListSyncEventArgs()
+        { }
     }
 }

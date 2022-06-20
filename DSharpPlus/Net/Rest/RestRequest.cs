@@ -39,7 +39,7 @@ namespace DSharpPlus.Net
         internal RestRequest(BaseDiscordClient client, RateLimitBucket bucket, Uri url, RestRequestMethod method, string route, IReadOnlyDictionary<string, string> headers = null, string payload = null, double? ratelimitWaitOverride = null)
             : base(client, bucket, url, method, route, headers, ratelimitWaitOverride)
         {
-            this.Payload = payload;
+            Payload = payload;
         }
     }
 }

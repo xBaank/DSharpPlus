@@ -57,8 +57,8 @@ namespace DSharpPlus.Lavalink
             if (gain < -0.25 || gain > 1.0)
                 throw new ArgumentOutOfRangeException(nameof(gain), "Gain cannot be lower than -0.25 or greater than 1.0.");
 
-            this.BandId = bandId;
-            this.Gain = gain;
+            BandId = bandId;
+            Gain = gain;
         }
     }
 

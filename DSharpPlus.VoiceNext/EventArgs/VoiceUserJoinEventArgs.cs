@@ -41,6 +41,7 @@ namespace DSharpPlus.VoiceNext.EventArgs
         /// </summary>
         public uint SSRC { get; internal set; }
 
-        internal VoiceUserJoinEventArgs() : base() { }
+        internal VoiceUserJoinEventArgs()
+        { }
     }
 }

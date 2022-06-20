@@ -30,7 +30,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Defines that usage of this command is only allowed with specific prefixes.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false)]
     public sealed class RequirePrefixesAttribute : CheckBaseAttribute
     {
         /// <summary>
@@ -53,10 +53,10 @@ namespace DSharpPlus.CommandsNext.Attributes
             if (prefixes?.Any() != true)
                 throw new ArgumentNullException(nameof(prefixes), "The allowed prefix collection cannot be null or empty.");
 
-            this.Prefixes = prefixes;
+            Prefixes = prefixes;
         }
 
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
-            => Task.FromResult((help && this.ShowInHelp) || this.Prefixes.Contains(ctx.Prefix, ctx.CommandsNext.GetStringComparer()));
+            => Task.FromResult((help && ShowInHelp) || Prefixes.Contains(ctx.Prefix, ctx.CommandsNext.GetStringComparer()));
     }
 }

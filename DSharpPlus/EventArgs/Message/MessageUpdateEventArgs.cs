@@ -45,19 +45,19 @@ namespace DSharpPlus.EventArgs
         /// Gets the channel this message belongs to.
         /// </summary>
         public DiscordChannel Channel
-            => this.Message.Channel;
+            => Message.Channel;
 
         /// <summary>
         /// Gets the guild this message belongs to.
         /// </summary>
         public DiscordGuild Guild
-            => this.Channel.Guild;
+            => Channel.Guild;
 
         /// <summary>
         /// Gets the author of the message.
         /// </summary>
         public DiscordUser Author
-            => this.Message.Author;
+            => Message.Author;
 
         /// <summary>
         /// Gets the collection of mentioned users.
@@ -74,6 +74,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public IReadOnlyList<DiscordChannel> MentionedChannels { get; internal set; }
 
-        internal MessageUpdateEventArgs() : base() { }
+        internal MessageUpdateEventArgs()
+        { }
     }
 }

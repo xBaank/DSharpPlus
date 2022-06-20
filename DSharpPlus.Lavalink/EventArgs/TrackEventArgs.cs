@@ -51,8 +51,8 @@ namespace DSharpPlus.Lavalink.EventArgs
 
         internal TrackStartEventArgs(LavalinkGuildConnection lvl, LavalinkTrack track)
         {
-            this.Track = track;
-            this.Player = lvl;
+            Track = track;
+            Player = lvl;
         }
     }
 
@@ -84,9 +84,9 @@ namespace DSharpPlus.Lavalink.EventArgs
 
         internal TrackFinishEventArgs(LavalinkGuildConnection lvl, LavalinkTrack track, TrackEndReason reason)
         {
-            this.Track = track;
-            this.Reason = reason;
-            this.Player = lvl;
+            Track = track;
+            Reason = reason;
+            Player = lvl;
         }
     }
 
@@ -149,9 +149,9 @@ namespace DSharpPlus.Lavalink.EventArgs
 
         internal TrackStuckEventArgs(LavalinkGuildConnection lvl, long thresholdMs, LavalinkTrack track)
         {
-            this.ThresholdMilliseconds = thresholdMs;
-            this.Track = track;
-            this.Player = lvl;
+            ThresholdMilliseconds = thresholdMs;
+            Track = track;
+            Player = lvl;
         }
     }
 
@@ -183,9 +183,9 @@ namespace DSharpPlus.Lavalink.EventArgs
 
         internal TrackExceptionEventArgs(LavalinkGuildConnection lvl, string error, LavalinkTrack track)
         {
-            this.Error = error;
-            this.Track = track;
-            this.Player = lvl;
+            Error = error;
+            Track = track;
+            Player = lvl;
         }
     }
 }

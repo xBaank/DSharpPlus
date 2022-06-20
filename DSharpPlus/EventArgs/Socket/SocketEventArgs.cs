@@ -31,6 +31,7 @@ namespace DSharpPlus.EventArgs
         /// <summary>
         /// Creates a new event argument container.
         /// </summary>
-        public SocketEventArgs() : base() { }
+        public SocketEventArgs()
+        { }
     }
 }

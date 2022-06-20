@@ -75,7 +75,7 @@ namespace DSharpPlus.Entities
         /// Allows the specific user to be mentioned
         /// </summary>
         /// <param name="id"></param>
-        public UserMention(ulong id) { this.Id = id; }
+        public UserMention(ulong id) { Id = id; }
 
         /// <summary>
         /// Allows the specific user to be mentioned
@@ -105,7 +105,7 @@ namespace DSharpPlus.Entities
         /// Allows the specific id to be mentioned
         /// </summary>
         /// <param name="id"></param>
-        public RoleMention(ulong id) { this.Id = id; }
+        public RoleMention(ulong id) { Id = id; }
 
         /// <summary>
         /// Allows the specific role to be mentioned

@@ -28,7 +28,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Sets a minimum value for this slash command option. Only valid for <see cref="long"/> or <see cref="double"/> parameters.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public class MinimumAttribute : Attribute
     {
         /// <summary>
@@ -41,7 +41,7 @@ namespace DSharpPlus.SlashCommands
         /// </summary>
         public MinimumAttribute(long value)
         {
-            this.Value = value;
+            Value = value;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace DSharpPlus.SlashCommands
         /// </summary>
         public MinimumAttribute(double value)
         {
-            this.Value = value;
+            Value = value;
         }
     }
 }

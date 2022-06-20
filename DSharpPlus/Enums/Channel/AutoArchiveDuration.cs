@@ -21,16 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace DSharpPlus
 {
     /// <summary>
     /// Represents the duration in minutes to automatically archive a thread after recent activity.
     /// </summary>
-    public enum AutoArchiveDuration : int
+    public enum AutoArchiveDuration
     {
         /// <summary>
         /// Thread will auto-archive after one hour of inactivity.

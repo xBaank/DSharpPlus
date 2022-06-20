@@ -16,7 +16,7 @@ namespace DSharpPlus.SlashCommands
         /// The member this command targets, if applicable.
         /// </summary>
         public DiscordMember TargetMember
-            => this.TargetUser is DiscordMember member ? member : null;
+            => TargetUser is DiscordMember member ? member : null;
 
         /// <summary>
         /// The message this command targets, if applicable.

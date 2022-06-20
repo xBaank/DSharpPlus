@@ -42,27 +42,27 @@ namespace DSharpPlus.Net.Abstractions
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     return "windows";
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     return "linux";
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     return "osx";
 
                 var plat = RuntimeInformation.OSDescription.ToLowerInvariant();
                 if (plat.Contains("freebsd"))
                     return "freebsd";
-                else if (plat.Contains("openbsd"))
+                if (plat.Contains("openbsd"))
                     return "openbsd";
-                else if (plat.Contains("netbsd"))
+                if (plat.Contains("netbsd"))
                     return "netbsd";
-                else if (plat.Contains("dragonfly"))
+                if (plat.Contains("dragonfly"))
                     return "dragonflybsd";
-                else if (plat.Contains("miros bsd") || plat.Contains("mirbsd"))
+                if (plat.Contains("miros bsd") || plat.Contains("mirbsd"))
                     return "miros bsd";
-                else if (plat.Contains("desktopbsd"))
+                if (plat.Contains("desktopbsd"))
                     return "desktopbsd";
-                else if (plat.Contains("darwin"))
+                if (plat.Contains("darwin"))
                     return "osx";
-                else return plat.Contains("unix") ? "unix" : "toaster (unknown)";
+                return plat.Contains("unix") ? "unix" : "toaster (unknown)";
             }
         }
 
@@ -85,7 +85,7 @@ namespace DSharpPlus.Net.Abstractions
         /// </summary>
         [JsonProperty("$device")]
         public string Device
-            => this.Browser;
+            => Browser;
 
         /// <summary>
         /// Gets the client's referrer.

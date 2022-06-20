@@ -21,8 +21,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 namespace DSharpPlus.EventArgs
 {
     /// <summary>
@@ -40,6 +38,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public bool GuildDownloadCompleted { get; internal set; }
 
-        internal ZombiedEventArgs() : base() { }
+        internal ZombiedEventArgs()
+        { }
     }
 }

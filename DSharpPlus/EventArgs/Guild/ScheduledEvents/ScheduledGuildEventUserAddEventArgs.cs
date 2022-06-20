@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using DSharpPlus.Entities;
 
 namespace DSharpPlus.EventArgs
@@ -32,7 +33,7 @@ namespace DSharpPlus.EventArgs
         /// <summary>
         /// The guild the event is scheduled for.
         /// </summary>
-        public DiscordGuild Guild => this.Event.Guild;
+        public DiscordGuild Guild => Event.Guild;
 
         /// <summary>
         /// The event that was subscribed to.
@@ -44,6 +45,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordUser User { get; internal set; }
 
-        internal ScheduledGuildEventUserAddEventArgs() : base() { }
+        internal ScheduledGuildEventUserAddEventArgs()
+        { }
     }
 }

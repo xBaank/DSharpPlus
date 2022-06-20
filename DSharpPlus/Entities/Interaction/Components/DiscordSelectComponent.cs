@@ -20,8 +20,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -69,7 +69,7 @@ namespace DSharpPlus.Entities
         /// <returns>The current component.</returns>
         public DiscordSelectComponent Enable()
         {
-            this.Disabled = false;
+            Disabled = false;
             return this;
         }
 
@@ -79,23 +79,23 @@ namespace DSharpPlus.Entities
         /// <returns>The current component.</returns>
         public DiscordSelectComponent Disable()
         {
-            this.Disabled = true;
+            Disabled = true;
             return this;
         }
 
         internal DiscordSelectComponent()
         {
-            this.Type = ComponentType.Select;
+            Type = ComponentType.Select;
         }
 
         public DiscordSelectComponent(string customId, string placeholder, IEnumerable<DiscordSelectComponentOption> options, bool disabled = false, int minOptions = 1, int maxOptions = 1) : this()
         {
-            this.CustomId = customId;
-            this.Options = options.ToArray();
-            this.Placeholder = placeholder;
-            this.Disabled = disabled;
-            this.MinimumSelectedValues = minOptions;
-            this.MaximumSelectedValues = maxOptions;
+            CustomId = customId;
+            Options = options.ToArray();
+            Placeholder = placeholder;
+            Disabled = disabled;
+            MinimumSelectedValues = minOptions;
+            MaximumSelectedValues = maxOptions;
         }
     }
 }

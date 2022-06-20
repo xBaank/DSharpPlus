@@ -22,7 +22,6 @@
 // SOFTWARE.
 
 using System;
-using System.Globalization;
 
 namespace DSharpPlus.SlashCommands
 {
@@ -38,8 +37,8 @@ namespace DSharpPlus.SlashCommands
 
         public DescriptionLocalizationAttribute(Localization locale, string description)
         {
-            this.Description = description;
-            this.Locale = LocaleHelper.LocaleToStrings[locale];
+            Description = description;
+            Locale = LocaleHelper.LocaleToStrings[locale];
         }
     }
 }

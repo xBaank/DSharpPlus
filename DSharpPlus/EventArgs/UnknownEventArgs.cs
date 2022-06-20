@@ -38,6 +38,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public string Json { get; internal set; }
 
-        internal UnknownEventArgs() : base() { }
+        internal UnknownEventArgs()
+        { }
     }
 }

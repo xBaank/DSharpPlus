@@ -39,7 +39,7 @@ namespace DSharpPlus.CommandsNext.Converters
         /// <summary>
         /// Gets the CommandsNext extension which constructed this help formatter.
         /// </summary>
-        protected CommandsNextExtension CommandsNext => this.Context.CommandsNext;
+        protected CommandsNextExtension CommandsNext => Context.CommandsNext;
 
         /// <summary>
         /// Creates a new help formatter for specified CommandsNext extension instance.
@@ -47,7 +47,7 @@ namespace DSharpPlus.CommandsNext.Converters
         /// <param name="ctx">Context in which this formatter is being invoked.</param>
         public BaseHelpFormatter(CommandContext ctx)
         {
-            this.Context = ctx;
+            Context = ctx;
         }
 
         /// <summary>

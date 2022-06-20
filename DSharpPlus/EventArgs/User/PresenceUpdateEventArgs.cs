@@ -65,6 +65,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordUser UserAfter { get; internal set; }
 
-        internal PresenceUpdateEventArgs() : base() { }
+        internal PresenceUpdateEventArgs()
+        { }
     }
 }

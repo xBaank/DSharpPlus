@@ -50,8 +50,8 @@ namespace DSharpPlus.CommandsNext.Exceptions
         public InvalidOverloadException(string message, MethodInfo method, ParameterInfo? parameter)
             : base(message)
         {
-            this.Method = method;
-            this.Parameter = parameter;
+            Method = method;
+            Parameter = parameter;
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace DSharpPlus.CommandsNext.Exceptions
         public override string ToString()
         {
             // much like System.ArgumentNullException works
-            return this.Parameter == null
-                ? $"{this.GetType()}: {this.Message}\nMethod: {this.Method} (declared in {this.Method.DeclaringType})"
-                : $"{this.GetType()}: {this.Message}\nMethod: {this.Method} (declared in {this.Method.DeclaringType})\nArgument: {this.Parameter.ParameterType} {this.Parameter.Name}";
+            return Parameter == null
+                ? $"{GetType()}: {Message}\nMethod: {Method} (declared in {Method.DeclaringType})"
+                : $"{GetType()}: {Message}\nMethod: {Method} (declared in {Method.DeclaringType})\nArgument: {Parameter.ParameterType} {Parameter.Name}";
         }
     }
 }

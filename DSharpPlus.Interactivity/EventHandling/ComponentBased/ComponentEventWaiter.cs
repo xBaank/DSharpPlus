@@ -20,19 +20,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using ConcurrentCollections;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Enums;
-using Emzi0767.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace DSharpPlus.Interactivity.EventHandling
@@ -51,11 +47,11 @@ namespace DSharpPlus.Interactivity.EventHandling
 
         public ComponentEventWaiter(DiscordClient client, InteractivityConfiguration config)
         {
-            this._client = client;
-            this._client.ComponentInteractionCreated += this.Handle;
-            this._config = config;
+            _client = client;
+            _client.ComponentInteractionCreated += Handle;
+            _config = config;
 
-            this._message = new() {Content = config.ResponseMessage ?? "This message was not meant for you.", IsEphemeral = true};
+            _message = new() {Content = config.ResponseMessage ?? "This message was not meant for you.", IsEphemeral = true};
         }
 
         /// <summary>
@@ -65,7 +61,7 @@ namespace DSharpPlus.Interactivity.EventHandling
         /// <returns>The returned args, or null if it timed out.</returns>
         public async Task<ComponentInteractionCreateEventArgs> WaitForMatchAsync(ComponentMatchRequest request)
         {
-            this._matchRequests.Add(request);
+            _matchRequests.Add(request);
 
             try
             {
@@ -73,12 +69,12 @@ namespace DSharpPlus.Interactivity.EventHandling
             }
             catch (Exception e)
             {
-                this._client.Logger.LogError(InteractivityEvents.InteractivityWaitError, e, "An exception was thrown while waiting for components.");
+                _client.Logger.LogError(InteractivityEvents.InteractivityWaitError, e, "An exception was thrown while waiting for components.");
                 return null;
             }
             finally
             {
-                this._matchRequests.TryRemove(request);
+                _matchRequests.TryRemove(request);
             }
         }
 
@@ -89,35 +85,35 @@ namespace DSharpPlus.Interactivity.EventHandling
         /// <returns>The result from request's predicate over the period of time leading up to the token's cancellation.</returns>
         public async Task<IReadOnlyList<ComponentInteractionCreateEventArgs>> CollectMatchesAsync(ComponentCollectRequest request)
         {
-            this._collectRequests.Add(request);
+            _collectRequests.Add(request);
             try
             {
                 await request.Tcs.Task.ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                this._client.Logger.LogError(InteractivityEvents.InteractivityCollectorError, e, "There was an error while collecting component event args.");
+                _client.Logger.LogError(InteractivityEvents.InteractivityCollectorError, e, "There was an error while collecting component event args.");
             }
             finally
             {
-                this._collectRequests.TryRemove(request);
+                _collectRequests.TryRemove(request);
             }
             return request.Collected.ToArray();
         }
 
         private async Task Handle(DiscordClient _, ComponentInteractionCreateEventArgs args)
         {
-            foreach (var mreq in this._matchRequests.ToArray())
+            foreach (var mreq in _matchRequests.ToArray())
             {
                 if (mreq.Message == args.Message && mreq.IsMatch(args))
                     mreq.Tcs.TrySetResult(args);
 
-                else if (this._config.ResponseBehavior is InteractionResponseBehavior.Respond)
-                    await args.Interaction.CreateFollowupMessageAsync(this._message).ConfigureAwait(false);
+                else if (_config.ResponseBehavior is InteractionResponseBehavior.Respond)
+                    await args.Interaction.CreateFollowupMessageAsync(_message).ConfigureAwait(false);
             }
 
 
-            foreach (var creq in this._collectRequests.ToArray())
+            foreach (var creq in _collectRequests.ToArray())
             {
                 if (creq.Message == args.Message && creq.IsMatch(args))
                 {
@@ -126,16 +122,16 @@ namespace DSharpPlus.Interactivity.EventHandling
                     if (creq.IsMatch(args))
                         creq.Collected.Add(args);
 
-                    else if (this._config.ResponseBehavior is InteractionResponseBehavior.Respond)
-                        await args.Interaction.CreateFollowupMessageAsync(this._message).ConfigureAwait(false);
+                    else if (_config.ResponseBehavior is InteractionResponseBehavior.Respond)
+                        await args.Interaction.CreateFollowupMessageAsync(_message).ConfigureAwait(false);
                 }
             }
         }
         public void Dispose()
         {
-            this._matchRequests.Clear();
-            this._collectRequests.Clear();
-            this._client.ComponentInteractionCreated -= this.Handle;
+            _matchRequests.Clear();
+            _collectRequests.Clear();
+            _client.ComponentInteractionCreated -= Handle;
         }
     }
 }

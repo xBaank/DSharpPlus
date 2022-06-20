@@ -22,7 +22,6 @@
 // SOFTWARE.
 
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 
 namespace DSharpPlus.CommandsNext.Attributes
 {

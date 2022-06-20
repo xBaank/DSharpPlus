@@ -65,7 +65,7 @@ namespace DSharpPlus.Entities
         /// <summary>
         /// Components on this interaction. Only applies to modal interactions.
         /// </summary>
-        public IReadOnlyList<DiscordActionRowComponent> Components => this._components;
+        public IReadOnlyList<DiscordActionRowComponent> Components => _components;
 
         [JsonProperty("components", NullValueHandling = NullValueHandling.Ignore)]
         internal List<DiscordActionRowComponent> _components;

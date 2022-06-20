@@ -69,6 +69,7 @@ namespace DSharpPlus.VoiceNext.EventArgs
         /// </summary>
         public int AudioDuration { get; internal set; }
 
-        internal VoiceReceiveEventArgs() : base() { }
+        internal VoiceReceiveEventArgs()
+        { }
     }
 }

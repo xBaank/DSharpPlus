@@ -23,9 +23,7 @@
 
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,7 +41,7 @@ namespace DSharpPlus.VoiceNext
         /// <returns></returns>
         public static async Task CopyToAsync(this Stream source, VoiceTransmitSink destination, int? bufferSize = null, CancellationToken cancellationToken = default)
         {
-            // adapted from CoreFX 
+            // adapted from CoreFX
             // https://source.dot.net/#System.Private.CoreLib/Stream.cs,8048a9680abdd13b
 
             if (source is null)

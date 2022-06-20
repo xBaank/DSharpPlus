@@ -94,20 +94,20 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <param name="module">Module on which this command is to be defined.</param>
         public CommandBuilder(ICommandModule? module)
         {
-            this.AliasList = new List<string>();
-            this.Aliases = new ReadOnlyCollection<string>(this.AliasList);
+            AliasList = new List<string>();
+            Aliases = new ReadOnlyCollection<string>(AliasList);
 
-            this.ExecutionCheckList = new List<CheckBaseAttribute>();
-            this.ExecutionChecks = new ReadOnlyCollection<CheckBaseAttribute>(this.ExecutionCheckList);
+            ExecutionCheckList = new List<CheckBaseAttribute>();
+            ExecutionChecks = new ReadOnlyCollection<CheckBaseAttribute>(ExecutionCheckList);
 
-            this.OverloadArgumentSets = new HashSet<string>();
-            this.OverloadList = new List<CommandOverloadBuilder>();
-            this.Overloads = new ReadOnlyCollection<CommandOverloadBuilder>(this.OverloadList);
+            OverloadArgumentSets = new HashSet<string>();
+            OverloadList = new List<CommandOverloadBuilder>();
+            Overloads = new ReadOnlyCollection<CommandOverloadBuilder>(OverloadList);
 
-            this.Module = module;
+            Module = module;
 
-            this.CustomAttributeList = new List<Attribute>();
-            this.CustomAttributes = new ReadOnlyCollection<Attribute>(this.CustomAttributeList);
+            CustomAttributeList = new List<Attribute>();
+            CustomAttributes = new ReadOnlyCollection<Attribute>(CustomAttributeList);
         }
 
         /// <summary>
@@ -120,13 +120,13 @@ namespace DSharpPlus.CommandsNext.Builders
             if (name == null || name.ToCharArray().Any(xc => char.IsWhiteSpace(xc)))
                 throw new ArgumentException("Command name cannot be null or contain any whitespace characters.", nameof(name));
 
-            if (this.Name != null)
+            if (Name != null)
                 throw new InvalidOperationException("This command already has a name.");
 
-            if (this.AliasList.Contains(name))
+            if (AliasList.Contains(name))
                 throw new ArgumentException("Command name cannot be one of its aliases.", nameof(name));
 
-            this.Name = name;
+            Name = name;
             return this;
         }
 
@@ -141,7 +141,7 @@ namespace DSharpPlus.CommandsNext.Builders
                 throw new ArgumentException("You need to pass at least one alias.", nameof(aliases));
 
             foreach (var alias in aliases)
-                this.WithAlias(alias);
+                WithAlias(alias);
 
             return this;
         }
@@ -156,10 +156,10 @@ namespace DSharpPlus.CommandsNext.Builders
             if (alias.ToCharArray().Any(xc => char.IsWhiteSpace(xc)))
                 throw new ArgumentException("Aliases cannot contain whitespace characters or null strings.", nameof(alias));
 
-            if (this.Name == alias || this.AliasList.Contains(alias))
+            if (Name == alias || AliasList.Contains(alias))
                 throw new ArgumentException("Aliases cannot contain the command name, and cannot be duplicate.", nameof(alias));
 
-            this.AliasList.Add(alias);
+            AliasList.Add(alias);
             return this;
         }
 
@@ -170,7 +170,7 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandBuilder WithDescription(string description)
         {
-            this.Description = description;
+            Description = description;
             return this;
         }
 
@@ -181,7 +181,7 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandBuilder WithHiddenStatus(bool hidden)
         {
-            this.IsHidden = hidden;
+            IsHidden = hidden;
             return this;
         }
 
@@ -192,7 +192,7 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandBuilder WithExecutionChecks(params CheckBaseAttribute[] checks)
         {
-            this.ExecutionCheckList.AddRange(checks.Except(this.ExecutionCheckList));
+            ExecutionCheckList.AddRange(checks.Except(ExecutionCheckList));
             return this;
         }
 
@@ -203,8 +203,8 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandBuilder WithExecutionCheck(CheckBaseAttribute check)
         {
-            if (!this.ExecutionCheckList.Contains(check))
-                this.ExecutionCheckList.Add(check);
+            if (!ExecutionCheckList.Contains(check))
+                ExecutionCheckList.Add(check);
             return this;
         }
 
@@ -216,7 +216,7 @@ namespace DSharpPlus.CommandsNext.Builders
         public CommandBuilder WithOverloads(params CommandOverloadBuilder[] overloads)
         {
             foreach (var overload in overloads)
-                this.WithOverload(overload);
+                WithOverload(overload);
 
             return this;
         }
@@ -228,11 +228,11 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandBuilder WithOverload(CommandOverloadBuilder overload)
         {
-            if (this.OverloadArgumentSets.Contains(overload.ArgumentSet))
-                throw new DuplicateOverloadException(this.Name, overload.Arguments.Select(x => x.Type).ToList(), overload.ArgumentSet);
+            if (OverloadArgumentSets.Contains(overload.ArgumentSet))
+                throw new DuplicateOverloadException(Name, overload.Arguments.Select(x => x.Type).ToList(), overload.ArgumentSet);
 
-            this.OverloadArgumentSets.Add(overload.ArgumentSet);
-            this.OverloadList.Add(overload);
+            OverloadArgumentSets.Add(overload.ArgumentSet);
+            OverloadList.Add(overload);
 
             return this;
         }
@@ -244,7 +244,7 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandBuilder WithCustomAttribute(Attribute attribute)
         {
-            this.CustomAttributeList.Add(attribute);
+            CustomAttributeList.Add(attribute);
             return this;
         }
 
@@ -256,7 +256,7 @@ namespace DSharpPlus.CommandsNext.Builders
         public CommandBuilder WithCustomAttributes(params Attribute[] attributes)
         {
             foreach (var attr in attributes)
-                this.WithCustomAttribute(attr);
+                WithCustomAttribute(attr);
 
             return this;
         }
@@ -265,18 +265,18 @@ namespace DSharpPlus.CommandsNext.Builders
         {
             var cmd = new Command
             {
-                Name = string.IsNullOrWhiteSpace(this.Name)
-                    ? throw new InvalidOperationException($"Cannot build a command with an invalid name. Use the method {nameof(this.WithName)} to set a valid name.")
-                    : this.Name,
+                Name = string.IsNullOrWhiteSpace(Name)
+                    ? throw new InvalidOperationException($"Cannot build a command with an invalid name. Use the method {nameof(WithName)} to set a valid name.")
+                    : Name,
 
-                Description = this.Description,
-                Aliases = this.Aliases,
-                ExecutionChecks = this.ExecutionChecks,
-                IsHidden = this.IsHidden,
+                Description = Description,
+                Aliases = Aliases,
+                ExecutionChecks = ExecutionChecks,
+                IsHidden = IsHidden,
                 Parent = parent,
-                Overloads = new ReadOnlyCollection<CommandOverload>(this.Overloads.Select(xo => xo.Build()).ToList()),
-                Module = this.Module,
-                CustomAttributes = this.CustomAttributes
+                Overloads = new ReadOnlyCollection<CommandOverload>(Overloads.Select(xo => xo.Build()).ToList()),
+                Module = Module,
+                CustomAttributes = CustomAttributes
             };
 
             return cmd;

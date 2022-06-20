@@ -5,7 +5,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Marks this method as a slash command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public sealed class SlashCommandAttribute : Attribute
     {
         /// <summary>
@@ -31,9 +31,9 @@ namespace DSharpPlus.SlashCommands
         /// <param name="defaultPermission">Sets whether the command should be enabled by default.</param>
         public SlashCommandAttribute(string name, string description, bool defaultPermission = true)
         {
-            this.Name = name.ToLower();
-            this.Description = description;
-            this.DefaultPermission = defaultPermission;
+            Name = name.ToLower();
+            Description = description;
+            DefaultPermission = defaultPermission;
         }
     }
 }

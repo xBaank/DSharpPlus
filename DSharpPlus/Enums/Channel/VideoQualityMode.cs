@@ -21,16 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace DSharpPlus
 {
     /// <summary>
     /// Represents the video quality mode of a voice channel. This is applicable to voice channels only.
     /// </summary>
-    public enum VideoQualityMode : int
+    public enum VideoQualityMode
     {
         /// <summary>
         /// Indicates that the video quality is automatically chosen, or there is no value set.

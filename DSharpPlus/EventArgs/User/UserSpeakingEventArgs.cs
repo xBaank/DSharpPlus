@@ -45,6 +45,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public bool Speaking { get; internal set; }
 
-        internal UserSpeakingEventArgs() : base() { }
+        internal UserSpeakingEventArgs()
+        { }
     }
 }

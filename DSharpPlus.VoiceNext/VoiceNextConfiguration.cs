@@ -38,7 +38,7 @@ namespace DSharpPlus.VoiceNext
         /// <para>Sets whether incoming voice receiver should be enabled.</para>
         /// <para>Defaults to false.</para>
         /// </summary>
-        public bool EnableIncoming { internal get; set; } = false;
+        public bool EnableIncoming { internal get; set; }
 
         /// <summary>
         /// <para>Sets the size of the packet queue.</para>
@@ -57,8 +57,8 @@ namespace DSharpPlus.VoiceNext
         /// <param name="other">Configuration the properties of which are to be copied.</param>
         public VoiceNextConfiguration(VoiceNextConfiguration other)
         {
-            this.AudioFormat = new AudioFormat(other.AudioFormat.SampleRate, other.AudioFormat.ChannelCount, other.AudioFormat.VoiceApplication);
-            this.EnableIncoming = other.EnableIncoming;
+            AudioFormat = new AudioFormat(other.AudioFormat.SampleRate, other.AudioFormat.ChannelCount, other.AudioFormat.VoiceApplication);
+            EnableIncoming = other.EnableIncoming;
         }
     }
 }

@@ -22,15 +22,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using DSharpPlus.Exceptions;
-using DSharpPlus.Net.Abstractions;
-using DSharpPlus.Net.Models;
 using Newtonsoft.Json;
 
 namespace DSharpPlus.Entities
@@ -63,21 +54,21 @@ namespace DSharpPlus.Entities
         /// </summary>
         [JsonIgnore]
         public DiscordMember Member
-            => this.Guild != null ? (this.Guild._members.TryGetValue(this.Id, out var member) ? member : new DiscordMember { Id = this.Id, _guild_id = this._guild_id, Discord = this.Discord}) : null;
+            => Guild != null ? (Guild._members.TryGetValue(Id, out var member) ? member : new DiscordMember { Id = Id, _guild_id = _guild_id, Discord = Discord}) : null;
 
         /// <summary>
         /// Gets the category that contains this channel. For threads, gets the channel this thread was created in.
         /// </summary>
         [JsonIgnore]
         public DiscordChannel Thread
-            => this.Guild != null ? (this.Guild._threads.TryGetValue(this.ThreadId, out var thread) ? thread : null) : null;
+            => Guild != null ? (Guild._threads.TryGetValue(ThreadId, out var thread) ? thread : null) : null;
 
         /// <summary>
         /// Gets the guild to which this channel belongs.
         /// </summary>
         [JsonIgnore]
         public DiscordGuild Guild
-            => this.Discord.Guilds.TryGetValue(this._guild_id, out var guild) ? guild : null;
+            => Discord.Guilds.TryGetValue(_guild_id, out var guild) ? guild : null;
 
         [JsonIgnore]
         internal ulong _guild_id;
@@ -95,7 +86,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether the object is equal to this <see cref="DiscordThreadChannelMember"/>.</returns>
-        public override bool Equals(object obj) => this.Equals(obj as DiscordThreadChannelMember);
+        public override bool Equals(object obj) => Equals(obj as DiscordThreadChannelMember);
 
         /// <summary>
         /// Checks whether this <see cref="DiscordThreadChannelMember"/> is equal to another <see cref="DiscordThreadChannelMember"/>.
@@ -107,7 +98,7 @@ namespace DSharpPlus.Entities
             if (e is null)
                 return false;
 
-            return ReferenceEquals(this, e) ? true : this.Id == e.Id && this.ThreadId == e.ThreadId;
+            return ReferenceEquals(this, e) ? true : Id == e.Id && ThreadId == e.ThreadId;
         }
 
         /// <summary>
@@ -118,8 +109,8 @@ namespace DSharpPlus.Entities
         {
             var hash = 13;
 
-            hash = (hash * 7) + this.Id.GetHashCode();
-            hash = (hash * 7) + this.ThreadId.GetHashCode();
+            hash = (hash * 7) + Id.GetHashCode();
+            hash = (hash * 7) + ThreadId.GetHashCode();
 
             return hash;
         }

@@ -45,6 +45,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         internal string VoiceToken { get; set; }
 
-        internal VoiceServerUpdateEventArgs() : base() { }
+        internal VoiceServerUpdateEventArgs()
+        { }
     }
 }

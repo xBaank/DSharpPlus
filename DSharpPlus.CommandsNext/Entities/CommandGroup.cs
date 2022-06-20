@@ -42,9 +42,10 @@ namespace DSharpPlus.CommandsNext
         /// <summary>
         /// Gets whether this command is executable without subcommands.
         /// </summary>
-        public bool IsExecutableWithoutSubcommands => this.Overloads.Count > 0;
+        public bool IsExecutableWithoutSubcommands => Overloads.Count > 0;
 
-        internal CommandGroup() : base() { }
+        internal CommandGroup()
+        { }
 
         /// <summary>
         /// Executes this command or its subcommand with specified context.
@@ -54,7 +55,7 @@ namespace DSharpPlus.CommandsNext
         public override async Task<CommandResult> ExecuteAsync(CommandContext ctx)
         {
             var findpos = 0;
-            var cn = CommandsNextUtilities.ExtractNextArgument(ctx.RawArgumentString, ref findpos);
+            var cn = ctx.RawArgumentString.ExtractNextArgument(ref findpos);
 
             if (cn != null)
             {
@@ -63,7 +64,7 @@ namespace DSharpPlus.CommandsNext
                     true  => (StringComparison.InvariantCulture, StringComparer.InvariantCulture),
                     false => (StringComparison.InvariantCultureIgnoreCase, StringComparer.InvariantCultureIgnoreCase)
                 };
-                var cmd = this.Children.FirstOrDefault(xc =>
+                var cmd = Children.FirstOrDefault(xc =>
                     xc.Name.Equals(cn, comparison) || xc.Aliases.Contains(cn, comparer));
                 if (cmd is not null)
                 {
@@ -92,7 +93,7 @@ namespace DSharpPlus.CommandsNext
                 }
             }
 
-            return !this.IsExecutableWithoutSubcommands
+            return !IsExecutableWithoutSubcommands
                 ? new CommandResult
                 {
                     IsSuccessful = false,

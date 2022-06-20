@@ -592,7 +592,7 @@ namespace DSharpPlus.Entities
     /// <summary>
     /// Represents type of the action that was taken in given audit log event.
     /// </summary>
-    public enum AuditLogActionType : int
+    public enum AuditLogActionType
     {
         /// <summary>
         /// Indicates that the guild was updated.

@@ -44,19 +44,19 @@ namespace DSharpPlus.Entities
         public bool IsEphemeral { get; set; }
 
         internal int? Flags
-            => this.IsEphemeral ? 64 : null;
+            => IsEphemeral ? 64 : null;
 
         /// <summary>
         /// Message to send on followup message.
         /// </summary>
         public string Content
         {
-            get => this._content;
+            get => _content;
             set
             {
                 if (value != null && value.Length > 2000)
                     throw new ArgumentException("Content length cannot exceed 2000 characters.", nameof(value));
-                this._content = value;
+                _content = value;
             }
         }
         private string _content;
@@ -64,25 +64,25 @@ namespace DSharpPlus.Entities
         /// <summary>
         /// Embeds to send on followup message.
         /// </summary>
-        public IReadOnlyList<DiscordEmbed> Embeds => this._embeds;
+        public IReadOnlyList<DiscordEmbed> Embeds => _embeds;
         private readonly List<DiscordEmbed> _embeds = new();
 
         /// <summary>
         /// Files to send on this followup message.
         /// </summary>
-        public IReadOnlyList<DiscordMessageFile> Files => this._files;
+        public IReadOnlyList<DiscordMessageFile> Files => _files;
         private readonly List<DiscordMessageFile> _files = new();
 
         /// <summary>
         /// Components to send on this followup message.
         /// </summary>
-        public IReadOnlyList<DiscordActionRowComponent> Components => this._components;
+        public IReadOnlyList<DiscordActionRowComponent> Components => _components;
         private readonly List<DiscordActionRowComponent> _components = new();
 
         /// <summary>
         /// Mentions to send on this followup message.
         /// </summary>
-        public IReadOnlyList<IMention> Mentions => this._mentions;
+        public IReadOnlyList<IMention> Mentions => _mentions;
         private readonly List<IMention> _mentions = new();
 
 
@@ -93,7 +93,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         /// <exception cref="ArgumentException"><paramref name="components"/> contained more than 5 components.</exception>
         public DiscordFollowupMessageBuilder AddComponents(params DiscordComponent[] components)
-            => this.AddComponents((IEnumerable<DiscordComponent>)components);
+            => AddComponents((IEnumerable<DiscordComponent>)components);
 
         /// <summary>
         /// Appends several rows of components to the message
@@ -104,11 +104,11 @@ namespace DSharpPlus.Entities
         {
             var ara = components.ToArray();
 
-            if (ara.Length + this._components.Count > 5)
+            if (ara.Length + _components.Count > 5)
                 throw new ArgumentException("ActionRow count exceeds maximum of five.");
 
             foreach (var ar in ara)
-                this._components.Add(ar);
+                _components.Add(ar);
 
             return this;
         }
@@ -128,7 +128,7 @@ namespace DSharpPlus.Entities
                 throw new ArgumentException("Cannot add more than 5 components per action row!");
 
             var arc = new DiscordActionRowComponent(compArr);
-            this._components.Add(arc);
+            _components.Add(arc);
             return this;
         }
         /// <summary>
@@ -138,7 +138,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder WithTTS(bool tts)
         {
-            this.IsTTS = tts;
+            IsTTS = tts;
             return this;
         }
 
@@ -149,7 +149,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder WithContent(string content)
         {
-            this.Content = content;
+            Content = content;
             return this;
         }
 
@@ -160,7 +160,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddEmbed(DiscordEmbed embed)
         {
-            this._embeds.Add(embed);
+            _embeds.Add(embed);
             return this;
         }
 
@@ -171,7 +171,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddEmbeds(IEnumerable<DiscordEmbed> embeds)
         {
-            this._embeds.AddRange(embeds);
+            _embeds.AddRange(embeds);
             return this;
         }
 
@@ -184,16 +184,16 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddFile(string filename, Stream data, bool resetStreamPosition = false)
         {
-            if (this.Files.Count >= 10)
+            if (Files.Count >= 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
-            if (this._files.Any(x => x.FileName == filename))
+            if (_files.Any(x => x.FileName == filename))
                 throw new ArgumentException("A File with that filename already exists");
 
             if (resetStreamPosition)
-                this._files.Add(new DiscordMessageFile(filename, data, data.Position));
+                _files.Add(new DiscordMessageFile(filename, data, data.Position));
             else
-                this._files.Add(new DiscordMessageFile(filename, data, null));
+                _files.Add(new DiscordMessageFile(filename, data, null));
 
             return this;
         }
@@ -206,16 +206,16 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddFile(FileStream stream, bool resetStreamPosition = false)
         {
-            if (this.Files.Count >= 10)
+            if (Files.Count >= 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
-            if (this._files.Any(x => x.FileName == stream.Name))
+            if (_files.Any(x => x.FileName == stream.Name))
                 throw new ArgumentException("A File with that filename already exists");
 
             if (resetStreamPosition)
-                this._files.Add(new DiscordMessageFile(stream.Name, stream, stream.Position));
+                _files.Add(new DiscordMessageFile(stream.Name, stream, stream.Position));
             else
-                this._files.Add(new DiscordMessageFile(stream.Name, stream, null));
+                _files.Add(new DiscordMessageFile(stream.Name, stream, null));
 
             return this;
         }
@@ -228,18 +228,18 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddFiles(Dictionary<string, Stream> files, bool resetStreamPosition = false)
         {
-            if (this.Files.Count + files.Count > 10)
+            if (Files.Count + files.Count > 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
             foreach (var file in files)
             {
-                if (this._files.Any(x => x.FileName == file.Key))
+                if (_files.Any(x => x.FileName == file.Key))
                     throw new ArgumentException("A File with that filename already exists");
 
                 if (resetStreamPosition)
-                    this._files.Add(new DiscordMessageFile(file.Key, file.Value, file.Value.Position));
+                    _files.Add(new DiscordMessageFile(file.Key, file.Value, file.Value.Position));
                 else
-                    this._files.Add(new DiscordMessageFile(file.Key, file.Value, null));
+                    _files.Add(new DiscordMessageFile(file.Key, file.Value, null));
             }
 
 
@@ -253,7 +253,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddMention(IMention mention)
         {
-            this._mentions.Add(mention);
+            _mentions.Add(mention);
             return this;
         }
 
@@ -264,7 +264,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AddMentions(IEnumerable<IMention> mentions)
         {
-            this._mentions.AddRange(mentions);
+            _mentions.AddRange(mentions);
             return this;
         }
 
@@ -275,7 +275,7 @@ namespace DSharpPlus.Entities
         /// <returns>The builder to chain calls with.</returns>
         public DiscordFollowupMessageBuilder AsEphemeral(bool ephemeral = true)
         {
-            this.IsEphemeral = ephemeral;
+            IsEphemeral = ephemeral;
             return this;
         }
 
@@ -283,25 +283,25 @@ namespace DSharpPlus.Entities
         /// Clears all message components on this builder.
         /// </summary>
         public void ClearComponents()
-            => this._components.Clear();
+            => _components.Clear();
 
         /// <summary>
         /// Allows for clearing the Followup Message builder so that it can be used again to send a new message.
         /// </summary>
         public void Clear()
         {
-            this.Content = "";
-            this._embeds.Clear();
-            this.IsTTS = false;
-            this._mentions.Clear();
-            this._files.Clear();
-            this.IsEphemeral = false;
-            this._components.Clear();
+            Content = "";
+            _embeds.Clear();
+            IsTTS = false;
+            _mentions.Clear();
+            _files.Clear();
+            IsEphemeral = false;
+            _components.Clear();
         }
 
         internal void Validate()
         {
-            if (this.Files?.Count == 0 && string.IsNullOrEmpty(this.Content) && !this.Embeds.Any())
+            if (Files?.Count == 0 && string.IsNullOrEmpty(Content) && !Embeds.Any())
                 throw new ArgumentException("You must specify content, an embed, or at least one file.");
         }
     }

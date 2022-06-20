@@ -46,6 +46,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DateTimeOffset? LastPinTimestamp { get; internal set; }
 
-        internal ChannelPinsUpdateEventArgs() : base() { }
+        internal ChannelPinsUpdateEventArgs()
+        { }
     }
 }

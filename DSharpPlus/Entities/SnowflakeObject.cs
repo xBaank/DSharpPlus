@@ -42,7 +42,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         [JsonIgnore]
         public DateTimeOffset CreationTimestamp
-            => this.Id.GetSnowflakeTime();
+            => Id.GetSnowflakeTime();
 
         /// <summary>
         /// Gets the client instance this object is tied to.

@@ -20,14 +20,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-
 
 namespace DSharpPlus.Test
 {
@@ -41,7 +40,7 @@ namespace DSharpPlus.Test
 
             var interactivity = ctx.Client.GetInteractivity();
             var embedPages = interactivity.GeneratePagesInEmbed(lipsum);
-            var pages = interactivity.GeneratePagesInContent(lipsum, SplitType.Character);
+            var pages = interactivity.GeneratePagesInContent(lipsum);
 
             await interactivity.SendPaginatedMessageAsync(ctx.Channel, ctx.User, embedPages, token: new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
         }

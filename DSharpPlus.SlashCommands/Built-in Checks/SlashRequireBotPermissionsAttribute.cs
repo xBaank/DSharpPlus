@@ -6,7 +6,7 @@ namespace DSharpPlus.SlashCommands.Attributes
     /// <summary>
     /// Defines that usage of this slash command is only possible when the bot is granted a specific permission.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
     public sealed class SlashRequireBotPermissionsAttribute : SlashCheckBaseAttribute
     {
         /// <summary>
@@ -26,8 +26,8 @@ namespace DSharpPlus.SlashCommands.Attributes
         /// <param name="ignoreDms">Sets this check's behaviour in DMs. True means the check will always pass in DMs, whereas false means that it will always fail.</param>
         public SlashRequireBotPermissionsAttribute(Permissions permissions, bool ignoreDms = true)
         {
-            this.Permissions = permissions;
-            this.IgnoreDms = ignoreDms;
+            Permissions = permissions;
+            IgnoreDms = ignoreDms;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace DSharpPlus.SlashCommands.Attributes
         public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
         {
             if (ctx.Guild == null)
-                return this.IgnoreDms;
+                return IgnoreDms;
 
             var bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id).ConfigureAwait(false);
             if (bot == null)
@@ -50,7 +50,7 @@ namespace DSharpPlus.SlashCommands.Attributes
             if ((pbot & Permissions.Administrator) != 0)
                 return true;
 
-            return (pbot & this.Permissions) == this.Permissions;
+            return (pbot & Permissions) == Permissions;
         }
     }
 }

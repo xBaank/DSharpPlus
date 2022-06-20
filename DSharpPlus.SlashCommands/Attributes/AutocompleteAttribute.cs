@@ -28,7 +28,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Handles autocomplete choices for a slash command parameter.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public class AutocompleteAttribute : Attribute
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace DSharpPlus.SlashCommands
         /// <param name="provider">The type of the autcomplete provider. This should inherit from <see cref="IAutocompleteProvider"/>.</param>
         public AutocompleteAttribute(Type provider)
         {
-            this.Provider = provider;
+            Provider = provider;
         }
     }
 }

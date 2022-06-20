@@ -39,6 +39,6 @@ namespace DSharpPlus.CommandsNext
         /// Gets the command that was executed.
         /// </summary>
         public Command Command
-            => this.Context.Command!;
+            => Context.Command!;
     }
 }

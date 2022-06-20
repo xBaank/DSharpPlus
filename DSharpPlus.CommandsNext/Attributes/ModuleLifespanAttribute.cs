@@ -28,7 +28,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Defines a lifespan for this command module.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class ModuleLifespanAttribute : Attribute
     {
         /// <summary>
@@ -42,14 +42,14 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <param name="lifespan">Lifespan for this module.</param>
         public ModuleLifespanAttribute(ModuleLifespan lifespan)
         {
-            this.Lifespan = lifespan;
+            Lifespan = lifespan;
         }
     }
 
     /// <summary>
     /// Defines lifespan of a command module.
     /// </summary>
-    public enum ModuleLifespan : int
+    public enum ModuleLifespan
     {
         /// <summary>
         /// Defines that this module will be instantiated once.

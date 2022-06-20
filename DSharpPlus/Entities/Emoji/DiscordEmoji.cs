@@ -45,7 +45,7 @@ namespace DSharpPlus.Entities
         /// Gets IDs the roles this emoji is enabled for.
         /// </summary>
         [JsonIgnore]
-        public IReadOnlyList<ulong> Roles => this._rolesLazy.Value;
+        public IReadOnlyList<ulong> Roles => _rolesLazy.Value;
 
         [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
         internal List<ulong> _roles;
@@ -77,12 +77,12 @@ namespace DSharpPlus.Entities
         {
             get
             {
-                if (this.Id == 0)
+                if (Id == 0)
                     throw new InvalidOperationException("Cannot get URL of unicode emojis.");
 
-                return this.IsAnimated
-                    ? $"https://cdn.discordapp.com/emojis/{this.Id.ToString(CultureInfo.InvariantCulture)}.gif"
-                    : $"https://cdn.discordapp.com/emojis/{this.Id.ToString(CultureInfo.InvariantCulture)}.png";
+                return IsAnimated
+                    ? $"https://cdn.discordapp.com/emojis/{Id.ToString(CultureInfo.InvariantCulture)}.gif"
+                    : $"https://cdn.discordapp.com/emojis/{Id.ToString(CultureInfo.InvariantCulture)}.png";
             }
         }
 
@@ -95,7 +95,7 @@ namespace DSharpPlus.Entities
 
         internal DiscordEmoji()
         {
-            this._rolesLazy = new Lazy<IReadOnlyList<ulong>>(() => new ReadOnlyCollection<ulong>(this._roles));
+            _rolesLazy = new Lazy<IReadOnlyList<ulong>>(() => new ReadOnlyCollection<ulong>(_roles));
         }
 
         /// <summary>
@@ -103,9 +103,9 @@ namespace DSharpPlus.Entities
         /// </summary>
         public string GetDiscordName()
         {
-            DiscordNameLookup.TryGetValue(this.Name, out var name);
+            DiscordNameLookup.TryGetValue(Name, out var name);
 
-            return name ?? $":{ this.Name }:";
+            return name ?? $":{ Name }:";
         }
 
         /// <summary>
@@ -114,14 +114,14 @@ namespace DSharpPlus.Entities
         /// <returns>String representation of this emoji.</returns>
         public override string ToString()
         {
-            if (this.Id != 0)
+            if (Id != 0)
             {
-                return this.IsAnimated
-                    ? $"<a:{this.Name}:{this.Id.ToString(CultureInfo.InvariantCulture)}>"
-                    : $"<:{this.Name}:{this.Id.ToString(CultureInfo.InvariantCulture)}>";
+                return IsAnimated
+                    ? $"<a:{Name}:{Id.ToString(CultureInfo.InvariantCulture)}>"
+                    : $"<:{Name}:{Id.ToString(CultureInfo.InvariantCulture)}>";
             }
 
-            return this.Name;
+            return Name;
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether the object is equal to this <see cref="DiscordEmoji"/>.</returns>
-        public override bool Equals(object obj) => this.Equals(obj as DiscordEmoji);
+        public override bool Equals(object obj) => Equals(obj as DiscordEmoji);
 
         /// <summary>
         /// Checks whether this <see cref="DiscordEmoji"/> is equal to another <see cref="DiscordEmoji"/>.
@@ -141,7 +141,7 @@ namespace DSharpPlus.Entities
             if (e is null)
                 return false;
 
-            return ReferenceEquals(this, e) || (this.Id == e.Id && (this.Id != 0 || this.Name == e.Name));
+            return ReferenceEquals(this, e) || (Id == e.Id && (Id != 0 || Name == e.Name));
         }
 
         /// <summary>
@@ -151,14 +151,14 @@ namespace DSharpPlus.Entities
         public override int GetHashCode()
         {
             var hash = 13;
-            hash = (hash * 7) + this.Id.GetHashCode();
-            hash = (hash * 7) + this.Name.GetHashCode();
+            hash = (hash * 7) + Id.GetHashCode();
+            hash = (hash * 7) + Name.GetHashCode();
 
             return hash;
         }
 
         internal string ToReactionString()
-            => this.Id != 0 ? $"{this.Name}:{this.Id.ToString(CultureInfo.InvariantCulture)}" : this.Name;
+            => Id != 0 ? $"{Name}:{Id.ToString(CultureInfo.InvariantCulture)}" : Name;
 
         /// <summary>
         /// Gets whether the two <see cref="DiscordEmoji"/> objects are equal.

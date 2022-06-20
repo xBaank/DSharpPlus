@@ -155,7 +155,7 @@ namespace DSharpPlus.Test
         [Command("editMention"), Description("Attempts to mention a user via edit message")]
         public async Task EditMentionablesAsync(CommandContext ctx, DiscordUser user)
         {
-            var origcontent = $"Hey, silly! Listen!";
+            var origcontent = "Hey, silly! Listen!";
             var newContent = $"Hey, {user.Mention}! Listen!";
 
             await ctx.Channel.SendMessageAsync("✔ should ping, ❌ should not ping.").ConfigureAwait(false);
@@ -225,7 +225,7 @@ namespace DSharpPlus.Test
                 // Verify that the lib resets the position when asked
                 var builder = new DiscordMessageBuilder()
                     .WithContent("Testing the `Dictionary<string, stream>` Overload with resetting the postion turned on.")
-                    .WithFiles(new Dictionary<string, Stream>() { { "ADumbFile1.txt", fs } }, true);
+                    .WithFiles(new Dictionary<string, Stream> { { "ADumbFile1.txt", fs } }, true);
 
                 await builder.SendAsync(ctx.Channel);
                 await builder.SendAsync(ctx.Channel);
@@ -234,7 +234,7 @@ namespace DSharpPlus.Test
 
                 //Verify the lib doesnt reset the position.  THe file sent should have 0 bytes.
                 builder.WithContent("Testing the `WithFile(Dictionary<string, stream> files)` Overload with resetting the postion turned off  The 2nd file sent should have 0 bytes.")
-                    .WithFiles(new Dictionary<string, Stream>() { { "ADumbFile1.txt", fs } }, false);
+                    .WithFiles(new Dictionary<string, Stream> { { "ADumbFile1.txt", fs } });
 
                 await builder.SendAsync(ctx.Channel);
                 await builder.SendAsync(ctx.Channel);
@@ -254,7 +254,7 @@ namespace DSharpPlus.Test
 
                 //Verify the lib doesnt reset the position.  THe file sent should have 0 bytes.
                 builder.WithContent("Testing the `WithFile(Stream stream)` Overload with resetting the postion turned off.  The 2nd file sent should have 0 bytes.")
-                    .WithFile(fs, false);
+                    .WithFile(fs);
 
                 await builder.SendAsync(ctx.Channel);
                 await builder.SendAsync(ctx.Channel);
@@ -274,7 +274,7 @@ namespace DSharpPlus.Test
 
                 //Verify the lib doesnt reset the position.  THe file sent should have 0 bytes.
                 builder.WithContent("Testing the `WithFile(string fileName, Stream stream)` Overload with resetting the postion turned off.  The 2nd file sent should have 0 bytes.")
-                    .WithFile("ADumbFile2.txt", fs, false);
+                    .WithFile("ADumbFile2.txt", fs);
 
                 await builder.SendAsync(ctx.Channel);
                 await builder.SendAsync(ctx.Channel);
@@ -326,7 +326,7 @@ namespace DSharpPlus.Test
                 // Verify that the lib resets the position when asked
                 var builder = new DiscordWebhookBuilder()
                     .WithContent("Testing the `AddFile(Dictionary<string, stream>)` Overload with resetting the postion turned on.")
-                    .AddFiles(new Dictionary<string, Stream>() { { "ADumbFile1.txt", fs } }, true);
+                    .AddFiles(new Dictionary<string, Stream> { { "ADumbFile1.txt", fs } }, true);
 
                 await builder.SendAsync(webhook);
                 await builder.SendAsync(webhook);
@@ -335,7 +335,7 @@ namespace DSharpPlus.Test
 
                 //Verify the lib doesnt reset the position.  THe file sent should have 0 bytes.
                 builder.WithContent("Testing the `AddFile(Dictionary<string, stream> files)` Overload with resetting the postion turned off  The 2nd file sent should have 0 bytes.")
-                    .AddFiles(new Dictionary<string, Stream>() { { "ADumbFile1.txt", fs } }, false);
+                    .AddFiles(new Dictionary<string, Stream> { { "ADumbFile1.txt", fs } });
 
                 await builder.SendAsync(webhook);
                 await builder.SendAsync(webhook);
@@ -355,7 +355,7 @@ namespace DSharpPlus.Test
 
                 //Verify the lib doesnt reset the position.  THe file sent should have 0 bytes.
                 builder.WithContent("Testing the `AddFile(Stream stream)` Overload with resetting the postion turned off.  The 2nd file sent should have 0 bytes.")
-                    .AddFile(fs, false);
+                    .AddFile(fs);
 
                 await builder.SendAsync(webhook);
                 await builder.SendAsync(webhook);
@@ -375,7 +375,7 @@ namespace DSharpPlus.Test
 
                 //Verify the lib doesnt reset the position.  THe file sent should have 0 bytes.
                 builder.WithContent("Testing the `AddFile(string fileName, Stream stream)` Overload with resetting the postion turned off.  The 2nd file sent should have 0 bytes.")
-                    .AddFile("ADumbFile2.txt", fs, false);
+                    .AddFile("ADumbFile2.txt", fs);
 
                 await builder.SendAsync(webhook);
                 await builder.SendAsync(webhook);
@@ -494,9 +494,9 @@ namespace DSharpPlus.Test
                 return;
             }
 
-            var cNull = await ctx.Guild.CreateVoiceChannelAsync(channel.Name + " [Null]", channel.Parent, null, null, null, null, null);
-            var cAuto = await ctx.Guild.CreateVoiceChannelAsync(channel.Name + " [Auto]", channel.Parent, null, null, null, VideoQualityMode.Auto, null);
-            var cFull = await ctx.Guild.CreateVoiceChannelAsync(channel.Name + " [Full]", channel.Parent, null, null, null, VideoQualityMode.Full, null);
+            var cNull = await ctx.Guild.CreateVoiceChannelAsync(channel.Name + " [Null]", channel.Parent);
+            var cAuto = await ctx.Guild.CreateVoiceChannelAsync(channel.Name + " [Auto]", channel.Parent, null, null, null, VideoQualityMode.Auto);
+            var cFull = await ctx.Guild.CreateVoiceChannelAsync(channel.Name + " [Full]", channel.Parent, null, null, null, VideoQualityMode.Full);
 
             await ctx.RespondAsync($"{cNull.Mention}, {cAuto.Mention}, and {cFull.Mention} created. Delete channels? (Y)");
             var result = await ctx.Message.GetNextMessageAsync(m => m.Content.Equals("Y", StringComparison.OrdinalIgnoreCase), TimeSpan.FromMinutes(1));
@@ -542,7 +542,7 @@ namespace DSharpPlus.Test
             await x.ModifyPositionAsync(z);
             var embed2 = new DiscordEmbedBuilder()
                 .WithTitle("✅ Purged")
-                .WithFooter($"foo");
+                .WithFooter("foo");
             await x.SendMessageAsync(embed: embed2);
         }
         [Command("ping"), Aliases("p")]

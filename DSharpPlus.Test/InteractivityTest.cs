@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -68,7 +69,7 @@ namespace DSharpPlus.Test
             var three = await ctx.RespondAsync(m => m.WithContent("**Button**: 3/6")
                 .AddComponents(new DiscordButtonComponent(ButtonStyle.Primary, "button-three", "Push me")));
 
-            buttonRes = await three.WaitForButtonAsync(b => b.User == ctx.User, null);
+            buttonRes = await three.WaitForButtonAsync(b => b.User == ctx.User);
 
             if (!buttonRes.TimedOut)
             {
@@ -100,7 +101,7 @@ namespace DSharpPlus.Test
             var five = await ctx.RespondAsync(m => m.WithContent("**Button**: 5/6")
                 .AddComponents(new DiscordButtonComponent(ButtonStyle.Primary, "button-five", "Push me")));
 
-            buttonRes = await ctx.Client.GetInteractivity().WaitForButtonAsync(five, new[] { new DiscordButtonComponent(ButtonStyle.Primary, "button-five", "Push me") }, null);
+            buttonRes = await ctx.Client.GetInteractivity().WaitForButtonAsync(five, new[] { new DiscordButtonComponent(ButtonStyle.Primary, "button-five", "Push me") });
 
             if (!buttonRes.TimedOut)
             {

@@ -60,7 +60,7 @@ namespace DSharpPlus.CommandsNext
         /// <para>Sets the custom prefix resolver used for commands.</para>
         /// <para>Defaults to none (disabled).</para>
         /// </summary>
-        public PrefixResolverDelegate? PrefixResolver { internal get; set; } = null;
+        public PrefixResolverDelegate? PrefixResolver { internal get; set; }
 
         /// <summary>
         /// <para>Sets whether to allow mentioning the bot to be used as command prefix.</para>
@@ -73,7 +73,7 @@ namespace DSharpPlus.CommandsNext
         /// <para>This switch affects the behaviour of default prefix resolver, command searching, and argument conversion.</para>
         /// <para>Defaults to false.</para>
         /// </summary>
-        public bool CaseSensitive { internal get; set; } = false;
+        public bool CaseSensitive { internal get; set; }
 
         /// <summary>
         /// <para>Sets whether to enable default help command.</para>
@@ -91,7 +91,7 @@ namespace DSharpPlus.CommandsNext
         /// <para>Enabling this will make the bot respond with help via direct messages.</para>
         /// <para>Defaults to false.</para>
         /// </summary>
-        public bool DmHelp { internal get; set; } = false;
+        public bool DmHelp { internal get; set; }
 
         /// <summary>
         /// <para>Sets the default pre-execution checks for the built-in help command.</para>
@@ -117,7 +117,7 @@ namespace DSharpPlus.CommandsNext
         /// <para>Gets whether any extra arguments passed to commands should be ignored or not. If this is set to false, extra arguments will throw, otherwise they will be ignored.</para>
         /// <para>Defaults to false.</para>
         /// </summary>
-        public bool IgnoreExtraArguments { internal get; set; } = false;
+        public bool IgnoreExtraArguments { internal get; set; }
 
         /// <summary>
         /// <para>Gets or sets whether to automatically enable handling commands.</para>
@@ -149,19 +149,19 @@ namespace DSharpPlus.CommandsNext
         /// <param name="other">Configuration the properties of which are to be copied.</param>
         public CommandsNextConfiguration(CommandsNextConfiguration other)
         {
-            this.CaseSensitive = other.CaseSensitive;
-            this.PrefixResolver = other.PrefixResolver;
-            this.DefaultHelpChecks = other.DefaultHelpChecks;
-            this.EnableDefaultHelp = other.EnableDefaultHelp;
-            this.EnableDms = other.EnableDms;
-            this.EnableMentionPrefix = other.EnableMentionPrefix;
-            this.IgnoreExtraArguments = other.IgnoreExtraArguments;
-            this.UseDefaultCommandHandler = other.UseDefaultCommandHandler;
-            this.Services = other.Services;
-            this.StringPrefixes = other.StringPrefixes.ToArray();
-            this.DmHelp = other.DmHelp;
-            this.DefaultParserCulture = other.DefaultParserCulture;
-            this.CommandExecutor = other.CommandExecutor;
+            CaseSensitive = other.CaseSensitive;
+            PrefixResolver = other.PrefixResolver;
+            DefaultHelpChecks = other.DefaultHelpChecks;
+            EnableDefaultHelp = other.EnableDefaultHelp;
+            EnableDms = other.EnableDms;
+            EnableMentionPrefix = other.EnableMentionPrefix;
+            IgnoreExtraArguments = other.IgnoreExtraArguments;
+            UseDefaultCommandHandler = other.UseDefaultCommandHandler;
+            Services = other.Services;
+            StringPrefixes = other.StringPrefixes.ToArray();
+            DmHelp = other.DmHelp;
+            DefaultParserCulture = other.DefaultParserCulture;
+            CommandExecutor = other.CommandExecutor;
         }
     }
 }

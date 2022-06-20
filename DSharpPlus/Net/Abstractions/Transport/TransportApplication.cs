@@ -83,7 +83,5 @@ namespace DSharpPlus.Net.Abstractions
 
         //[JsonProperty("cover_image")]
         //public Optional<string> CoverImageHash { get; set; }
-
-        internal TransportApplication() { }
     }
 }

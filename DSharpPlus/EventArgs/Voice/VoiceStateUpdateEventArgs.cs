@@ -60,6 +60,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         internal string SessionId { get; set; }
 
-        internal VoiceStateUpdateEventArgs() : base() { }
+        internal VoiceStateUpdateEventArgs()
+        { }
     }
 }

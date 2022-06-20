@@ -25,7 +25,7 @@ namespace DSharpPlus
     /// <summary>
     /// Represents a button's style/color.
     /// </summary>
-    public enum ButtonStyle : int
+    public enum ButtonStyle
     {
         /// <summary>
         /// Blurple button.

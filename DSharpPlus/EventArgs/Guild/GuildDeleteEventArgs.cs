@@ -40,6 +40,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public bool Unavailable { get; internal set; }
 
-        internal GuildDeleteEventArgs() : base() { }
+        internal GuildDeleteEventArgs()
+        { }
     }
 }

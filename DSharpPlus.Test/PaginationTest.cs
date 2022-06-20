@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -43,7 +44,7 @@ namespace DSharpPlus.Test
             var builder = new DiscordMessageBuilder().WithContent("** **").AddComponents(new DiscordButtonComponent(ButtonStyle.Primary, "a", "Paginate"));
             await ctx.RespondAsync(builder);
 
-            ctx.Client.ComponentInteractionCreated += this.Handle;
+            ctx.Client.ComponentInteractionCreated += Handle;
         }
 
         private Task Handle(DiscordClient sender, ComponentInteractionCreateEventArgs e)
@@ -52,7 +53,7 @@ namespace DSharpPlus.Test
                 return Task.CompletedTask;
             var pages = sender.GetInteractivity().GeneratePagesInContent(Lorem);
             _ = sender.GetInteractivity().SendPaginatedResponseAsync(e.Interaction, true, e.User, pages);
-            sender.ComponentInteractionCreated -= this.Handle;
+            sender.ComponentInteractionCreated -= Handle;
             return Task.CompletedTask;
         }
     }

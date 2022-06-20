@@ -44,7 +44,7 @@ namespace DSharpPlus.CommandsNext
         /// Gets this command's qualified name (i.e. one that includes all module names).
         /// </summary>
         public string QualifiedName
-            => this.Parent is not null ? string.Concat(this.Parent.QualifiedName, " ", this.Name) : this.Name;
+            => Parent is not null ? string.Concat(Parent.QualifiedName, " ", Name) : Name;
 
         /// <summary>
         /// Gets this command's aliases.
@@ -99,7 +99,7 @@ namespace DSharpPlus.CommandsNext
             try
             {
                 var executed = false;
-                foreach (var ovl in this.Overloads.OrderByDescending(x => x.Priority))
+                foreach (var ovl in Overloads.OrderByDescending(x => x.Priority))
                 {
                     ctx.Overload = ovl;
                     var args = await CommandsNextUtilities.BindArgumentsAsync(ctx, ctx.Config.IgnoreExtraArguments).ConfigureAwait(false);
@@ -109,7 +109,7 @@ namespace DSharpPlus.CommandsNext
 
                     ctx.RawArguments = args.Raw;
 
-                    var mdl = ovl.InvocationTarget ?? this.Module?.GetInstance(ctx.Services);
+                    var mdl = ovl.InvocationTarget ?? Module?.GetInstance(ctx.Services);
                     if (mdl is BaseCommandModule bcmBefore)
                         await bcmBefore.BeforeExecutionAsync(ctx).ConfigureAwait(false);
 
@@ -153,8 +153,8 @@ namespace DSharpPlus.CommandsNext
         public async Task<IEnumerable<CheckBaseAttribute>> RunChecksAsync(CommandContext ctx, bool help)
         {
             var fchecks = new List<CheckBaseAttribute>();
-            if (this.ExecutionChecks.Any())
-                foreach (var ec in this.ExecutionChecks)
+            if (ExecutionChecks.Any())
+                foreach (var ec in ExecutionChecks)
                     if (!await ec.ExecuteCheckAsync(ctx, help).ConfigureAwait(false))
                         fchecks.Add(ec);
 
@@ -174,9 +174,9 @@ namespace DSharpPlus.CommandsNext
 
             if (o1 == null && o2 != null)
                 return false;
-            else if (o1 != null && o2 == null)
+            if (o1 != null && o2 == null)
                 return false;
-            else if (o1 == null && o2 == null)
+            if (o1 == null && o2 == null)
                 return true;
 
             return cmd1.QualifiedName == cmd2.QualifiedName;
@@ -198,25 +198,25 @@ namespace DSharpPlus.CommandsNext
         /// <returns>Whether this command is equal to another object.</returns>
         public override bool Equals(object obj)
         {
-            var o1 = obj as object;
+            var o1 = obj;
             var o2 = this as object;
 
             if (o1 == null && o2 != null)
                 return false;
-            else if (o1 != null && o2 == null)
+            if (o1 != null && o2 == null)
                 return false;
-            else if (o1 == null && o2 == null)
+            if (o1 == null && o2 == null)
                 return true;
 
             return obj is Command cmd
-&& cmd.QualifiedName == this.QualifiedName;
+                   && cmd.QualifiedName == QualifiedName;
         }
 
         /// <summary>
         /// Gets this command's hash code.
         /// </summary>
         /// <returns>This command's hash code.</returns>
-        public override int GetHashCode() => this.QualifiedName.GetHashCode();
+        public override int GetHashCode() => QualifiedName.GetHashCode();
 
         /// <summary>
         /// Returns a string representation of this command.
@@ -225,8 +225,8 @@ namespace DSharpPlus.CommandsNext
         public override string ToString()
         {
             return this is CommandGroup g
-                ? $"Command Group: {this.QualifiedName}, {g.Children.Count} top-level children"
-                : $"Command: {this.QualifiedName}";
+                ? $"Command Group: {QualifiedName}, {g.Children.Count} top-level children"
+                : $"Command: {QualifiedName}";
         }
     }
 }

@@ -47,8 +47,8 @@ namespace DSharpPlus.Net
         /// <param name="port">Port to use for connection.</param>
         public IpEndpoint(IPAddress address, int port)
         {
-            this.Address = address;
-            this.Port = port;
+            Address = address;
+            Port = port;
         }
     }
 }

@@ -35,13 +35,13 @@ namespace DSharpPlus.Lavalink.Entities
 
         internal LavalinkPayload(string opcode)
         {
-            this.Operation = opcode;
+            Operation = opcode;
         }
 
         internal LavalinkPayload(string opcode, string guildId)
         {
-            this.Operation = opcode;
-            this.GuildId = guildId;
+            Operation = opcode;
+            GuildId = guildId;
         }
     }
 }

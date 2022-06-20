@@ -40,13 +40,13 @@ namespace DSharpPlus
         /// </summary>
         public string Token
         {
-            internal get => this._token;
+            internal get => _token;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentNullException(nameof(value), "Token cannot be null, empty, or all whitespace.");
 
-                this._token = value.Trim();
+                _token = value.Trim();
             }
         }
         private string _token = "";
@@ -93,7 +93,7 @@ namespace DSharpPlus
         /// <para>Sets the ID of the shard to connect to.</para>
         /// <para>If not sharding, or sharding automatically, this value should be left with the default value of 0.</para>
         /// </summary>
-        public int ShardId { internal get; set; } = 0;
+        public int ShardId { internal get; set; }
 
         /// <summary>
         /// <para>Sets the total number of shards the bot is on. If not sharding, this value should be left with a default value of 1.</para>
@@ -118,7 +118,7 @@ namespace DSharpPlus
         /// <para>Sets the proxy to use for HTTP and WebSocket connections to Discord.</para>
         /// <para>Defaults to null.</para>
         /// </summary>
-        public IWebProxy Proxy { internal get; set; } = null;
+        public IWebProxy Proxy { internal get; set; }
 
         /// <summary>
         /// <para>Sets the timeout for HTTP requests.</para>
@@ -132,7 +132,7 @@ namespace DSharpPlus
         /// <para>This is typically a very bad idea to set to <c>true</c>, as it will swallow all connection errors.</para>
         /// <para>Defaults to false.</para>
         /// </summary>
-        public bool ReconnectIndefinitely { internal get; set; } = false;
+        public bool ReconnectIndefinitely { internal get; set; }
 
         /// <summary>
         /// Sets whether the client should attempt to cache members if exclusively using unprivileged intents.
@@ -158,13 +158,13 @@ namespace DSharpPlus
         /// </summary>
         public WebSocketClientFactoryDelegate WebSocketClientFactory
         {
-            internal get => this._webSocketClientFactory;
+            internal get => _webSocketClientFactory;
             set
             {
                 if (value == null)
                     throw new InvalidOperationException("You need to supply a valid WebSocket client factory method.");
 
-                this._webSocketClientFactory = value;
+                _webSocketClientFactory = value;
             }
         }
         private WebSocketClientFactoryDelegate _webSocketClientFactory = WebSocketClient.CreateNew;
@@ -176,8 +176,8 @@ namespace DSharpPlus
         /// </summary>
         public UdpClientFactoryDelegate UdpClientFactory
         {
-            internal get => this._udpClientFactory;
-            set => this._udpClientFactory = value ?? throw new InvalidOperationException("You need to supply a valid UDP client factory method.");
+            internal get => _udpClientFactory;
+            set => _udpClientFactory = value ?? throw new InvalidOperationException("You need to supply a valid UDP client factory method.");
         }
         private UdpClientFactoryDelegate _udpClientFactory = DspUdpClient.CreateNew;
 
@@ -186,7 +186,7 @@ namespace DSharpPlus
         /// <para>To create your own logger, implement the <see cref="ILoggerFactory"/> instance.</para>
         /// <para>Defaults to built-in implementation.</para>
         /// </summary>
-        public ILoggerFactory LoggerFactory { internal get; set; } = null;
+        public ILoggerFactory LoggerFactory { internal get; set; }
 
         /// <summary>
         /// Creates a new configuration with default values.
@@ -200,24 +200,24 @@ namespace DSharpPlus
         /// <param name="other">Client configuration to clone.</param>
         public DiscordConfiguration(DiscordConfiguration other)
         {
-            this.Token = other.Token;
-            this.TokenType = other.TokenType;
-            this.MinimumLogLevel = other.MinimumLogLevel;
-            this.UseRelativeRatelimit = other.UseRelativeRatelimit;
-            this.LogTimestampFormat = other.LogTimestampFormat;
-            this.LargeThreshold = other.LargeThreshold;
-            this.AutoReconnect = other.AutoReconnect;
-            this.ShardId = other.ShardId;
-            this.ShardCount = other.ShardCount;
-            this.GatewayCompressionLevel = other.GatewayCompressionLevel;
-            this.MessageCacheSize = other.MessageCacheSize;
-            this.WebSocketClientFactory = other.WebSocketClientFactory;
-            this.UdpClientFactory = other.UdpClientFactory;
-            this.Proxy = other.Proxy;
-            this.HttpTimeout = other.HttpTimeout;
-            this.ReconnectIndefinitely = other.ReconnectIndefinitely;
-            this.Intents = other.Intents;
-            this.LoggerFactory = other.LoggerFactory;
+            Token = other.Token;
+            TokenType = other.TokenType;
+            MinimumLogLevel = other.MinimumLogLevel;
+            UseRelativeRatelimit = other.UseRelativeRatelimit;
+            LogTimestampFormat = other.LogTimestampFormat;
+            LargeThreshold = other.LargeThreshold;
+            AutoReconnect = other.AutoReconnect;
+            ShardId = other.ShardId;
+            ShardCount = other.ShardCount;
+            GatewayCompressionLevel = other.GatewayCompressionLevel;
+            MessageCacheSize = other.MessageCacheSize;
+            WebSocketClientFactory = other.WebSocketClientFactory;
+            UdpClientFactory = other.UdpClientFactory;
+            Proxy = other.Proxy;
+            HttpTimeout = other.HttpTimeout;
+            ReconnectIndefinitely = other.ReconnectIndefinitely;
+            Intents = other.Intents;
+            LoggerFactory = other.LoggerFactory;
         }
     }
 }

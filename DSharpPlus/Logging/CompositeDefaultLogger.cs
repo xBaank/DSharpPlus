@@ -34,7 +34,7 @@ namespace DSharpPlus
 
         public CompositeDefaultLogger(IEnumerable<ILoggerProvider> providers)
         {
-            this.Loggers = providers.Select(x => x.CreateLogger(typeof(BaseDiscordClient).FullName))
+            Loggers = providers.Select(x => x.CreateLogger(typeof(BaseDiscordClient).FullName))
                 .OfType<ILogger<BaseDiscordClient>>()
                 .ToList();
         }
@@ -44,7 +44,7 @@ namespace DSharpPlus
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            foreach (var logger in this.Loggers)
+            foreach (var logger in Loggers)
                 logger.Log(logLevel, eventId, state, exception, formatter);
         }
 

@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using Newtonsoft.Json;
 
@@ -57,8 +58,8 @@ namespace DSharpPlus.Entities
             if (value is string val && val.Length > 100)
                 throw new ArgumentException("Application command choice value cannot exceed 100 characters.", nameof(value));
 
-            this.Name = name;
-            this.Value = value;
+            Name = name;
+            Value = value;
         }
     }
 }

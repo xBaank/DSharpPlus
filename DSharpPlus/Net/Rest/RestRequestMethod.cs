@@ -26,7 +26,7 @@ namespace DSharpPlus.Net
     /// <summary>
     /// Defines the HTTP method to use for an HTTP request.
     /// </summary>
-    public enum RestRequestMethod : int
+    public enum RestRequestMethod
     {
         /// <summary>
         /// Defines that the request is a GET request.

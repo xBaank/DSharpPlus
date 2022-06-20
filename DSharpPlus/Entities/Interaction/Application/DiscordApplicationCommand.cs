@@ -112,13 +112,13 @@ namespace DSharpPlus.Entities
 
             var optionsList = options != null ? new ReadOnlyCollection<DiscordApplicationCommandOption>(options.ToList()) : null;
 
-            this.Type = type;
-            this.Name = name;
-            this.Description = description;
-            this.Options = optionsList;
-            this.DefaultPermission = defaultPermission;
-            this.NameLocalizations = name_localizations;
-            this.DescriptionLocalizations = description_localizations;
+            Type = type;
+            Name = name;
+            Description = description;
+            Options = optionsList;
+            DefaultPermission = defaultPermission;
+            NameLocalizations = name_localizations;
+            DescriptionLocalizations = description_localizations;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace DSharpPlus.Entities
         /// <param name="other">The command to compare to.</param>
         /// <returns>Whether the command is equal to this <see cref="DiscordApplicationCommand"/>.</returns>
         public bool Equals(DiscordApplicationCommand other)
-            => this.Id == other.Id;
+            => Id == other.Id;
 
         /// <summary>
         /// Determines if two <see cref="DiscordApplicationCommand"/> objects are equal.
@@ -153,13 +153,13 @@ namespace DSharpPlus.Entities
         /// <param name="other">The object to compare to.</param>
         /// <returns>Whether the two <see cref="DiscordApplicationCommand"/> objects are not equal.</returns>
         public override bool Equals(object other)
-            => other is DiscordApplicationCommand dac ? this.Equals(dac) : false;
+            => other is DiscordApplicationCommand dac ? Equals(dac) : false;
 
         /// <summary>
         /// Gets the hash code for this <see cref="DiscordApplicationCommand"/>.
         /// </summary>
         /// <returns>The hash code for this <see cref="DiscordApplicationCommand"/>.</returns>
         public override int GetHashCode()
-            => this.Id.GetHashCode();
+            => Id.GetHashCode();
     }
 }

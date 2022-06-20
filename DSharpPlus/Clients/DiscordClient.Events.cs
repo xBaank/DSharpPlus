@@ -22,7 +22,6 @@
 // SOFTWARE.
 
 using System;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Emzi0767.Utilities;
 using Microsoft.Extensions.Logging;
@@ -44,8 +43,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, SocketErrorEventArgs> SocketErrored
         {
-            add => this._socketErrored.Register(value);
-            remove => this._socketErrored.Unregister(value);
+            add => _socketErrored.Register(value);
+            remove => _socketErrored.Unregister(value);
         }
         private AsyncEvent<DiscordClient, SocketErrorEventArgs> _socketErrored;
 
@@ -54,8 +53,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, SocketEventArgs> SocketOpened
         {
-            add => this._socketOpened.Register(value);
-            remove => this._socketOpened.Unregister(value);
+            add => _socketOpened.Register(value);
+            remove => _socketOpened.Unregister(value);
         }
         private AsyncEvent<DiscordClient, SocketEventArgs> _socketOpened;
 
@@ -64,8 +63,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, SocketCloseEventArgs> SocketClosed
         {
-            add => this._socketClosed.Register(value);
-            remove => this._socketClosed.Unregister(value);
+            add => _socketClosed.Register(value);
+            remove => _socketClosed.Unregister(value);
         }
         private AsyncEvent<DiscordClient, SocketCloseEventArgs> _socketClosed;
 
@@ -74,8 +73,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ReadyEventArgs> Ready
         {
-            add => this._ready.Register(value);
-            remove => this._ready.Unregister(value);
+            add => _ready.Register(value);
+            remove => _ready.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ReadyEventArgs> _ready;
 
@@ -84,8 +83,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ReadyEventArgs> Resumed
         {
-            add => this._resumed.Register(value);
-            remove => this._resumed.Unregister(value);
+            add => _resumed.Register(value);
+            remove => _resumed.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ReadyEventArgs> _resumed;
 
@@ -94,8 +93,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, HeartbeatEventArgs> Heartbeated
         {
-            add => this._heartbeated.Register(value);
-            remove => this._heartbeated.Unregister(value);
+            add => _heartbeated.Register(value);
+            remove => _heartbeated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, HeartbeatEventArgs> _heartbeated;
 
@@ -104,8 +103,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ZombiedEventArgs> Zombied
         {
-            add => this._zombied.Register(value);
-            remove => this._zombied.Unregister(value);
+            add => _zombied.Register(value);
+            remove => _zombied.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ZombiedEventArgs> _zombied;
 
@@ -119,8 +118,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelCreateEventArgs> ChannelCreated
         {
-            add => this._channelCreated.Register(value);
-            remove => this._channelCreated.Unregister(value);
+            add => _channelCreated.Register(value);
+            remove => _channelCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ChannelCreateEventArgs> _channelCreated;
 
@@ -130,8 +129,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelUpdateEventArgs> ChannelUpdated
         {
-            add => this._channelUpdated.Register(value);
-            remove => this._channelUpdated.Unregister(value);
+            add => _channelUpdated.Register(value);
+            remove => _channelUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ChannelUpdateEventArgs> _channelUpdated;
 
@@ -141,8 +140,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelDeleteEventArgs> ChannelDeleted
         {
-            add => this._channelDeleted.Register(value);
-            remove => this._channelDeleted.Unregister(value);
+            add => _channelDeleted.Register(value);
+            remove => _channelDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ChannelDeleteEventArgs> _channelDeleted;
 
@@ -152,8 +151,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, DmChannelDeleteEventArgs> DmChannelDeleted
         {
-            add => this._dmChannelDeleted.Register(value);
-            remove => this._dmChannelDeleted.Unregister(value);
+            add => _dmChannelDeleted.Register(value);
+            remove => _dmChannelDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, DmChannelDeleteEventArgs> _dmChannelDeleted;
 
@@ -163,8 +162,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelPinsUpdateEventArgs> ChannelPinsUpdated
         {
-            add => this._channelPinsUpdated.Register(value);
-            remove => this._channelPinsUpdated.Unregister(value);
+            add => _channelPinsUpdated.Register(value);
+            remove => _channelPinsUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ChannelPinsUpdateEventArgs> _channelPinsUpdated;
 
@@ -179,8 +178,8 @@ namespace DSharpPlus
         /// <remarks>[alias="GuildJoined"][alias="JoinedGuild"]</remarks>
         public event AsyncEventHandler<DiscordClient, GuildCreateEventArgs> GuildCreated
         {
-            add => this._guildCreated.Register(value);
-            remove => this._guildCreated.Unregister(value);
+            add => _guildCreated.Register(value);
+            remove => _guildCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildCreateEventArgs> _guildCreated;
 
@@ -190,8 +189,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildCreateEventArgs> GuildAvailable
         {
-            add => this._guildAvailable.Register(value);
-            remove => this._guildAvailable.Unregister(value);
+            add => _guildAvailable.Register(value);
+            remove => _guildAvailable.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildCreateEventArgs> _guildAvailable;
 
@@ -201,8 +200,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildUpdateEventArgs> GuildUpdated
         {
-            add => this._guildUpdated.Register(value);
-            remove => this._guildUpdated.Unregister(value);
+            add => _guildUpdated.Register(value);
+            remove => _guildUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildUpdateEventArgs> _guildUpdated;
 
@@ -212,8 +211,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildDeleteEventArgs> GuildDeleted
         {
-            add => this._guildDeleted.Register(value);
-            remove => this._guildDeleted.Unregister(value);
+            add => _guildDeleted.Register(value);
+            remove => _guildDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildDeleteEventArgs> _guildDeleted;
 
@@ -222,8 +221,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildDeleteEventArgs> GuildUnavailable
         {
-            add => this._guildUnavailable.Register(value);
-            remove => this._guildUnavailable.Unregister(value);
+            add => _guildUnavailable.Register(value);
+            remove => _guildUnavailable.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildDeleteEventArgs> _guildUnavailable;
 
@@ -232,8 +231,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildDownloadCompletedEventArgs> GuildDownloadCompleted
         {
-            add => this._guildDownloadCompletedEv.Register(value);
-            remove => this._guildDownloadCompletedEv.Unregister(value);
+            add => _guildDownloadCompletedEv.Register(value);
+            remove => _guildDownloadCompletedEv.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildDownloadCompletedEventArgs> _guildDownloadCompletedEv;
 
@@ -243,16 +242,16 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildEmojisUpdateEventArgs> GuildEmojisUpdated
         {
-            add => this._guildEmojisUpdated.Register(value);
-            remove => this._guildEmojisUpdated.Unregister(value);
+            add => _guildEmojisUpdated.Register(value);
+            remove => _guildEmojisUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildEmojisUpdateEventArgs> _guildEmojisUpdated;
 
 
         public event AsyncEventHandler<DiscordClient, GuildStickersUpdateEventArgs> GuildStickersUpdated
         {
-            add => this._guildStickersUpdated.Register(value);
-            remove => this._guildStickersUpdated.Unregister(value);
+            add => _guildStickersUpdated.Register(value);
+            remove => _guildStickersUpdated.Unregister(value);
         }
 
         private AsyncEvent<DiscordClient, GuildStickersUpdateEventArgs> _guildStickersUpdated;
@@ -262,8 +261,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildIntegrationsUpdateEventArgs> GuildIntegrationsUpdated
         {
-            add => this._guildIntegrationsUpdated.Register(value);
-            remove => this._guildIntegrationsUpdated.Unregister(value);
+            add => _guildIntegrationsUpdated.Register(value);
+            remove => _guildIntegrationsUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildIntegrationsUpdateEventArgs> _guildIntegrationsUpdated;
 
@@ -273,43 +272,43 @@ namespace DSharpPlus
 
         public event AsyncEventHandler<DiscordClient, ScheduledGuildEventCreateEventArgs> ScheduledGuildEventCreated
         {
-            add => this._scheduledGuildEventCreated.Register(value);
-            remove => this._scheduledGuildEventCreated.Unregister(value);
+            add => _scheduledGuildEventCreated.Register(value);
+            remove => _scheduledGuildEventCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ScheduledGuildEventCreateEventArgs> _scheduledGuildEventCreated;
 
         public event AsyncEventHandler<DiscordClient, ScheduledGuildEventUpdateEventArgs> ScheduledGuildEventUpdated
         {
-            add => this._scheduledGuildEventUpdated.Register(value);
-            remove => this._scheduledGuildEventUpdated.Unregister(value);
+            add => _scheduledGuildEventUpdated.Register(value);
+            remove => _scheduledGuildEventUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ScheduledGuildEventUpdateEventArgs> _scheduledGuildEventUpdated;
 
         public event AsyncEventHandler<DiscordClient, ScheduledGuildEventDeleteEventArgs> ScheduledGuildEventDeleted
         {
-            add => this._scheduledGuildEventDeleted.Register(value);
-            remove => this._scheduledGuildEventDeleted.Unregister(value);
+            add => _scheduledGuildEventDeleted.Register(value);
+            remove => _scheduledGuildEventDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ScheduledGuildEventDeleteEventArgs> _scheduledGuildEventDeleted;
 
         public event AsyncEventHandler<DiscordClient, ScheduledGuildEventCompletedEventArgs> ScheduledGuildEventCompleted
         {
-            add => this._scheduledGuildEventCompleted.Register(value);
-            remove => this._scheduledGuildEventCompleted.Unregister(value);
+            add => _scheduledGuildEventCompleted.Register(value);
+            remove => _scheduledGuildEventCompleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ScheduledGuildEventCompletedEventArgs> _scheduledGuildEventCompleted;
 
         public event AsyncEventHandler<DiscordClient, ScheduledGuildEventUserAddEventArgs> ScheduledGuildEventUserAdded
         {
-            add => this._scheduledGuildEventUserAdded.Register(value);
-            remove => this._scheduledGuildEventUserAdded.Unregister(value);
+            add => _scheduledGuildEventUserAdded.Register(value);
+            remove => _scheduledGuildEventUserAdded.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ScheduledGuildEventUserAddEventArgs> _scheduledGuildEventUserAdded;
 
         public event AsyncEventHandler<DiscordClient, ScheduledGuildEventUserRemoveEventArgs> ScheduledGuildEventUserRemoved
         {
-            add => this._scheduledGuildEventUserRemoved.Register(value);
-            remove => this._scheduledGuildEventUserRemoved.Unregister(value);
+            add => _scheduledGuildEventUserRemoved.Register(value);
+            remove => _scheduledGuildEventUserRemoved.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ScheduledGuildEventUserRemoveEventArgs> _scheduledGuildEventUserRemoved;
 
@@ -323,8 +322,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded
         {
-            add => this._guildBanAdded.Register(value);
-            remove => this._guildBanAdded.Unregister(value);
+            add => _guildBanAdded.Register(value);
+            remove => _guildBanAdded.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildBanAddEventArgs> _guildBanAdded;
 
@@ -334,8 +333,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved
         {
-            add => this._guildBanRemoved.Register(value);
-            remove => this._guildBanRemoved.Unregister(value);
+            add => _guildBanRemoved.Register(value);
+            remove => _guildBanRemoved.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildBanRemoveEventArgs> _guildBanRemoved;
 
@@ -349,8 +348,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMemberAddEventArgs> GuildMemberAdded
         {
-            add => this._guildMemberAdded.Register(value);
-            remove => this._guildMemberAdded.Unregister(value);
+            add => _guildMemberAdded.Register(value);
+            remove => _guildMemberAdded.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildMemberAddEventArgs> _guildMemberAdded;
 
@@ -360,8 +359,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMemberRemoveEventArgs> GuildMemberRemoved
         {
-            add => this._guildMemberRemoved.Register(value);
-            remove => this._guildMemberRemoved.Unregister(value);
+            add => _guildMemberRemoved.Register(value);
+            remove => _guildMemberRemoved.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildMemberRemoveEventArgs> _guildMemberRemoved;
 
@@ -371,8 +370,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMemberUpdateEventArgs> GuildMemberUpdated
         {
-            add => this._guildMemberUpdated.Register(value);
-            remove => this._guildMemberUpdated.Unregister(value);
+            add => _guildMemberUpdated.Register(value);
+            remove => _guildMemberUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildMemberUpdateEventArgs> _guildMemberUpdated;
 
@@ -381,8 +380,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMembersChunkEventArgs> GuildMembersChunked
         {
-            add => this._guildMembersChunked.Register(value);
-            remove => this._guildMembersChunked.Unregister(value);
+            add => _guildMembersChunked.Register(value);
+            remove => _guildMembersChunked.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildMembersChunkEventArgs> _guildMembersChunked;
 
@@ -396,8 +395,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> GuildRoleCreated
         {
-            add => this._guildRoleCreated.Register(value);
-            remove => this._guildRoleCreated.Unregister(value);
+            add => _guildRoleCreated.Register(value);
+            remove => _guildRoleCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildRoleCreateEventArgs> _guildRoleCreated;
 
@@ -407,8 +406,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated
         {
-            add => this._guildRoleUpdated.Register(value);
-            remove => this._guildRoleUpdated.Unregister(value);
+            add => _guildRoleUpdated.Register(value);
+            remove => _guildRoleUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildRoleUpdateEventArgs> _guildRoleUpdated;
 
@@ -418,8 +417,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> GuildRoleDeleted
         {
-            add => this._guildRoleDeleted.Register(value);
-            remove => this._guildRoleDeleted.Unregister(value);
+            add => _guildRoleDeleted.Register(value);
+            remove => _guildRoleDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, GuildRoleDeleteEventArgs> _guildRoleDeleted;
 
@@ -433,8 +432,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, InviteCreateEventArgs> InviteCreated
         {
-            add => this._inviteCreated.Register(value);
-            remove => this._inviteCreated.Unregister(value);
+            add => _inviteCreated.Register(value);
+            remove => _inviteCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, InviteCreateEventArgs> _inviteCreated;
 
@@ -444,8 +443,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, InviteDeleteEventArgs> InviteDeleted
         {
-            add => this._inviteDeleted.Register(value);
-            remove => this._inviteDeleted.Unregister(value);
+            add => _inviteDeleted.Register(value);
+            remove => _inviteDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, InviteDeleteEventArgs> _inviteDeleted;
 
@@ -459,8 +458,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageCreateEventArgs> MessageCreated
         {
-            add => this._messageCreated.Register(value);
-            remove => this._messageCreated.Unregister(value);
+            add => _messageCreated.Register(value);
+            remove => _messageCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageCreateEventArgs> _messageCreated;
 
@@ -470,8 +469,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageAcknowledgeEventArgs> MessageAcknowledged
         {
-            add => this._messageAcknowledged.Register(value);
-            remove => this._messageAcknowledged.Unregister(value);
+            add => _messageAcknowledged.Register(value);
+            remove => _messageAcknowledged.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageAcknowledgeEventArgs> _messageAcknowledged;
 
@@ -481,8 +480,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageUpdateEventArgs> MessageUpdated
         {
-            add => this._messageUpdated.Register(value);
-            remove => this._messageUpdated.Unregister(value);
+            add => _messageUpdated.Register(value);
+            remove => _messageUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageUpdateEventArgs> _messageUpdated;
 
@@ -492,8 +491,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageDeleteEventArgs> MessageDeleted
         {
-            add => this._messageDeleted.Register(value);
-            remove => this._messageDeleted.Unregister(value);
+            add => _messageDeleted.Register(value);
+            remove => _messageDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageDeleteEventArgs> _messageDeleted;
 
@@ -503,8 +502,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageBulkDeleteEventArgs> MessagesBulkDeleted
         {
-            add => this._messagesBulkDeleted.Register(value);
-            remove => this._messagesBulkDeleted.Unregister(value);
+            add => _messagesBulkDeleted.Register(value);
+            remove => _messagesBulkDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageBulkDeleteEventArgs> _messagesBulkDeleted;
 
@@ -518,8 +517,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionAddEventArgs> MessageReactionAdded
         {
-            add => this._messageReactionAdded.Register(value);
-            remove => this._messageReactionAdded.Unregister(value);
+            add => _messageReactionAdded.Register(value);
+            remove => _messageReactionAdded.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageReactionAddEventArgs> _messageReactionAdded;
 
@@ -529,8 +528,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionRemoveEventArgs> MessageReactionRemoved
         {
-            add => this._messageReactionRemoved.Register(value);
-            remove => this._messageReactionRemoved.Unregister(value);
+            add => _messageReactionRemoved.Register(value);
+            remove => _messageReactionRemoved.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageReactionRemoveEventArgs> _messageReactionRemoved;
 
@@ -540,8 +539,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionsClearEventArgs> MessageReactionsCleared
         {
-            add => this._messageReactionsCleared.Register(value);
-            remove => this._messageReactionsCleared.Unregister(value);
+            add => _messageReactionsCleared.Register(value);
+            remove => _messageReactionsCleared.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageReactionsClearEventArgs> _messageReactionsCleared;
 
@@ -551,8 +550,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionRemoveEmojiEventArgs> MessageReactionRemovedEmoji
         {
-            add => this._messageReactionRemovedEmoji.Register(value);
-            remove => this._messageReactionRemovedEmoji.Unregister(value);
+            add => _messageReactionRemovedEmoji.Register(value);
+            remove => _messageReactionRemovedEmoji.Unregister(value);
         }
         private AsyncEvent<DiscordClient, MessageReactionRemoveEmojiEventArgs> _messageReactionRemovedEmoji;
 
@@ -566,8 +565,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, PresenceUpdateEventArgs> PresenceUpdated
         {
-            add => this._presenceUpdated.Register(value);
-            remove => this._presenceUpdated.Unregister(value);
+            add => _presenceUpdated.Register(value);
+            remove => _presenceUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, PresenceUpdateEventArgs> _presenceUpdated;
 
@@ -578,8 +577,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, UserSettingsUpdateEventArgs> UserSettingsUpdated
         {
-            add => this._userSettingsUpdated.Register(value);
-            remove => this._userSettingsUpdated.Unregister(value);
+            add => _userSettingsUpdated.Register(value);
+            remove => _userSettingsUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, UserSettingsUpdateEventArgs> _userSettingsUpdated;
 
@@ -592,8 +591,8 @@ namespace DSharpPlus
         /// </remarks>
         public event AsyncEventHandler<DiscordClient, UserUpdateEventArgs> UserUpdated
         {
-            add => this._userUpdated.Register(value);
-            remove => this._userUpdated.Unregister(value);
+            add => _userUpdated.Register(value);
+            remove => _userUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, UserUpdateEventArgs> _userUpdated;
 
@@ -607,8 +606,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, VoiceStateUpdateEventArgs> VoiceStateUpdated
         {
-            add => this._voiceStateUpdated.Register(value);
-            remove => this._voiceStateUpdated.Unregister(value);
+            add => _voiceStateUpdated.Register(value);
+            remove => _voiceStateUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, VoiceStateUpdateEventArgs> _voiceStateUpdated;
 
@@ -618,8 +617,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, VoiceServerUpdateEventArgs> VoiceServerUpdated
         {
-            add => this._voiceServerUpdated.Register(value);
-            remove => this._voiceServerUpdated.Unregister(value);
+            add => _voiceServerUpdated.Register(value);
+            remove => _voiceServerUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, VoiceServerUpdateEventArgs> _voiceServerUpdated;
 
@@ -633,8 +632,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ThreadCreateEventArgs> ThreadCreated
         {
-            add => this._threadCreated.Register(value);
-            remove => this._threadCreated.Unregister(value);
+            add => _threadCreated.Register(value);
+            remove => _threadCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ThreadCreateEventArgs> _threadCreated;
 
@@ -644,8 +643,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ThreadUpdateEventArgs> ThreadUpdated
         {
-            add => this._threadUpdated.Register(value);
-            remove => this._threadUpdated.Unregister(value);
+            add => _threadUpdated.Register(value);
+            remove => _threadUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ThreadUpdateEventArgs> _threadUpdated;
 
@@ -655,8 +654,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ThreadDeleteEventArgs> ThreadDeleted
         {
-            add => this._threadDeleted.Register(value);
-            remove => this._threadDeleted.Unregister(value);
+            add => _threadDeleted.Register(value);
+            remove => _threadDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ThreadDeleteEventArgs> _threadDeleted;
 
@@ -666,8 +665,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ThreadListSyncEventArgs> ThreadListSynced
         {
-            add => this._threadListSynced.Register(value);
-            remove => this._threadListSynced.Unregister(value);
+            add => _threadListSynced.Register(value);
+            remove => _threadListSynced.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ThreadListSyncEventArgs> _threadListSynced;
 
@@ -677,8 +676,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ThreadMemberUpdateEventArgs> ThreadMemberUpdated
         {
-            add => this._threadMemberUpdated.Register(value);
-            remove => this._threadMemberUpdated.Unregister(value);
+            add => _threadMemberUpdated.Register(value);
+            remove => _threadMemberUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ThreadMemberUpdateEventArgs> _threadMemberUpdated;
 
@@ -688,8 +687,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ThreadMembersUpdateEventArgs> ThreadMembersUpdated
         {
-            add => this._threadMembersUpdated.Register(value);
-            remove => this._threadMembersUpdated.Unregister(value);
+            add => _threadMembersUpdated.Register(value);
+            remove => _threadMembersUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ThreadMembersUpdateEventArgs> _threadMembersUpdated;
 
@@ -703,8 +702,8 @@ namespace DSharpPlus
         [Obsolete("This event has been removed by discord and does not fire anymore.", false)]
         public event AsyncEventHandler<DiscordClient, ApplicationCommandEventArgs> ApplicationCommandCreated
         {
-            add => this._applicationCommandCreated.Register(value);
-            remove => this._applicationCommandCreated.Unregister(value);
+            add => _applicationCommandCreated.Register(value);
+            remove => _applicationCommandCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ApplicationCommandEventArgs> _applicationCommandCreated;
 
@@ -714,8 +713,8 @@ namespace DSharpPlus
         [Obsolete("This event has been removed by discord and does not fire anymore.", false)]
         public event AsyncEventHandler<DiscordClient, ApplicationCommandEventArgs> ApplicationCommandUpdated
         {
-            add => this._applicationCommandUpdated.Register(value);
-            remove => this._applicationCommandUpdated.Unregister(value);
+            add => _applicationCommandUpdated.Register(value);
+            remove => _applicationCommandUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ApplicationCommandEventArgs> _applicationCommandUpdated;
 
@@ -725,8 +724,8 @@ namespace DSharpPlus
         [Obsolete("This event has been removed by discord and does not fire anymore.", false)]
         public event AsyncEventHandler<DiscordClient, ApplicationCommandEventArgs> ApplicationCommandDeleted
         {
-            add => this._applicationCommandDeleted.Register(value);
-            remove => this._applicationCommandDeleted.Unregister(value);
+            add => _applicationCommandDeleted.Register(value);
+            remove => _applicationCommandDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ApplicationCommandEventArgs> _applicationCommandDeleted;
 
@@ -739,8 +738,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, IntegrationCreateEventArgs> IntegrationCreated
         {
-            add => this._integrationCreated.Register(value);
-            remove => this._integrationCreated.Unregister(value);
+            add => _integrationCreated.Register(value);
+            remove => _integrationCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, IntegrationCreateEventArgs> _integrationCreated;
 
@@ -749,8 +748,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, IntegrationUpdateEventArgs> IntegrationUpdated
         {
-            add => this._integrationUpdated.Register(value);
-            remove => this._integrationUpdated.Unregister(value);
+            add => _integrationUpdated.Register(value);
+            remove => _integrationUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, IntegrationUpdateEventArgs> _integrationUpdated;
 
@@ -759,8 +758,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, IntegrationDeleteEventArgs> IntegrationDeleted
         {
-            add => this._integrationDeleted.Register(value);
-            remove => this._integrationDeleted.Unregister(value);
+            add => _integrationDeleted.Register(value);
+            remove => _integrationDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, IntegrationDeleteEventArgs> _integrationDeleted;
 
@@ -773,8 +772,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, StageInstanceCreateEventArgs> StageInstanceCreated
         {
-            add => this._stageInstanceCreated.Register(value);
-            remove => this._stageInstanceCreated.Unregister(value);
+            add => _stageInstanceCreated.Register(value);
+            remove => _stageInstanceCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, StageInstanceCreateEventArgs> _stageInstanceCreated;
 
@@ -783,8 +782,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, StageInstanceUpdateEventArgs> StageInstanceUpdated
         {
-            add => this._stageInstanceUpdated.Register(value);
-            remove => this._stageInstanceUpdated.Unregister(value);
+            add => _stageInstanceUpdated.Register(value);
+            remove => _stageInstanceUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, StageInstanceUpdateEventArgs> _stageInstanceUpdated;
 
@@ -793,8 +792,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, StageInstanceDeleteEventArgs> StageInstanceDeleted
         {
-            add => this._stageInstanceDeleted.Register(value);
-            remove => this._stageInstanceDeleted.Unregister(value);
+            add => _stageInstanceDeleted.Register(value);
+            remove => _stageInstanceDeleted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, StageInstanceDeleteEventArgs> _stageInstanceDeleted;
 
@@ -807,8 +806,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, InteractionCreateEventArgs> InteractionCreated
         {
-            add => this._interactionCreated.Register(value);
-            remove => this._interactionCreated.Unregister(value);
+            add => _interactionCreated.Register(value);
+            remove => _interactionCreated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, InteractionCreateEventArgs> _interactionCreated;
 
@@ -817,8 +816,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ComponentInteractionCreateEventArgs> ComponentInteractionCreated
         {
-            add => this._componentInteractionCreated.Register(value);
-            remove => this._componentInteractionCreated.Unregister(value);
+            add => _componentInteractionCreated.Register(value);
+            remove => _componentInteractionCreated.Unregister(value);
         }
 
         private AsyncEvent<DiscordClient, ComponentInteractionCreateEventArgs> _componentInteractionCreated;
@@ -828,8 +827,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ModalSubmitEventArgs> ModalSubmitted
         {
-            add => this._modalSubmitted.Register(value);
-            remove => this._modalSubmitted.Unregister(value);
+            add => _modalSubmitted.Register(value);
+            remove => _modalSubmitted.Unregister(value);
         }
 
         private AsyncEvent<DiscordClient, ModalSubmitEventArgs> _modalSubmitted;
@@ -839,8 +838,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ContextMenuInteractionCreateEventArgs> ContextMenuInteractionCreated
         {
-            add => this._contextMenuInteractionCreated.Register(value);
-            remove => this._contextMenuInteractionCreated.Unregister(value);
+            add => _contextMenuInteractionCreated.Register(value);
+            remove => _contextMenuInteractionCreated.Unregister(value);
         }
 
         private AsyncEvent<DiscordClient, ContextMenuInteractionCreateEventArgs> _contextMenuInteractionCreated;
@@ -850,8 +849,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, TypingStartEventArgs> TypingStarted
         {
-            add => this._typingStarted.Register(value);
-            remove => this._typingStarted.Unregister(value);
+            add => _typingStarted.Register(value);
+            remove => _typingStarted.Unregister(value);
         }
         private AsyncEvent<DiscordClient, TypingStartEventArgs> _typingStarted;
 
@@ -860,8 +859,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, UnknownEventArgs> UnknownEvent
         {
-            add => this._unknownEvent.Register(value);
-            remove => this._unknownEvent.Unregister(value);
+            add => _unknownEvent.Register(value);
+            remove => _unknownEvent.Unregister(value);
         }
         private AsyncEvent<DiscordClient, UnknownEventArgs> _unknownEvent;
 
@@ -870,8 +869,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, WebhooksUpdateEventArgs> WebhooksUpdated
         {
-            add => this._webhooksUpdated.Register(value);
-            remove => this._webhooksUpdated.Unregister(value);
+            add => _webhooksUpdated.Register(value);
+            remove => _webhooksUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, WebhooksUpdateEventArgs> _webhooksUpdated;
 
@@ -880,8 +879,8 @@ namespace DSharpPlus
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ClientErrorEventArgs> ClientErrored
         {
-            add => this._clientErrored.Register(value);
-            remove => this._clientErrored.Unregister(value);
+            add => _clientErrored.Register(value);
+            remove => _clientErrored.Unregister(value);
         }
         private AsyncEvent<DiscordClient, ClientErrorEventArgs> _clientErrored;
 
@@ -894,16 +893,16 @@ namespace DSharpPlus
         {
             if (ex is AsyncEventTimeoutException)
             {
-                this.Logger.LogWarning(LoggerEvents.EventHandlerException, $"An event handler for {asyncEvent.Name} took too long to execute. Defined as \"{handler.Method.ToString().Replace(handler.Method.ReturnType.ToString(), "").TrimStart()}\" located in \"{handler.Method.DeclaringType}\".");
+                Logger.LogWarning(LoggerEvents.EventHandlerException, $"An event handler for {asyncEvent.Name} took too long to execute. Defined as \"{handler.Method.ToString().Replace(handler.Method.ReturnType.ToString(), "").TrimStart()}\" located in \"{handler.Method.DeclaringType}\".");
                 return;
             }
 
-            this.Logger.LogError(LoggerEvents.EventHandlerException, ex, "Event handler exception for event {Event} thrown from {Method} (defined in {DeclaryingType})", asyncEvent.Name, handler.Method, handler.Method.DeclaringType);
-            this._clientErrored.InvokeAsync(this, new ClientErrorEventArgs { EventName = asyncEvent.Name, Exception = ex }).ConfigureAwait(false).GetAwaiter().GetResult();
+            Logger.LogError(LoggerEvents.EventHandlerException, ex, "Event handler exception for event {Event} thrown from {Method} (defined in {DeclaryingType})", asyncEvent.Name, handler.Method, handler.Method.DeclaringType);
+            _clientErrored.InvokeAsync(this, new ClientErrorEventArgs { EventName = asyncEvent.Name, Exception = ex }).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private void Goof<TSender, TArgs>(AsyncEvent<TSender, TArgs> asyncEvent, Exception ex, AsyncEventHandler<TSender, TArgs> handler, TSender sender, TArgs eventArgs)
-            where TArgs : AsyncEventArgs => this.Logger.LogCritical(LoggerEvents.EventHandlerException, ex, "Exception event handler {Method} (defined in {DeclaringType}) threw an exception", handler.Method, handler.Method.DeclaringType);
+            where TArgs : AsyncEventArgs => Logger.LogCritical(LoggerEvents.EventHandlerException, ex, "Exception event handler {Method} (defined in {DeclaringType}) threw an exception", handler.Method, handler.Method.DeclaringType);
 
         #endregion
     }

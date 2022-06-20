@@ -52,6 +52,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DateTimeOffset StartedAt { get; internal set; }
 
-        internal TypingStartEventArgs() : base() { }
+        internal TypingStartEventArgs()
+        { }
     }
 }

@@ -29,7 +29,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Defines that usage of this command is restricted to members with specified permissions.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
     public sealed class RequireUserPermissionsAttribute : CheckBaseAttribute
     {
         /// <summary>
@@ -49,14 +49,14 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// <param name="ignoreDms">Sets this check's behaviour in DMs. True means the check will always pass in DMs, whereas false means that it will always fail.</param>
         public RequireUserPermissionsAttribute(Permissions permissions, bool ignoreDms = true)
         {
-            this.Permissions = permissions;
-            this.IgnoreDms = ignoreDms;
+            Permissions = permissions;
+            IgnoreDms = ignoreDms;
         }
 
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
             if (ctx.Guild == null)
-                return Task.FromResult(this.IgnoreDms);
+                return Task.FromResult(IgnoreDms);
 
             var usr = ctx.Member;
             if (usr == null)
@@ -70,7 +70,7 @@ namespace DSharpPlus.CommandsNext.Attributes
             if ((pusr & Permissions.Administrator) != 0)
                 return Task.FromResult(true);
 
-            return (pusr & this.Permissions) == this.Permissions ? Task.FromResult(true) : Task.FromResult(false);
+            return (pusr & Permissions) == Permissions ? Task.FromResult(true) : Task.FromResult(false);
         }
     }
 }

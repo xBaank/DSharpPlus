@@ -47,7 +47,7 @@ namespace DSharpPlus.EventArgs
         /// <param name="message">Received message string.</param>
         public SocketTextMessageEventArgs(string message)
         {
-            this.Message = message;
+            Message = message;
         }
     }
 
@@ -67,7 +67,7 @@ namespace DSharpPlus.EventArgs
         /// <param name="message">Received message bytes.</param>
         public SocketBinaryMessageEventArgs(byte[] message)
         {
-            this.Message = message;
+            Message = message;
         }
     }
 }

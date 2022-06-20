@@ -52,7 +52,7 @@ namespace DSharpPlus.VoiceNext
         /// <summary>
         /// Gets the default audio format. This is a formt configured for 48kHz sampling rate, 2 channels, with music quality preset.
         /// </summary>
-        public static AudioFormat Default { get; } = new AudioFormat(48000, 2, VoiceApplication.Music);
+        public static AudioFormat Default { get; } = new AudioFormat(48000);
 
         /// <summary>
         /// Gets the audio sampling rate in Hz.
@@ -86,9 +86,9 @@ namespace DSharpPlus.VoiceNext
             if (voiceApplication != VoiceApplication.Music && voiceApplication != VoiceApplication.Voice && voiceApplication != VoiceApplication.LowLatency)
                 throw new ArgumentOutOfRangeException(nameof(voiceApplication), "Invalid voice application specified.");
 
-            this.SampleRate = sampleRate;
-            this.ChannelCount = channelCount;
-            this.VoiceApplication = voiceApplication;
+            SampleRate = sampleRate;
+            ChannelCount = channelCount;
+            VoiceApplication = voiceApplication;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace DSharpPlus.VoiceNext
             // - sample rate in kHz
             // - size of data (in this case, sizeof(int16_t))
             // which comes down to below:
-            return sampleDuration * this.ChannelCount * (this.SampleRate / 1000) * 2;
+            return sampleDuration * ChannelCount * (SampleRate / 1000) * 2;
         }
 
         /// <summary>
@@ -117,26 +117,26 @@ namespace DSharpPlus.VoiceNext
         /// <returns>Buffer size required to decode data.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetMaximumBufferSize()
-            => this.CalculateMaximumFrameSize();
+            => CalculateMaximumFrameSize();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int CalculateSampleDuration(int sampleSize)
-            => sampleSize / (this.SampleRate / 1000) / this.ChannelCount / 2 /* sizeof(int16_t) */;
+            => sampleSize / (SampleRate / 1000) / ChannelCount / 2 /* sizeof(int16_t) */;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int CalculateFrameSize(int sampleDuration)
-            => sampleDuration * (this.SampleRate / 1000);
+            => sampleDuration * (SampleRate / 1000);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int CalculateMaximumFrameSize()
-            => 120 * (this.SampleRate / 1000);
+            => 120 * (SampleRate / 1000);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int SampleCountToSampleSize(int sampleCount)
-            => sampleCount * this.ChannelCount * 2 /* sizeof(int16_t) */;
+            => sampleCount * ChannelCount * 2 /* sizeof(int16_t) */;
 
         internal bool IsValid()
-            => AllowedSampleRates.Contains(this.SampleRate) && AllowedChannelCounts.Contains(this.ChannelCount) &&
-                (this.VoiceApplication == VoiceApplication.Music || this.VoiceApplication == VoiceApplication.Voice || this.VoiceApplication == VoiceApplication.LowLatency);
+            => AllowedSampleRates.Contains(SampleRate) && AllowedChannelCounts.Contains(ChannelCount) &&
+                (VoiceApplication == VoiceApplication.Music || VoiceApplication == VoiceApplication.Voice || VoiceApplication == VoiceApplication.LowLatency);
     }
 }

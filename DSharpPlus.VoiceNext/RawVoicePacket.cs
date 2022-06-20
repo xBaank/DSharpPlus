@@ -22,25 +22,24 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DSharpPlus.VoiceNext
 {
     internal readonly struct RawVoicePacket
     {
-        public RawVoicePacket(Memory<byte> bytes, int duration, bool silence)
+        public RawVoicePacket(Memory<byte> bytes, int duration, bool silence, bool isOpusPacket = false)
         {
-            this.Bytes = bytes;
-            this.Duration = duration;
-            this.Silence = silence;
-            this.RentedBuffer = null;
+            Bytes = bytes;
+            Duration = duration;
+            Silence = silence;
+            RentedBuffer = null;
+            IsOpusPacket = isOpusPacket;
         }
 
-        public RawVoicePacket(Memory<byte> bytes, int duration, bool silence, byte[] rentedBuffer)
-            : this(bytes, duration, silence)
+        public RawVoicePacket(Memory<byte> bytes, int duration, bool silence, byte[] rentedBuffer, bool isOpusPacket = false)
+            : this(bytes, duration, silence, isOpusPacket)
         {
-            this.RentedBuffer = rentedBuffer;
+            RentedBuffer = rentedBuffer;
         }
 
         public readonly Memory<byte> Bytes;
@@ -48,5 +47,7 @@ namespace DSharpPlus.VoiceNext
         public readonly bool Silence;
 
         public readonly byte[] RentedBuffer;
+
+        public bool IsOpusPacket { get; }
     }
 }

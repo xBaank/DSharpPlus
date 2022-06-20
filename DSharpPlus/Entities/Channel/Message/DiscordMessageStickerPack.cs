@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -33,7 +34,7 @@ namespace DSharpPlus.Entities
         /// <summary>
         /// Gets the stickers contained in this pack.
         /// </summary>
-        public IReadOnlyDictionary<ulong, DiscordMessageSticker> Stickers => this._stickers;
+        public IReadOnlyDictionary<ulong, DiscordMessageSticker> Stickers => _stickers;
 
         [JsonProperty("stickers")]
         internal Dictionary<ulong, DiscordMessageSticker> _stickers = new();

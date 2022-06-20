@@ -34,15 +34,15 @@ namespace DSharpPlus.Exceptions
     {
         internal UnauthorizedException(BaseRestRequest request, RestResponse response) : base("Unauthorized: " + response.ResponseCode)
         {
-            this.WebRequest = request;
-            this.WebResponse = response;
+            WebRequest = request;
+            WebResponse = response;
 
             try
             {
                 var j = JObject.Parse(response.Response);
 
                 if (j["message"] != null)
-                    this.JsonMessage = j["message"].ToString();
+                    JsonMessage = j["message"].ToString();
             }
             catch (Exception) { }
         }

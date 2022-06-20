@@ -22,7 +22,6 @@
 // SOFTWARE.
 
 using System.Threading.Tasks;
-using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.SlashCommands;
 
 namespace DSharpPlus.Test

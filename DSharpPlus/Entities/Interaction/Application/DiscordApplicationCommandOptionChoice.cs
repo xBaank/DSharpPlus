@@ -58,8 +58,8 @@ namespace DSharpPlus.Entities
             if (value is string val && val.Length > 100)
                 throw new ArgumentException("Application command choice value cannot exceed 100 characters.", nameof(value));
 
-            this.Name = name;
-            this.Value = value;
+            Name = name;
+            Value = value;
         }
     }
 }

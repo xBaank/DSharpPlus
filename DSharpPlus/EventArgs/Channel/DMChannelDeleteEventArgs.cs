@@ -35,6 +35,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordDmChannel Channel { get; internal set; }
 
-        internal DmChannelDeleteEventArgs() : base() { }
+        internal DmChannelDeleteEventArgs()
+        { }
     }
 }

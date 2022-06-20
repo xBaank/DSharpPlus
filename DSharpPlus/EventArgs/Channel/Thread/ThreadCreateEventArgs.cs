@@ -50,6 +50,7 @@ namespace DSharpPlus.EventArgs
         /// </summary>
         public DiscordGuild Guild { get; internal set; }
 
-        internal ThreadCreateEventArgs() : base() { }
+        internal ThreadCreateEventArgs()
+        { }
     }
 }

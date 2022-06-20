@@ -29,7 +29,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Marks this method as a command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public sealed class CommandAttribute : Attribute
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace DSharpPlus.CommandsNext.Attributes
         /// </summary>
         public CommandAttribute()
         {
-            this.Name = null;
+            Name = null;
         }
 
         /// <summary>
@@ -57,14 +57,14 @@ namespace DSharpPlus.CommandsNext.Attributes
             if (name.Any(xc => char.IsWhiteSpace(xc)))
                 throw new ArgumentException("Command names cannot contain whitespace characters.", nameof(name));
 
-            this.Name = name;
+            Name = name;
         }
     }
 
     /// <summary>
     /// Marks this method as a group command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public sealed class GroupCommandAttribute : Attribute
     {
         /// <summary>

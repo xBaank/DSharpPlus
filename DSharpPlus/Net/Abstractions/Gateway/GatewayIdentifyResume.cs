@@ -64,7 +64,7 @@ namespace DSharpPlus.Net.Abstractions
         /// Gets or sets the presence for this connection.
         /// </summary>
 		[JsonProperty("presence", NullValueHandling = NullValueHandling.Ignore)]
-        public StatusUpdate Presence { get; set; } = null;
+        public StatusUpdate Presence { get; set; }
 
         /// <summary>
         /// Gets or sets the intent flags for this connection.

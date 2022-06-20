@@ -21,7 +21,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -50,7 +49,7 @@ namespace DSharpPlus.Entities
         /// </summary>
         [JsonIgnore]
         public DiscordGuild Guild
-            => (this.Discord as DiscordClient).InternalGetCachedGuild(this.GuildId);
+            => (Discord as DiscordClient).InternalGetCachedGuild(GuildId);
 
         /// <summary>
         /// Gets the permissions for the application command in the guild.
@@ -67,8 +66,8 @@ namespace DSharpPlus.Entities
         /// <param name="permissions">The permissions for the application command.</param>
         public DiscordGuildApplicationCommandPermissions(ulong commandId, IEnumerable<DiscordApplicationCommandPermission> permissions)
         {
-            this.Id = commandId;
-            this.Permissions = permissions.ToList();
+            Id = commandId;
+            Permissions = permissions.ToList();
         }
     }
 }

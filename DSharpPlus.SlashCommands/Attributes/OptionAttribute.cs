@@ -5,7 +5,7 @@ namespace DSharpPlus.SlashCommands
     /// <summary>
     /// Marks this parameter as an option for a slash command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class OptionAttribute : Attribute
     {
         /// <summary>
@@ -35,9 +35,9 @@ namespace DSharpPlus.SlashCommands
                 throw new ArgumentException("Slash command option names cannot go over 32 characters.");
             if (description.Length > 100)
                 throw new ArgumentException("Slash command option descriptions cannot go over 100 characters.");
-            this.Name = name.ToLower();
-            this.Description = description;
-            this.Autocomplete = autocomplete;
+            Name = name.ToLower();
+            Description = description;
+            Autocomplete = autocomplete;
         }
     }
 }

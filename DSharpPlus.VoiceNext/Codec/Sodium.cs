@@ -43,7 +43,7 @@ namespace DSharpPlus.VoiceNext.Codec
 
         static Sodium()
         {
-            SupportedModes = new ReadOnlyDictionary<string, EncryptionMode>(new Dictionary<string, EncryptionMode>()
+            SupportedModes = new ReadOnlyDictionary<string, EncryptionMode>(new Dictionary<string, EncryptionMode>
             {
                 ["xsalsa20_poly1305_lite"] = EncryptionMode.XSalsa20_Poly1305_Lite,
                 ["xsalsa20_poly1305_suffix"] = EncryptionMode.XSalsa20_Poly1305_Suffix,
@@ -56,10 +56,10 @@ namespace DSharpPlus.VoiceNext.Codec
             if (key.Length != Interop.SodiumKeySize)
                 throw new ArgumentException($"Invalid Sodium key size. Key needs to have a length of {Interop.SodiumKeySize} bytes.", nameof(key));
 
-            this.Key = key;
+            Key = key;
 
-            this.CSPRNG = RandomNumberGenerator.Create();
-            this.Buffer = new byte[Interop.SodiumNonceSize];
+            CSPRNG = RandomNumberGenerator.Create();
+            Buffer = new byte[Interop.SodiumNonceSize];
         }
 
         public void GenerateNonce(ReadOnlySpan<byte> rtpHeader, Span<byte> target)
@@ -82,8 +82,8 @@ namespace DSharpPlus.VoiceNext.Codec
             if (target.Length != Interop.SodiumNonceSize)
                 throw new ArgumentException($"Invalid nonce buffer size. Target buffer for the nonce needs to have a capacity of {Interop.SodiumNonceSize} bytes.", nameof(target));
 
-            this.CSPRNG.GetBytes(this.Buffer);
-            this.Buffer.AsSpan().CopyTo(target);
+            CSPRNG.GetBytes(Buffer);
+            Buffer.AsSpan().CopyTo(target);
         }
 
         public void GenerateNonce(uint nonce, Span<byte> target)
@@ -151,7 +151,7 @@ namespace DSharpPlus.VoiceNext.Codec
                 throw new ArgumentException($"Invalid target buffer size. Target buffer needs to have a length that is a sum of input buffer length and Sodium MAC size ({Interop.SodiumMacSize} bytes).", nameof(target));
 
             int result;
-            if ((result = Interop.Encrypt(source, target, this.Key.Span, nonce)) != 0)
+            if ((result = Interop.Encrypt(source, target, Key.Span, nonce)) != 0)
                 throw new CryptographicException($"Could not encrypt the buffer. Sodium returned code {result}.");
         }
 
@@ -164,11 +164,11 @@ namespace DSharpPlus.VoiceNext.Codec
                 throw new ArgumentException($"Invalid target buffer size. Target buffer needs to have a length that is input buffer decreased by Sodium MAC size ({Interop.SodiumMacSize} bytes).", nameof(target));
 
             int result;
-            if ((result = Interop.Decrypt(source, target, this.Key.Span, nonce)) != 0)
+            if ((result = Interop.Decrypt(source, target, Key.Span, nonce)) != 0)
                 throw new CryptographicException($"Could not decrypt the buffer. Sodium returned code {result}.");
         }
 
-        public void Dispose() => this.CSPRNG.Dispose();
+        public void Dispose() => CSPRNG.Dispose();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static KeyValuePair<string, EncryptionMode> SelectMode(IEnumerable<string> availableModes)

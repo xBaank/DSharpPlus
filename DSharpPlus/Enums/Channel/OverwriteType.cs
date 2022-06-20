@@ -26,7 +26,7 @@ namespace DSharpPlus
     /// <summary>
     /// Represents a channelpermissions overwrite's type.
     /// </summary>
-    public enum OverwriteType : int
+    public enum OverwriteType
     {
         /// <summary>
         /// Specifies that this overwrite applies to a role.

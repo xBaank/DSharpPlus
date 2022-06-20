@@ -61,11 +61,11 @@ namespace DSharpPlus.Net.Models
 
         internal RoleEditModel()
         {
-            this.Name = null;
-            this.Permissions = null;
-            this.Color = null;
-            this.Hoist = null;
-            this.Mentionable = null;
+            Name = null;
+            Permissions = null;
+            Color = null;
+            Hoist = null;
+            Mentionable = null;
         }
     }
 }

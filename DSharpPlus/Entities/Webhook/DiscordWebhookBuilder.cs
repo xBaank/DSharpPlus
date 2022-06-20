@@ -54,12 +54,12 @@ namespace DSharpPlus.Entities
         /// </summary>
         public string Content
         {
-            get => this._content;
+            get => _content;
             set
             {
                 if (value != null && value.Length > 2000)
                     throw new ArgumentException("Content length cannot exceed 2000 characters.", nameof(value));
-                this._content = value;
+                _content = value;
             }
         }
 
@@ -73,23 +73,23 @@ namespace DSharpPlus.Entities
         /// <summary>
         /// Embeds to send on this webhook request.
         /// </summary>
-        public IReadOnlyList<DiscordEmbed> Embeds => this._embeds;
+        public IReadOnlyList<DiscordEmbed> Embeds => _embeds;
         private readonly List<DiscordEmbed> _embeds = new();
 
         /// <summary>
         /// Files to send on this webhook request.
         /// </summary>
-        public IReadOnlyList<DiscordMessageFile> Files => this._files;
+        public IReadOnlyList<DiscordMessageFile> Files => _files;
         private readonly List<DiscordMessageFile> _files = new();
 
         /// <summary>
         /// Mentions to send on this webhook request.
         /// </summary>
-        public IReadOnlyList<IMention> Mentions => this._mentions;
+        public IReadOnlyList<IMention> Mentions => _mentions;
         private readonly List<IMention> _mentions = new();
 
 
-        public IReadOnlyList<DiscordActionRowComponent> Components => this._components;
+        public IReadOnlyList<DiscordActionRowComponent> Components => _components;
         private readonly List<DiscordActionRowComponent> _components = new();
 
 
@@ -106,7 +106,7 @@ namespace DSharpPlus.Entities
         /// <returns>The current builder to be chained.</returns>
         /// <exception cref="ArgumentOutOfRangeException">No components were passed.</exception>
         public DiscordWebhookBuilder AddComponents(params DiscordComponent[] components)
-            => this.AddComponents((IEnumerable<DiscordComponent>)components);
+            => AddComponents((IEnumerable<DiscordComponent>)components);
 
 
         /// <summary>
@@ -118,11 +118,11 @@ namespace DSharpPlus.Entities
         {
             var ara = components.ToArray();
 
-            if (ara.Length + this._components.Count > 5)
+            if (ara.Length + _components.Count > 5)
                 throw new ArgumentException("ActionRow count exceeds maximum of five.");
 
             foreach (var ar in ara)
-                this._components.Add(ar);
+                _components.Add(ar);
 
             return this;
         }
@@ -145,7 +145,7 @@ namespace DSharpPlus.Entities
                 throw new ArgumentException("Cannot add more than 5 components per action row!");
 
             var comp = new DiscordActionRowComponent(cmpArr);
-            this._components.Add(comp);
+            _components.Add(comp);
 
             return this;
         }
@@ -156,7 +156,7 @@ namespace DSharpPlus.Entities
         /// <param name="username">Username of the webhook</param>
         public DiscordWebhookBuilder WithUsername(string username)
         {
-            this.Username = username;
+            Username = username;
             return this;
         }
 
@@ -166,7 +166,7 @@ namespace DSharpPlus.Entities
         /// <param name="avatarUrl">Avatar url of the webhook</param>
         public DiscordWebhookBuilder WithAvatarUrl(string avatarUrl)
         {
-            this.AvatarUrl = avatarUrl;
+            AvatarUrl = avatarUrl;
             return this;
         }
 
@@ -176,7 +176,7 @@ namespace DSharpPlus.Entities
         /// <param name="tts">Text-to-speech</param>
         public DiscordWebhookBuilder WithTTS(bool tts)
         {
-            this.IsTTS = tts;
+            IsTTS = tts;
             return this;
         }
 
@@ -186,7 +186,7 @@ namespace DSharpPlus.Entities
         /// <param name="content">Message to send.</param>
         public DiscordWebhookBuilder WithContent(string content)
         {
-            this.Content = content;
+            Content = content;
             return this;
         }
 
@@ -197,7 +197,7 @@ namespace DSharpPlus.Entities
         public DiscordWebhookBuilder AddEmbed(DiscordEmbed embed)
         {
             if (embed != null)
-                this._embeds.Add(embed);
+                _embeds.Add(embed);
 
             return this;
         }
@@ -208,7 +208,7 @@ namespace DSharpPlus.Entities
         /// <param name="embeds">Embeds to add.</param>
         public DiscordWebhookBuilder AddEmbeds(IEnumerable<DiscordEmbed> embeds)
         {
-            this._embeds.AddRange(embeds);
+            _embeds.AddRange(embeds);
             return this;
         }
 
@@ -220,16 +220,16 @@ namespace DSharpPlus.Entities
         /// <param name="resetStreamPosition">Tells the API Client to reset the stream position to what it was after the file is sent.</param>
         public DiscordWebhookBuilder AddFile(string filename, Stream data, bool resetStreamPosition = false)
         {
-            if (this.Files.Count() >= 10)
+            if (Files.Count() >= 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
-            if (this._files.Any(x => x.FileName == filename))
+            if (_files.Any(x => x.FileName == filename))
                 throw new ArgumentException("A File with that filename already exists");
 
             if (resetStreamPosition)
-                this._files.Add(new DiscordMessageFile(filename, data, data.Position));
+                _files.Add(new DiscordMessageFile(filename, data, data.Position));
             else
-                this._files.Add(new DiscordMessageFile(filename, data, null));
+                _files.Add(new DiscordMessageFile(filename, data, null));
 
             return this;
         }
@@ -242,16 +242,16 @@ namespace DSharpPlus.Entities
         /// <returns></returns>
         public DiscordWebhookBuilder AddFile(FileStream stream, bool resetStreamPosition = false)
         {
-            if (this.Files.Count() >= 10)
+            if (Files.Count() >= 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
-            if (this._files.Any(x => x.FileName == stream.Name))
+            if (_files.Any(x => x.FileName == stream.Name))
                 throw new ArgumentException("A File with that filename already exists");
 
             if (resetStreamPosition)
-                this._files.Add(new DiscordMessageFile(stream.Name, stream, stream.Position));
+                _files.Add(new DiscordMessageFile(stream.Name, stream, stream.Position));
             else
-                this._files.Add(new DiscordMessageFile(stream.Name, stream, null));
+                _files.Add(new DiscordMessageFile(stream.Name, stream, null));
 
             return this;
         }
@@ -263,18 +263,18 @@ namespace DSharpPlus.Entities
         /// <param name="resetStreamPosition">Tells the API Client to reset the stream position to what it was after the file is sent.</param>
         public DiscordWebhookBuilder AddFiles(Dictionary<string, Stream> files, bool resetStreamPosition = false)
         {
-            if (this.Files.Count() + files.Count() > 10)
+            if (Files.Count() + files.Count() > 10)
                 throw new ArgumentException("Cannot send more than 10 files with a single message.");
 
             foreach (var file in files)
             {
-                if (this._files.Any(x => x.FileName == file.Key))
+                if (_files.Any(x => x.FileName == file.Key))
                     throw new ArgumentException("A File with that filename already exists");
 
                 if (resetStreamPosition)
-                    this._files.Add(new DiscordMessageFile(file.Key, file.Value, file.Value.Position));
+                    _files.Add(new DiscordMessageFile(file.Key, file.Value, file.Value.Position));
                 else
-                    this._files.Add(new DiscordMessageFile(file.Key, file.Value, null));
+                    _files.Add(new DiscordMessageFile(file.Key, file.Value, null));
             }
 
 
@@ -287,7 +287,7 @@ namespace DSharpPlus.Entities
         /// <param name="mention">Mention to add.</param>
         public DiscordWebhookBuilder AddMention(IMention mention)
         {
-            this._mentions.Add(mention);
+            _mentions.Add(mention);
             return this;
         }
 
@@ -297,7 +297,7 @@ namespace DSharpPlus.Entities
         /// <param name="mentions">Mentions to add.</param>
         public DiscordWebhookBuilder AddMentions(IEnumerable<IMention> mentions)
         {
-            this._mentions.AddRange(mentions);
+            _mentions.AddRange(mentions);
             return this;
         }
 
@@ -307,7 +307,7 @@ namespace DSharpPlus.Entities
         /// <param name="threadId">The id of the thread</param>
         public DiscordWebhookBuilder WithThreadId(ulong? threadId)
         {
-            this.ThreadId = threadId;
+            ThreadId = threadId;
             return this;
         }
 
@@ -324,7 +324,7 @@ namespace DSharpPlus.Entities
         /// <param name="webhook">The webhook that should be executed.</param>
         /// <param name="message">The message to modify.</param>
         /// <returns>The modified message</returns>
-        public async Task<DiscordMessage> ModifyAsync(DiscordWebhook webhook, DiscordMessage message) => await this.ModifyAsync(webhook, message.Id).ConfigureAwait(false);
+        public async Task<DiscordMessage> ModifyAsync(DiscordWebhook webhook, DiscordMessage message) => await ModifyAsync(webhook, message.Id).ConfigureAwait(false);
         /// <summary>
         /// Sends the modified webhook message.
         /// </summary>
@@ -337,18 +337,18 @@ namespace DSharpPlus.Entities
         /// Clears all message components on this builder.
         /// </summary>
         public void ClearComponents()
-            => this._components.Clear();
+            => _components.Clear();
 
         /// <summary>
         /// Allows for clearing the Webhook Builder so that it can be used again to send a new message.
         /// </summary>
         public void Clear()
         {
-            this.Content = "";
-            this._embeds.Clear();
-            this.IsTTS = false;
-            this._mentions.Clear();
-            this._files.Clear();
+            Content = "";
+            _embeds.Clear();
+            IsTTS = false;
+            _mentions.Clear();
+            _files.Clear();
         }
 
         /// <summary>
@@ -361,31 +361,31 @@ namespace DSharpPlus.Entities
         {
             if (isModify)
             {
-                if (this.Username.HasValue)
+                if (Username.HasValue)
                     throw new ArgumentException("You cannot change the username of a message.");
 
-                if (this.AvatarUrl.HasValue)
+                if (AvatarUrl.HasValue)
                     throw new ArgumentException("You cannot change the avatar of a message.");
             }
             else if (isFollowup)
             {
-                if (this.Username.HasValue)
+                if (Username.HasValue)
                     throw new ArgumentException("You cannot change the username of a follow up message.");
 
-                if (this.AvatarUrl.HasValue)
+                if (AvatarUrl.HasValue)
                     throw new ArgumentException("You cannot change the avatar of a follow up message.");
             }
             else if (isInteractionResponse)
             {
-                if (this.Username.HasValue)
+                if (Username.HasValue)
                     throw new ArgumentException("You cannot change the username of an interaction response.");
 
-                if (this.AvatarUrl.HasValue)
+                if (AvatarUrl.HasValue)
                     throw new ArgumentException("You cannot change the avatar of an interaction response.");
             }
             else
             {
-                if (this.Files?.Count == 0 && string.IsNullOrEmpty(this.Content) && !this.Embeds.Any())
+                if (Files?.Count == 0 && string.IsNullOrEmpty(Content) && !Embeds.Any())
                     throw new ArgumentException("You must specify content, an embed, or at least one file.");
             }
         }

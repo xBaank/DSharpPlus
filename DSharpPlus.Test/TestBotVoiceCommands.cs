@@ -40,16 +40,16 @@ namespace DSharpPlus.Test
     public class TestBotVoiceCommands : BaseCommandModule
     {
         private CancellationTokenSource AudioLoopCancelTokenSource { get; set; }
-        private CancellationToken AudioLoopCancelToken => this.AudioLoopCancelTokenSource.Token;
+        private CancellationToken AudioLoopCancelToken => AudioLoopCancelTokenSource.Token;
         private Task AudioLoopTask { get; set; }
 
         private ConcurrentDictionary<uint, ulong> _ssrcMap;
         private ConcurrentDictionary<uint, FileStream> _ssrcFilemap;
         private async Task OnVoiceReceived(VoiceNextConnection vnc, VoiceReceiveEventArgs e)
         {
-            if (!this._ssrcFilemap.ContainsKey(e.SSRC))
-                this._ssrcFilemap[e.SSRC] = File.Create($"{e.SSRC} ({e.AudioFormat.ChannelCount}).pcm");
-            var fs = this._ssrcFilemap[e.SSRC];
+            if (!_ssrcFilemap.ContainsKey(e.SSRC))
+                _ssrcFilemap[e.SSRC] = File.Create($"{e.SSRC} ({e.AudioFormat.ChannelCount}).pcm");
+            var fs = _ssrcFilemap[e.SSRC];
 
             // e.Client.DebugLogger.LogMessage(LogLevel.Debug, "VNEXT RX", $"{e.User?.Username ?? "Unknown user"} sent voice data. {e.AudioFormat.ChannelCount}", DateTime.Now);
             var buff = e.PcmData.ToArray();
@@ -58,25 +58,25 @@ namespace DSharpPlus.Test
         }
         private Task OnUserSpeaking(VoiceNextConnection vnc, UserSpeakingEventArgs e)
         {
-            if (this._ssrcMap.ContainsKey(e.SSRC))
+            if (_ssrcMap.ContainsKey(e.SSRC))
                 return Task.CompletedTask;
 
             if (e.User == null)
                 return Task.CompletedTask;
 
-            this._ssrcMap[e.SSRC] = e.User.Id;
+            _ssrcMap[e.SSRC] = e.User.Id;
             return Task.CompletedTask;
         }
         private Task OnUserJoined(VoiceNextConnection vnc, VoiceUserJoinEventArgs e)
         {
-            this._ssrcMap.TryAdd(e.SSRC, e.User.Id);
+            _ssrcMap.TryAdd(e.SSRC, e.User.Id);
             return Task.CompletedTask;
         }
         private Task OnUserLeft(VoiceNextConnection vnc, VoiceUserLeaveEventArgs e)
         {
-            if (this._ssrcFilemap.TryRemove(e.SSRC, out var pcmFs))
+            if (_ssrcFilemap.TryRemove(e.SSRC, out var pcmFs))
                 pcmFs.Dispose();
-            this._ssrcMap.TryRemove(e.SSRC, out _);
+            _ssrcMap.TryRemove(e.SSRC, out _);
             return Task.CompletedTask;
         }
 
@@ -121,12 +121,12 @@ namespace DSharpPlus.Test
 
             if (ctx.Client.GetVoiceNext().IsIncomingEnabled)
             {
-                this._ssrcMap = new ConcurrentDictionary<uint, ulong>();
-                this._ssrcFilemap = new ConcurrentDictionary<uint, FileStream>();
-                vnc.VoiceReceived += this.OnVoiceReceived;
-                vnc.UserSpeaking += this.OnUserSpeaking;
-                vnc.UserJoined += this.OnUserJoined;
-                vnc.UserLeft += this.OnUserLeft;
+                _ssrcMap = new ConcurrentDictionary<uint, ulong>();
+                _ssrcFilemap = new ConcurrentDictionary<uint, FileStream>();
+                vnc.VoiceReceived += OnVoiceReceived;
+                vnc.UserSpeaking += OnUserSpeaking;
+                vnc.UserJoined += OnUserJoined;
+                vnc.UserLeft += OnUserLeft;
             }
         }
 
@@ -149,15 +149,15 @@ namespace DSharpPlus.Test
 
             if (voice.IsIncomingEnabled)
             {
-                vnc.UserSpeaking -= this.OnUserSpeaking;
-                vnc.VoiceReceived -= this.OnVoiceReceived;
+                vnc.UserSpeaking -= OnUserSpeaking;
+                vnc.VoiceReceived -= OnVoiceReceived;
 
-                foreach (var kvp in this._ssrcFilemap)
+                foreach (var kvp in _ssrcFilemap)
                     kvp.Value.Dispose();
 
                 using (var fs = File.Create("index.txt"))
                 using (var sw = new StreamWriter(fs, new UTF8Encoding(false)))
-                    foreach (var kvp in this._ssrcMap)
+                    foreach (var kvp in _ssrcMap)
                         await sw.WriteLineAsync(string.Format("{0} = {1}", kvp.Key, kvp.Value)).ConfigureAwait(false);
             }
 
@@ -241,7 +241,7 @@ namespace DSharpPlus.Test
                 return;
             }
 
-            if (this.AudioLoopTask != null && !this.AudioLoopCancelToken.IsCancellationRequested)
+            if (AudioLoopTask != null && !AudioLoopCancelToken.IsCancellationRequested)
             {
                 await ctx.Message.RespondAsync("Audio loop is already playing").ConfigureAwait(false);
                 return;
@@ -255,11 +255,11 @@ namespace DSharpPlus.Test
             }
 
             await ctx.Message.RespondAsync($"Playing `{snd}` in a loop").ConfigureAwait(false);
-            this.AudioLoopCancelTokenSource = new CancellationTokenSource();
-            this.AudioLoopTask = Task.Run(async () =>
+            AudioLoopCancelTokenSource = new CancellationTokenSource();
+            AudioLoopTask = Task.Run(async () =>
             {
                 var chn = ctx.Channel;
-                var token = this.AudioLoopCancelToken;
+                var token = AudioLoopCancelToken;
                 try
                 {
                     // borrowed from
@@ -284,7 +284,7 @@ namespace DSharpPlus.Test
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception ex) { await chn.SendMessageAsync($"Audio loop crashed: {ex.GetType()}: {ex.Message}").ConfigureAwait(false); }
-            }, this.AudioLoopCancelToken);
+            }, AudioLoopCancelToken);
         }
 
         [Command("playstop")]
@@ -304,15 +304,15 @@ namespace DSharpPlus.Test
                 return;
             }
 
-            if (this.AudioLoopTask == null || this.AudioLoopCancelToken.IsCancellationRequested)
+            if (AudioLoopTask == null || AudioLoopCancelToken.IsCancellationRequested)
             {
                 await ctx.Message.RespondAsync("Audio loop is already paused").ConfigureAwait(false);
                 return;
             }
 
-            this.AudioLoopCancelTokenSource.Cancel();
-            await this.AudioLoopTask.ConfigureAwait(false);
-            this.AudioLoopTask = null;
+            AudioLoopCancelTokenSource.Cancel();
+            await AudioLoopTask.ConfigureAwait(false);
+            AudioLoopTask = null;
 
             await ctx.Message.RespondAsync("Audio loop stopped").ConfigureAwait(false);
         }

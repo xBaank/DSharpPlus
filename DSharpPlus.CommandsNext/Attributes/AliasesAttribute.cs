@@ -31,7 +31,7 @@ namespace DSharpPlus.CommandsNext.Attributes
     /// <summary>
     /// Adds aliases to this command or group.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public sealed class AliasesAttribute : Attribute
     {
         /// <summary>
@@ -48,7 +48,7 @@ namespace DSharpPlus.CommandsNext.Attributes
             if (aliases.Any(xa => xa == null || xa.Any(xc => char.IsWhiteSpace(xc))))
                 throw new ArgumentException("Aliases cannot contain whitespace characters or null strings.", nameof(aliases));
 
-            this.Aliases = new ReadOnlyCollection<string>(aliases);
+            Aliases = new ReadOnlyCollection<string>(aliases);
         }
     }
 }

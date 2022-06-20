@@ -55,7 +55,7 @@ namespace DSharpPlus.Net.Abstractions
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var arr = this.ReadArrayObject(reader, serializer);
+            var arr = ReadArrayObject(reader, serializer);
             return new ShardInfo
             {
                 ShardId = (int)arr[0],

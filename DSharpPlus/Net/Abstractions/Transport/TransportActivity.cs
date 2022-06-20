@@ -83,8 +83,8 @@ namespace DSharpPlus.Net.Abstractions
         [JsonIgnore]
         public ulong? ApplicationId
         {
-            get => this.ApplicationIdStr != null ? (ulong?)ulong.Parse(this.ApplicationIdStr, CultureInfo.InvariantCulture) : null;
-            internal set => this.ApplicationIdStr = value?.ToString(CultureInfo.InvariantCulture);
+            get => ApplicationIdStr != null ? ulong.Parse(ApplicationIdStr, CultureInfo.InvariantCulture) : null;
+            internal set => ApplicationIdStr = value?.ToString(CultureInfo.InvariantCulture);
         }
 
         [JsonProperty("application_id", NullValueHandling = NullValueHandling.Ignore)]
@@ -140,16 +140,16 @@ namespace DSharpPlus.Net.Abstractions
             if (game == null)
                 return;
 
-            this.Name = game.Name;
-            this.ActivityType = game.ActivityType;
-            this.StreamUrl = game.StreamUrl;
+            Name = game.Name;
+            ActivityType = game.ActivityType;
+            StreamUrl = game.StreamUrl;
         }
 
         public bool IsRichPresence()
-            => this.Details != null || this.State != null || this.ApplicationId != null || this.Instance != null || this.Party != null || this.Assets != null || this.Secrets != null || this.Timestamps != null;
+            => Details != null || State != null || ApplicationId != null || Instance != null || Party != null || Assets != null || Secrets != null || Timestamps != null;
 
         public bool IsCustomStatus()
-            => this.Name == "Custom Status";
+            => Name == "Custom Status";
 
         /// <summary>
         /// Represents information about assets attached to a rich presence.
@@ -226,7 +226,7 @@ namespace DSharpPlus.Net.Abstractions
             /// </summary>
             [JsonIgnore]
             public DateTimeOffset? Start
-                => this._start != null ? (DateTimeOffset?)Utilities.GetDateTimeOffsetFromMilliseconds(this._start.Value, false) : null;
+                => _start != null ? Utilities.GetDateTimeOffsetFromMilliseconds(_start.Value, false) : null;
 
             [JsonProperty("start", NullValueHandling = NullValueHandling.Ignore)]
             internal long? _start;
@@ -236,7 +236,7 @@ namespace DSharpPlus.Net.Abstractions
             /// </summary>
             [JsonIgnore]
             public DateTimeOffset? End
-                => this._end != null ? (DateTimeOffset?)Utilities.GetDateTimeOffsetFromMilliseconds(this._end.Value, false) : null;
+                => _end != null ? Utilities.GetDateTimeOffsetFromMilliseconds(_end.Value, false) : null;
 
             [JsonProperty("end", NullValueHandling = NullValueHandling.Ignore)]
             internal long? _end;
@@ -279,7 +279,7 @@ namespace DSharpPlus.Net.Abstractions
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var arr = this.ReadArrayObject(reader, serializer);
+            var arr = ReadArrayObject(reader, serializer);
             return new TransportActivity.GameParty.GamePartySize
             {
                 Current = (long)arr[0],

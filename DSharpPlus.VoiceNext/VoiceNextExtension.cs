@@ -50,12 +50,12 @@ namespace DSharpPlus.VoiceNext
 
         internal VoiceNextExtension(VoiceNextConfiguration config)
         {
-            this.Configuration = new VoiceNextConfiguration(config);
-            this.IsIncomingEnabled = config.EnableIncoming;
+            Configuration = new VoiceNextConfiguration(config);
+            IsIncomingEnabled = config.EnableIncoming;
 
-            this.ActiveConnections = new ConcurrentDictionary<ulong, VoiceNextConnection>();
-            this.VoiceStateUpdates = new ConcurrentDictionary<ulong, TaskCompletionSource<VoiceStateUpdateEventArgs>>();
-            this.VoiceServerUpdates = new ConcurrentDictionary<ulong, TaskCompletionSource<VoiceServerUpdateEventArgs>>();
+            ActiveConnections = new ConcurrentDictionary<ulong, VoiceNextConnection>();
+            VoiceStateUpdates = new ConcurrentDictionary<ulong, TaskCompletionSource<VoiceStateUpdateEventArgs>>();
+            VoiceServerUpdates = new ConcurrentDictionary<ulong, TaskCompletionSource<VoiceServerUpdateEventArgs>>();
         }
 
         /// <summary>
@@ -65,13 +65,13 @@ namespace DSharpPlus.VoiceNext
         /// <exception cref="InvalidOperationException"/>
         protected internal override void Setup(DiscordClient client)
         {
-            if (this.Client != null)
+            if (Client != null)
                 throw new InvalidOperationException("What did I tell you?");
 
-            this.Client = client;
+            Client = client;
 
-            this.Client.VoiceStateUpdated += this.Client_VoiceStateUpdate;
-            this.Client.VoiceServerUpdated += this.Client_VoiceServerUpdate;
+            Client.VoiceStateUpdated += Client_VoiceStateUpdate;
+            Client.VoiceServerUpdated += Client_VoiceServerUpdate;
         }
 
         /// <summary>
@@ -91,13 +91,13 @@ namespace DSharpPlus.VoiceNext
                 throw new InvalidOperationException("You need AccessChannels and UseVoice permission to connect to this voice channel");
 
             var gld = channel.Guild;
-            if (this.ActiveConnections.ContainsKey(gld.Id))
+            if (ActiveConnections.ContainsKey(gld.Id))
                 throw new InvalidOperationException("This guild already has a voice connection");
 
             var vstut = new TaskCompletionSource<VoiceStateUpdateEventArgs>();
             var vsrut = new TaskCompletionSource<VoiceServerUpdateEventArgs>();
-            this.VoiceStateUpdates[gld.Id] = vstut;
-            this.VoiceServerUpdates[gld.Id] = vsrut;
+            VoiceStateUpdates[gld.Id] = vstut;
+            VoiceServerUpdates[gld.Id] = vsrut;
 
             var vsd = new VoiceDispatch
             {
@@ -127,11 +127,11 @@ namespace DSharpPlus.VoiceNext
                 Token = vsru.VoiceToken
             };
 
-            var vnc = new VoiceNextConnection(this.Client, gld, channel, this.Configuration, vsrup, vstup);
-            vnc.VoiceDisconnected += this.Vnc_VoiceDisconnected;
+            var vnc = new VoiceNextConnection(Client, gld, channel, Configuration, vsrup, vstup);
+            vnc.VoiceDisconnected += Vnc_VoiceDisconnected;
             await vnc.ConnectAsync().ConfigureAwait(false);
             await vnc.WaitForReadyAsync().ConfigureAwait(false);
-            this.ActiveConnections[gld.Id] = vnc;
+            ActiveConnections[gld.Id] = vnc;
             return vnc;
         }
 
@@ -141,13 +141,13 @@ namespace DSharpPlus.VoiceNext
         /// <param name="guild">Guild to get VoiceNext connection for.</param>
         /// <returns>VoiceNext connection for the specified guild.</returns>
         public VoiceNextConnection GetConnection(DiscordGuild guild)
-            => this.ActiveConnections.ContainsKey(guild.Id) ? this.ActiveConnections[guild.Id] : null;
+            => ActiveConnections.ContainsKey(guild.Id) ? ActiveConnections[guild.Id] : null;
 
         private async Task Vnc_VoiceDisconnected(DiscordGuild guild)
         {
             VoiceNextConnection vnc = null;
-            if (this.ActiveConnections.ContainsKey(guild.Id))
-                this.ActiveConnections.TryRemove(guild.Id, out vnc);
+            if (ActiveConnections.ContainsKey(guild.Id))
+                ActiveConnections.TryRemove(guild.Id, out vnc);
 
             var vsd = new VoiceDispatch
             {
@@ -171,15 +171,15 @@ namespace DSharpPlus.VoiceNext
             if (e.User == null)
                 return Task.CompletedTask;
 
-            if (e.User.Id == this.Client.CurrentUser.Id)
+            if (e.User.Id == Client.CurrentUser.Id)
             {
-                if (e.After.Channel == null && this.ActiveConnections.TryRemove(gld.Id, out var ac))
+                if (e.After.Channel == null && ActiveConnections.TryRemove(gld.Id, out var ac))
                     ac.Disconnect();
 
-                if (this.ActiveConnections.TryGetValue(e.Guild.Id, out var vnc))
+                if (ActiveConnections.TryGetValue(e.Guild.Id, out var vnc))
                     vnc.TargetChannel = e.Channel;
 
-                if (!string.IsNullOrWhiteSpace(e.SessionId) && e.Channel != null && this.VoiceStateUpdates.TryRemove(gld.Id, out var xe))
+                if (!string.IsNullOrWhiteSpace(e.SessionId) && e.Channel != null && VoiceStateUpdates.TryRemove(gld.Id, out var xe))
                     xe.SetResult(e);
             }
 
@@ -192,7 +192,7 @@ namespace DSharpPlus.VoiceNext
             if (gld == null)
                 return;
 
-            if (this.ActiveConnections.TryGetValue(e.Guild.Id, out var vnc))
+            if (ActiveConnections.TryGetValue(e.Guild.Id, out var vnc))
             {
                 vnc.ServerData = new VoiceServerUpdatePayload
                 {
@@ -220,9 +220,9 @@ namespace DSharpPlus.VoiceNext
                 await vnc.ReconnectAsync().ConfigureAwait(false);
             }
 
-            if (this.VoiceServerUpdates.ContainsKey(gld.Id))
+            if (VoiceServerUpdates.ContainsKey(gld.Id))
             {
-                this.VoiceServerUpdates.TryRemove(gld.Id, out var xe);
+                VoiceServerUpdates.TryRemove(gld.Id, out var xe);
                 xe.SetResult(e);
             }
         }

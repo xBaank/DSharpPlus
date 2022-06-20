@@ -23,8 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using DSharpPlus.Entities;
 
 namespace DSharpPlus.Net
@@ -50,9 +48,9 @@ namespace DSharpPlus.Net
             IReadOnlyCollection<DiscordMessageFile> files = null, double? ratelimit_wait_override = null, bool removeFileCount = false)
             : base(client, bucket, url, method, route, headers, ratelimit_wait_override)
         {
-            this.Values = values;
-            this.Files = files;
-            this._removeFileCount = removeFileCount;
+            Values = values;
+            Files = files;
+            _removeFileCount = removeFileCount;
         }
     }
 }

@@ -53,8 +53,8 @@ namespace DSharpPlus.CommandsNext.Builders
         public CommandGroupBuilder(ICommandModule? module)
             : base(module)
         {
-            this.ChildrenList = new List<CommandBuilder>();
-            this.Children = new ReadOnlyCollection<CommandBuilder>(this.ChildrenList);
+            ChildrenList = new List<CommandBuilder>();
+            Children = new ReadOnlyCollection<CommandBuilder>(ChildrenList);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace DSharpPlus.CommandsNext.Builders
         /// <returns>This builder.</returns>
         public CommandGroupBuilder WithChild(CommandBuilder child)
         {
-            this.ChildrenList.Add(child);
+            ChildrenList.Add(child);
             return this;
         }
 
@@ -72,19 +72,19 @@ namespace DSharpPlus.CommandsNext.Builders
         {
             var cmd = new CommandGroup
             {
-                Name = this.Name,
-                Description = this.Description,
-                Aliases = this.Aliases,
-                ExecutionChecks = this.ExecutionChecks,
-                IsHidden = this.IsHidden,
+                Name = Name,
+                Description = Description,
+                Aliases = Aliases,
+                ExecutionChecks = ExecutionChecks,
+                IsHidden = IsHidden,
                 Parent = parent,
-                Overloads = new ReadOnlyCollection<CommandOverload>(this.Overloads.Select(xo => xo.Build()).ToList()),
-                Module = this.Module,
-                CustomAttributes = this.CustomAttributes
+                Overloads = new ReadOnlyCollection<CommandOverload>(Overloads.Select(xo => xo.Build()).ToList()),
+                Module = Module,
+                CustomAttributes = CustomAttributes
             };
 
             var cs = new List<Command>();
-            foreach (var xc in this.Children)
+            foreach (var xc in Children)
                 cs.Add(xc.Build(cmd));
 
             cmd.Children = new ReadOnlyCollection<Command>(cs);

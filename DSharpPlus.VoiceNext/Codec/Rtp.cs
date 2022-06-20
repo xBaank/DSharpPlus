@@ -34,9 +34,6 @@ namespace DSharpPlus.VoiceNext.Codec
         private const byte RtpExtension = 0x90;
         private const byte RtpVersion = 0x78;
 
-        public Rtp()
-        { }
-
         public void EncodeHeader(ushort sequence, uint timestamp, uint ssrc, Span<byte> target)
         {
             if (target.Length < HeaderSize)
