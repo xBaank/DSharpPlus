@@ -121,6 +121,8 @@ namespace DSharpPlus.VoiceNext
             VoiceWs.ExceptionThrown += VoiceWs_SocketException;
         }
 
+        public bool IsConnected => !IsDisposed;
+
         private static DateTimeOffset UnixEpoch { get; } = new(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
         private DiscordClient Discord { get; }
@@ -129,7 +131,7 @@ namespace DSharpPlus.VoiceNext
 
         private ConcurrentDictionary<uint, AudioSender> TransmittingSSRCs { get; }
 
-        private BaseUdpClient UdpClient { get; }
+        private BaseUdpClient UdpClient { get; set; }
 
         private IWebSocketClient VoiceWs { get; set; }
 
@@ -176,7 +178,7 @@ namespace DSharpPlus.VoiceNext
 
         internal ConnectionEndpoint UdpEndpoint { get; set; }
 
-        private TaskCompletionSource<bool> ReadyWait { get; }
+        private TaskCompletionSource<bool> ReadyWait { get; set; }
 
         private bool IsInitialized { get; set; }
 
@@ -341,8 +343,7 @@ namespace DSharpPlus.VoiceNext
             return VoiceWs.ConnectAsync(gwuri.Uri);
         }
 
-        internal Task ReconnectAsync()
-            => VoiceWs.DisconnectAsync();
+        internal Task ReconnectAsync() => VoiceWs.DisconnectAsync();
 
         internal async Task StartAsync()
         {
@@ -811,6 +812,9 @@ namespace DSharpPlus.VoiceNext
 
         private async Task Stage1(VoiceReadyPayload voiceReady)
         {
+            UdpClient?.Close();
+            UdpClient = Discord.Configuration.UdpClientFactory();
+
             // IP Discovery
             UdpClient.Setup(UdpEndpoint);
 
@@ -892,6 +896,12 @@ namespace DSharpPlus.VoiceNext
                     var vrp = opp.ToDiscordObject<VoiceReadyPayload>();
                     SSRC = vrp.SSRC;
                     UdpEndpoint = new ConnectionEndpoint(vrp.Address, vrp.Port);
+
+                    //Reset this for packets headers
+                    Sequence = 0;
+                    Timestamp = 0;
+                    _isSpeaking = false;
+
                     // this is not the valid interval
                     // oh, discord
                     //this.HeartbeatInterval = vrp.HeartbeatInterval;
@@ -992,13 +1002,32 @@ namespace DSharpPlus.VoiceNext
             // otherwise problems happen
             //this.Dispose();
 
-            if (e.CloseCode == 4006 || e.CloseCode == 4009)
+            if (e.CloseCode is 4006 or 4009)
                 Resume = false;
+
+            //4014 means it has been moved, kicked or channel was deleted, we check if the target channel is not null to know it has moved from channel
+            if (e.CloseCode is 4014 && TargetChannel is not null)
+            {
+                Resume = false;
+
+                KeepaliveTokenSource.Cancel();
+                KeepaliveTokenSource = new CancellationTokenSource();
+                ReceiverTokenSource.Cancel();
+                ReceiverTokenSource = new CancellationTokenSource();
+                SenderTokenSource.Cancel();
+                SenderTokenSource = new CancellationTokenSource();
+
+                KeepaliveTimestamps.Clear();
+
+                ReadyWait = new TaskCompletionSource<bool>();
+            }
 
             if (!IsDisposed)
             {
+                //Cancel all tasks
                 TokenSource.Cancel();
                 TokenSource = new CancellationTokenSource();
+
                 VoiceWs = Discord.Configuration.WebSocketClientFactory(Discord.Configuration.Proxy);
                 VoiceWs.Disconnected += VoiceWS_SocketClosed;
                 VoiceWs.MessageReceived += VoiceWS_SocketMessage;
