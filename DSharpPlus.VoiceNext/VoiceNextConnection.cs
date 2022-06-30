@@ -49,7 +49,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DSharpPlus.VoiceNext
 {
-    internal delegate Task VoiceDisconnectedEventHandler(DiscordGuild guild);
+    public delegate Task VoiceDisconnectedEventHandler(DiscordGuild guild);
 
     /// <summary>
     ///     VoiceNext connection to a voice channel.
@@ -325,7 +325,7 @@ namespace DSharpPlus.VoiceNext
             remove => _voiceSocketError.Unregister(value);
         }
 
-        internal event VoiceDisconnectedEventHandler VoiceDisconnected;
+        public event VoiceDisconnectedEventHandler VoiceDisconnected;
 
         ~VoiceNextConnection()
         {

@@ -195,19 +195,7 @@ namespace DSharpPlus.VoiceNext
                 vnc.Resume = false;
                 vnc.WebSocketEndpoint = new ConnectionEndpoint { Hostname = eph, Port = epp };
 
-                /*var vsd = new VoiceDispatch
-                {
-                    OpCode = 4,
-                    Payload = new VoiceStateUpdatePayload
-                    {
-                        GuildId = gld.Id, ChannelId = vnc.TargetChannel.Id, Deafened = false, Muted = false,
-                    },
-                };
-                var vsj = JsonConvert.SerializeObject(vsd, Formatting.None);
-                await client.WsSendAsync(vsj).ConfigureAwait(false);*/
-
                 await vnc.ConnectAsync().ConfigureAwait(false);
-                await vnc.WaitForReadyAsync().ConfigureAwait(false);
             }
 
             if (VoiceServerUpdates.ContainsKey(gld.Id))
