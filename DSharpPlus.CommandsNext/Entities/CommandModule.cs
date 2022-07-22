@@ -127,15 +127,14 @@ namespace DSharpPlus.CommandsNext.Entities
         /// <inheritdoc />
         public BaseCommandModule GetInstance(IServiceProvider services, DiscordGuild guild)
         {
-            //Default scope is the guild's command module.
-            using var scoped = services.CreateScope();
 
             if (!_instances.TryGetValue(guild, out var instance))
             {
-                instance = (BaseCommandModule)ModuleType.CreateInstance(services);
+                //Default scope is the guild's command module.
+                using var scope = services.CreateScope();
+                instance = (BaseCommandModule)ModuleType.CreateInstance(scope.ServiceProvider);
                 _instances.Add(guild, instance);
             }
-
             return instance;
         }
     }
