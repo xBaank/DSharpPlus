@@ -31,65 +31,65 @@ using DSharpPlus.CommandsNext.Entities;
 namespace DSharpPlus.CommandsNext
 {
     /// <summary>
-    /// Represents a command.
+    ///     Represents a command.
     /// </summary>
     public class Command
     {
+        internal Command() { }
+
         /// <summary>
-        /// Gets this command's name.
+        ///     Gets this command's name.
         /// </summary>
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Gets this command's qualified name (i.e. one that includes all module names).
+        ///     Gets this command's qualified name (i.e. one that includes all module names).
         /// </summary>
         public string QualifiedName
             => Parent is not null ? string.Concat(Parent.QualifiedName, " ", Name) : Name;
 
         /// <summary>
-        /// Gets this command's aliases.
+        ///     Gets this command's aliases.
         /// </summary>
         public IReadOnlyList<string> Aliases { get; internal set; } = Array.Empty<string>();
 
         /// <summary>
-        /// Gets this command's parent module, if any.
+        ///     Gets this command's parent module, if any.
         /// </summary>
         public CommandGroup? Parent { get; internal set; }
 
         /// <summary>
-        /// Gets this command's description.
+        ///     Gets this command's description.
         /// </summary>
         public string? Description { get; internal set; }
 
         /// <summary>
-        /// Gets whether this command is hidden.
+        ///     Gets whether this command is hidden.
         /// </summary>
         public bool IsHidden { get; internal set; }
 
         /// <summary>
-        /// Gets a collection of pre-execution checks for this command.
+        ///     Gets a collection of pre-execution checks for this command.
         /// </summary>
         public IReadOnlyList<CheckBaseAttribute> ExecutionChecks { get; internal set; } = Array.Empty<CheckBaseAttribute>();
 
         /// <summary>
-        /// Gets a collection of this command's overloads.
+        ///     Gets a collection of this command's overloads.
         /// </summary>
         public IReadOnlyList<CommandOverload> Overloads { get; internal set; } = Array.Empty<CommandOverload>();
 
         /// <summary>
-        /// Gets the module in which this command is defined.
+        ///     Gets the module in which this command is defined.
         /// </summary>
         public ICommandModule? Module { get; internal set; }
 
         /// <summary>
-        /// Gets the custom attributes defined on this command.
+        ///     Gets the custom attributes defined on this command.
         /// </summary>
         public IReadOnlyList<Attribute> CustomAttributes { get; internal set; } = Array.Empty<Attribute>();
 
-        internal Command() { }
-
         /// <summary>
-        /// Executes this command with specified context.
+        ///     Executes this command with specified context.
         /// </summary>
         /// <param name="ctx">Context to execute the command in.</param>
         /// <returns>Command's execution results.</returns>
@@ -109,7 +109,7 @@ namespace DSharpPlus.CommandsNext
 
                     ctx.RawArguments = args.Raw;
 
-                    var mdl = ovl.InvocationTarget ?? Module?.GetInstance(ctx.Services);
+                    var mdl = ovl.InvocationTarget ?? Module?.GetInstance(ctx.Services, ctx.Guild);
                     if (mdl is BaseCommandModule bcmBefore)
                         await bcmBefore.BeforeExecutionAsync(ctx).ConfigureAwait(false);
 
@@ -117,11 +117,7 @@ namespace DSharpPlus.CommandsNext
                     var ret = (Task)ovl.Callable.DynamicInvoke(args.Converted);
                     await ret.ConfigureAwait(false);
                     executed = true;
-                    res = new CommandResult
-                    {
-                        IsSuccessful = true,
-                        Context = ctx
-                    };
+                    res = new CommandResult { IsSuccessful = true, Context = ctx };
 
                     if (mdl is BaseCommandModule bcmAfter)
                         await bcmAfter.AfterExecutionAsync(ctx).ConfigureAwait(false);
@@ -133,22 +129,20 @@ namespace DSharpPlus.CommandsNext
             }
             catch (Exception ex)
             {
-                res = new CommandResult
-                {
-                    IsSuccessful = false,
-                    Exception = ex,
-                    Context = ctx
-                };
+                res = new CommandResult { IsSuccessful = false, Exception = ex, Context = ctx };
             }
 
             return res;
         }
 
         /// <summary>
-        /// Runs pre-execution checks for this command and returns any that fail for given context.
+        ///     Runs pre-execution checks for this command and returns any that fail for given context.
         /// </summary>
         /// <param name="ctx">Context in which the command is executed.</param>
-        /// <param name="help">Whether this check is being executed from help or not. This can be used to probe whether command can be run without setting off certain fail conditions (such as cooldowns).</param>
+        /// <param name="help">
+        ///     Whether this check is being executed from help or not. This can be used to probe whether command can
+        ///     be run without setting off certain fail conditions (such as cooldowns).
+        /// </param>
         /// <returns>Pre-execution checks that fail for given context.</returns>
         public async Task<IEnumerable<CheckBaseAttribute>> RunChecksAsync(CommandContext ctx, bool help)
         {
@@ -162,7 +156,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Checks whether this command is equal to another one.
+        ///     Checks whether this command is equal to another one.
         /// </summary>
         /// <param name="cmd1">Command to compare to.</param>
         /// <param name="cmd2">Command to compare.</param>
@@ -183,7 +177,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Checks whether this command is not equal to another one.
+        ///     Checks whether this command is not equal to another one.
         /// </summary>
         /// <param name="cmd1">Command to compare to.</param>
         /// <param name="cmd2">Command to compare.</param>
@@ -192,7 +186,7 @@ namespace DSharpPlus.CommandsNext
             => !(cmd1 == cmd2);
 
         /// <summary>
-        /// Checks whether this command equals another object.
+        ///     Checks whether this command equals another object.
         /// </summary>
         /// <param name="obj">Object to compare to.</param>
         /// <returns>Whether this command is equal to another object.</returns>
@@ -208,25 +202,21 @@ namespace DSharpPlus.CommandsNext
             if (o1 == null && o2 == null)
                 return true;
 
-            return obj is Command cmd
-                   && cmd.QualifiedName == QualifiedName;
+            return obj is Command cmd && cmd.QualifiedName == QualifiedName;
         }
 
         /// <summary>
-        /// Gets this command's hash code.
+        ///     Gets this command's hash code.
         /// </summary>
         /// <returns>This command's hash code.</returns>
         public override int GetHashCode() => QualifiedName.GetHashCode();
 
         /// <summary>
-        /// Returns a string representation of this command.
+        ///     Returns a string representation of this command.
         /// </summary>
         /// <returns>String representation of this command.</returns>
-        public override string ToString()
-        {
-            return this is CommandGroup g
-                ? $"Command Group: {QualifiedName}, {g.Children.Count} top-level children"
-                : $"Command: {QualifiedName}";
-        }
+        public override string ToString() => this is CommandGroup g
+            ? $"Command Group: {QualifiedName}, {g.Children.Count} top-level children"
+            : $"Command: {QualifiedName}";
     }
 }

@@ -36,7 +36,7 @@ namespace DSharpPlus.CommandsNext
         /// <param name="ctx">Context in which the method is being executed.</param>
         /// <returns></returns>
         public virtual Task BeforeExecutionAsync(CommandContext ctx)
-            => Task.Delay(0);
+            => Task.CompletedTask;
 
         /// <summary>
         /// Called after a command in the implementing module is successfully executed.
@@ -44,6 +44,6 @@ namespace DSharpPlus.CommandsNext
         /// <param name="ctx">Context in which the method is being executed.</param>
         /// <returns></returns>
         public virtual Task AfterExecutionAsync(CommandContext ctx)
-            => Task.Delay(0);
+            => Task.CompletedTask;
     }
 }

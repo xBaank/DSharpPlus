@@ -22,39 +22,38 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DSharpPlus.CommandsNext.Entities
 {
     /// <summary>
-    /// Represents a base interface for all types of command modules.
+    ///     Represents a base interface for all types of command modules.
     /// </summary>
     public interface ICommandModule
     {
         /// <summary>
-        /// Gets the type of this module.
+        ///     Gets the type of this module.
         /// </summary>
         Type ModuleType { get; }
 
         /// <summary>
-        /// Returns an instance of this module.
+        ///     Returns an instance of this module.
         /// </summary>
         /// <param name="services">Services to instantiate the module with.</param>
+        /// <param name="guild"></param>
         /// <returns>A created instance of this module.</returns>
-        BaseCommandModule GetInstance(IServiceProvider services);
+        BaseCommandModule GetInstance(IServiceProvider services, DiscordGuild guild);
     }
 
     /// <summary>
-    /// Represents a transient command module. This type of module is reinstantiated on every command call.
+    ///     Represents a transient command module. This type of module is reinstantiated on every command call.
     /// </summary>
     public class TransientCommandModule : ICommandModule
     {
         /// <summary>
-        /// Gets the type of this module.
-        /// </summary>
-        public Type ModuleType { get; }
-
-        /// <summary>
-        /// Creates a new transient module.
+        ///     Creates a new transient module.
         /// </summary>
         /// <param name="t">Type of the module to create.</param>
         internal TransientCommandModule(Type t)
@@ -63,46 +62,81 @@ namespace DSharpPlus.CommandsNext.Entities
         }
 
         /// <summary>
-        /// Creates a new instance of this module.
+        ///     Gets the type of this module.
         /// </summary>
-        /// <param name="services">Services to instantiate the module with.</param>
-        /// <returns>Created module.</returns>
-        public BaseCommandModule GetInstance(IServiceProvider services)
+        public Type ModuleType { get; }
+
+        /// <inheritdoc />
+        public BaseCommandModule GetInstance(IServiceProvider services, DiscordGuild guild)
             => (BaseCommandModule)ModuleType.CreateInstance(services);
     }
 
     /// <summary>
-    /// Represents a singleton command module. This type of module is instantiated only when created.
+    ///     Represents a singleton command module. This type of module is instantiated only when created.
     /// </summary>
     public class SingletonCommandModule : ICommandModule
     {
         /// <summary>
-        /// Gets the type of this module.
+        ///     Gets this module's instance.
         /// </summary>
-        public Type ModuleType { get; }
+        private readonly BaseCommandModule _instance;
 
         /// <summary>
-        /// Gets this module's instance.
-        /// </summary>
-        public BaseCommandModule Instance { get; }
-
-        /// <summary>
-        /// Creates a new singleton module, and instantiates it.
+        ///     Creates a new singleton module, and instantiates it.
         /// </summary>
         /// <param name="t">Type of the module to create.</param>
         /// <param name="services">Services to instantiate the module with.</param>
         internal SingletonCommandModule(Type t, IServiceProvider services)
         {
             ModuleType = t;
-            Instance = (BaseCommandModule)t.CreateInstance(services);
+            _instance = (BaseCommandModule)t.CreateInstance(services);
         }
 
         /// <summary>
-        /// Returns the instance of this module.
+        ///     Gets the type of this module.
         /// </summary>
-        /// <param name="services">Services to instantiate the module with.</param>
-        /// <returns>This module's instance.</returns>
-        public BaseCommandModule GetInstance(IServiceProvider services)
-            => Instance;
+        public Type ModuleType { get; }
+
+        /// <inheritdoc />
+        public BaseCommandModule GetInstance(IServiceProvider services, DiscordGuild guild)
+            => _instance;
+    }
+
+    public class ScopedCommandModule : ICommandModule
+    {
+        /// <summary>
+        ///     Gets this module's instance.
+        /// </summary>
+        private readonly Dictionary<DiscordGuild, BaseCommandModule> _instances;
+
+        /// <summary>
+        ///     Creates a new scoped module, and instantiates it.
+        /// </summary>
+        /// <param name="t">Type of the module to create.</param>
+        internal ScopedCommandModule(Type t)
+        {
+            ModuleType = t;
+            _instances = new Dictionary<DiscordGuild, BaseCommandModule>();
+        }
+
+        /// <summary>
+        ///     Gets the type of this module.
+        /// </summary>
+        public Type ModuleType { get; }
+
+        /// <inheritdoc />
+        public BaseCommandModule GetInstance(IServiceProvider services, DiscordGuild guild)
+        {
+            //Default scope is the guild's command module.
+            using var scoped = services.CreateScope();
+
+            if (!_instances.TryGetValue(guild, out var instance))
+            {
+                instance = (BaseCommandModule)ModuleType.CreateInstance(services);
+                _instances.Add(guild, instance);
+            }
+
+            return instance;
+        }
     }
 }
