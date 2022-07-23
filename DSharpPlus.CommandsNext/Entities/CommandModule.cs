@@ -131,7 +131,7 @@ namespace DSharpPlus.CommandsNext.Entities
             if (!_instances.TryGetValue(guild, out var instance))
             {
                 //Default scope is the guild's command module.
-                using var scope = services.CreateScope();
+                var scope = services.CreateScope();
                 instance = (BaseCommandModule)ModuleType.CreateInstance(scope.ServiceProvider);
                 _instances.Add(guild, instance);
             }
