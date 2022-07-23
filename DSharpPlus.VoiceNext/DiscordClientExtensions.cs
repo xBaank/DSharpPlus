@@ -33,7 +33,7 @@ namespace DSharpPlus.VoiceNext
     public static class DiscordClientExtensions
     {
         /// <summary>
-        /// Creates a new VoiceNext client with default settings.
+        ///     Creates a new VoiceNext client with default settings.
         /// </summary>
         /// <param name="client">Discord client to create VoiceNext instance for.</param>
         /// <returns>VoiceNext client instance.</returns>
@@ -41,7 +41,7 @@ namespace DSharpPlus.VoiceNext
             => UseVoiceNext(client, new VoiceNextConfiguration());
 
         /// <summary>
-        /// Creates a new VoiceNext client with specified settings.
+        ///     Creates a new VoiceNext client with specified settings.
         /// </summary>
         /// <param name="client">Discord client to create VoiceNext instance for.</param>
         /// <param name="config">Configuration for the VoiceNext client.</param>
@@ -57,7 +57,7 @@ namespace DSharpPlus.VoiceNext
         }
 
         /// <summary>
-        /// Creates new VoiceNext clients on all shards in a given sharded client.
+        ///     Creates new VoiceNext clients on all shards in a given sharded client.
         /// </summary>
         /// <param name="client">Discord sharded client to create VoiceNext instances for.</param>
         /// <param name="config">Configuration for the VoiceNext clients.</param>
@@ -80,7 +80,7 @@ namespace DSharpPlus.VoiceNext
         }
 
         /// <summary>
-        /// Gets the active instance of VoiceNext client for the DiscordClient.
+        ///     Gets the active instance of VoiceNext client for the DiscordClient.
         /// </summary>
         /// <param name="client">Discord client to get VoiceNext instance for.</param>
         /// <returns>VoiceNext client instance.</returns>
@@ -88,25 +88,23 @@ namespace DSharpPlus.VoiceNext
             => client.GetExtension<VoiceNextExtension>();
 
         /// <summary>
-        /// Retrieves a <see cref="VoiceNextExtension"/> instance for each shard.
+        ///     Retrieves a <see cref="VoiceNextExtension" /> instance for each shard.
         /// </summary>
-        /// <param name="client">The shard client to retrieve <see cref="VoiceNextExtension"/> instances from.</param>
-        /// <returns>A dictionary containing <see cref="VoiceNextExtension"/> instances for each shard.</returns>
+        /// <param name="client">The shard client to retrieve <see cref="VoiceNextExtension" /> instances from.</param>
+        /// <returns>A dictionary containing <see cref="VoiceNextExtension" /> instances for each shard.</returns>
         public static async Task<IReadOnlyDictionary<int, VoiceNextExtension>> GetVoiceNextAsync(this DiscordShardedClient client)
         {
             await client.InitializeShardsAsync().ConfigureAwait(false);
             var extensions = new Dictionary<int, VoiceNextExtension>();
 
             foreach (var shard in client.ShardClients.Values)
-            {
                 extensions.Add(shard.ShardId, shard.GetExtension<VoiceNextExtension>());
-            }
 
             return new ReadOnlyDictionary<int, VoiceNextExtension>(extensions);
         }
 
         /// <summary>
-        /// Connects to this voice channel using VoiceNext.
+        ///     Connects to this voice channel using VoiceNext.
         /// </summary>
         /// <param name="channel">Channel to connect to.</param>
         /// <returns>If successful, the VoiceNext connection.</returns>
@@ -129,8 +127,8 @@ namespace DSharpPlus.VoiceNext
                 throw new InvalidOperationException("VoiceNext is not initialized for this Discord client.");
 
             var vnc = vnext.GetConnection(channel.Guild);
-            return vnc != null
-                ? throw new InvalidOperationException("VoiceNext is already connected in this guild.")
+            return vnc is not null
+                ? Task.FromResult(vnc)
                 : vnext.ConnectAsync(channel);
         }
     }
