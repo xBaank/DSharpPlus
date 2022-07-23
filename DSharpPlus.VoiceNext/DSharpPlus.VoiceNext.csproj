@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>DSharpPlus.VoiceNext</PackageId>
+    <PackageId>Tobi.DSharpPlus.VoiceNext</PackageId>
     <Description>Voice implementation for DSharpPlus.</Description>
     <PackageTags>discord, discord-api, bots, discord-bots, chat, dsharp, dsharpplus, csharp, dotnet, vb-net, fsharp, audio, voice, radio, music</PackageTags>
   </PropertyGroup>
