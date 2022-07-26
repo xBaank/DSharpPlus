@@ -10,10 +10,11 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <PackageVersion>4.2.1.2</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>DSharpPlus.CommandsNext</PackageId>
+    <PackageId>Tobi.DSharpPlus.CommandsNext</PackageId>
     <Description>Advanced command framework for DSharpPlus.</Description>
     <PackageTags>discord, discord-api, bots, discord-bots, chat, dsharp, dsharpplus, csharp, dotnet, vb-net, fsharp, commands, commandsnext</PackageTags>
   </PropertyGroup>
