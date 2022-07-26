@@ -43,25 +43,10 @@ using Microsoft.Extensions.Logging;
 namespace DSharpPlus.CommandsNext
 {
     /// <summary>
-    /// This is the class which handles command registration, management, and execution.
+    ///     This is the class which handles command registration, management, and execution.
     /// </summary>
     public class CommandsNextExtension : BaseExtension, IDisposable
     {
-        private CommandsNextConfiguration Config { get; }
-        private HelpFormatterFactory HelpFormatter { get; }
-
-        private MethodInfo ConvertGeneric { get; }
-        private Dictionary<Type, string> UserFriendlyTypeNames { get; }
-        internal Dictionary<Type, IArgumentConverter> ArgumentConverters { get; }
-        internal CultureInfo DefaultParserCulture
-            => Config.DefaultParserCulture;
-
-        /// <summary>
-        /// Gets the service provider this CommandsNext module was configured with.
-        /// </summary>
-        public IServiceProvider Services
-            => Config.Services;
-
         internal CommandsNextExtension(CommandsNextConfiguration cfg)
         {
             Config = new CommandsNextConfiguration(cfg);
@@ -97,7 +82,7 @@ namespace DSharpPlus.CommandsNext
                 [typeof(DiscordGuild)] = new DiscordGuildConverter(),
                 [typeof(DiscordMessage)] = new DiscordMessageConverter(),
                 [typeof(DiscordEmoji)] = new DiscordEmojiConverter(),
-                [typeof(DiscordColor)] = new DiscordColorConverter()
+                [typeof(DiscordColor)] = new DiscordColorConverter(),
             };
 
             UserFriendlyTypeNames = new Dictionary<Type, string>
@@ -126,7 +111,7 @@ namespace DSharpPlus.CommandsNext
                 [typeof(DiscordGuild)] = "guild",
                 [typeof(DiscordMessage)] = "message",
                 [typeof(DiscordEmoji)] = "emoji",
-                [typeof(DiscordColor)] = "color"
+                [typeof(DiscordColor)] = "color",
             };
 
             var ncvt = typeof(NullableConverter<>);
@@ -154,24 +139,44 @@ namespace DSharpPlus.CommandsNext
             ConvertGeneric = m;
         }
 
-        /// <summary>
-        /// Sets the help formatter to use with the default help command.
-        /// </summary>
-        /// <typeparam name="T">Type of the formatter to use.</typeparam>
-        public void SetHelpFormatter<T>() where T : BaseHelpFormatter => HelpFormatter.SetFormatterType<T>();
+        private CommandsNextConfiguration Config { get; }
+
+        private HelpFormatterFactory HelpFormatter { get; }
+
+        private MethodInfo ConvertGeneric { get; }
+
+        private Dictionary<Type, string> UserFriendlyTypeNames { get; }
+
+        internal Dictionary<Type, IArgumentConverter> ArgumentConverters { get; }
+
+        internal CultureInfo DefaultParserCulture
+            => Config.DefaultParserCulture;
 
         /// <summary>
-        /// Disposes of this the resources used by CNext.
+        ///     Gets the service provider this CommandsNext module was configured with.
+        /// </summary>
+        public IServiceProvider Services
+            => Config.Services;
+
+        /// <summary>
+        ///     Disposes of this the resources used by CNext.
         /// </summary>
         public void Dispose()
             => Config.CommandExecutor.Dispose();
 
-        #region DiscordClient Registration
         /// <summary>
-        /// DO NOT USE THIS MANUALLY.
+        ///     Sets the help formatter to use with the default help command.
+        /// </summary>
+        /// <typeparam name="T">Type of the formatter to use.</typeparam>
+        public void SetHelpFormatter<T>() where T : BaseHelpFormatter => HelpFormatter.SetFormatterType<T>();
+
+        #region DiscordClient Registration
+
+        /// <summary>
+        ///     DO NOT USE THIS MANUALLY.
         /// </summary>
         /// <param name="client">DO NOT USE THIS MANUALLY.</param>
-        /// <exception cref="InvalidOperationException"/>
+        /// <exception cref="InvalidOperationException" />
         protected internal override void Setup(DiscordClient client)
         {
             if (Client != null)
@@ -207,117 +212,64 @@ namespace DSharpPlus.CommandsNext
             if (Config.CommandExecutor is ParallelQueuedCommandExecutor pqce)
                 Client.Logger.LogDebug(CommandsNextEvents.Misc, "Using parallel executor with degree {0}", pqce.Parallelism);
         }
+
         #endregion
 
-        #region Command Handling
-        private async Task HandleCommandsAsync(DiscordClient sender, MessageCreateEventArgs e)
-        {
-            if (e.Author.IsBot) // bad bot
-                return;
-
-            if (!Config.EnableDms && e.Channel.IsPrivate)
-                return;
-
-            var mpos = -1;
-            if (Config.EnableMentionPrefix)
-                mpos = e.Message.GetMentionPrefixLength(Client.CurrentUser);
-
-            if (Config.StringPrefixes.Any())
-                foreach (var pfix in Config.StringPrefixes)
-                    if (mpos == -1 && !string.IsNullOrWhiteSpace(pfix))
-                        mpos = e.Message.GetStringPrefixLength(pfix, Config.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-
-            if (mpos == -1 && Config.PrefixResolver != null)
-                mpos = await Config.PrefixResolver(e.Message).ConfigureAwait(false);
-
-            if (mpos == -1)
-                return;
-
-            var pfx = e.Message.Content.Substring(0, mpos);
-            var cnt = e.Message.Content.Substring(mpos);
-
-            var __ = 0;
-            var fname = cnt.ExtractNextArgument(ref __);
-
-            var cmd = FindCommand(cnt, out var args);
-            var ctx = CreateContext(e.Message, pfx, cmd, args);
-
-            if (cmd is null)
-            {
-                await _error.InvokeAsync(this, new CommandErrorEventArgs { Context = ctx, Exception = new CommandNotFoundException(fname ?? "UnknownCmd") }).ConfigureAwait(false);
-                return;
-            }
-
-            await Config.CommandExecutor.ExecuteAsync(ctx).ConfigureAwait(false);
-        }
+        #region Sudo
 
         /// <summary>
-        /// Finds a specified command by its qualified name, then separates arguments.
+        ///     Creates a fake command context to execute commands with.
         /// </summary>
-        /// <param name="commandString">Qualified name of the command, optionally with arguments.</param>
-        /// <param name="rawArguments">Separated arguments.</param>
-        /// <returns>Found command or null if none was found.</returns>
-        public Command? FindCommand(string commandString, out string? rawArguments)
-        {
-            rawArguments = null;
-
-            var ignoreCase = !Config.CaseSensitive;
-            var pos = 0;
-            var next = commandString.ExtractNextArgument(ref pos);
-            if (next is null)
-                return null;
-
-            if (!RegisteredCommands.TryGetValue(next, out var cmd))
-            {
-                if (!ignoreCase)
-                    return null;
-
-                var cmdKvp = RegisteredCommands.FirstOrDefault(x => x.Key.Equals(next, StringComparison.InvariantCultureIgnoreCase));
-                if (cmdKvp.Value is null)
-                    return null;
-
-                cmd = cmdKvp.Value;
-            }
-
-            if (cmd is not CommandGroup)
-            {
-                rawArguments = commandString.Substring(pos).Trim();
-                return cmd;
-            }
-
-            while (cmd is CommandGroup)
-            {
-                var cm2 = cmd as CommandGroup;
-                var oldPos = pos;
-                next = commandString.ExtractNextArgument(ref pos);
-                if (next is null)
-                    break;
-
-                var comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-                cmd = cm2?.Children.FirstOrDefault(x => x.Name.Equals(next, comparison) || x.Aliases.Any(xx => xx.Equals(next, comparison)));
-
-                if (cmd is null)
-                {
-                    cmd = cm2;
-                    pos = oldPos;
-                    break;
-                }
-            }
-
-            rawArguments = commandString.Substring(pos).Trim();
-            return cmd;
-        }
-
-        /// <summary>
-        /// Creates a command execution context from specified arguments.
-        /// </summary>
-        /// <param name="msg">Message to use for context.</param>
+        /// <param name="actor">The user or member to use as message author.</param>
+        /// <param name="channel">The channel the message is supposed to appear from.</param>
+        /// <param name="messageContents">Contents of the message.</param>
         /// <param name="prefix">Command prefix, used to execute commands.</param>
         /// <param name="cmd">Command to execute.</param>
         /// <param name="rawArguments">Raw arguments to pass to command.</param>
-        /// <returns>Created command execution context.</returns>
-        public CommandContext CreateContext(DiscordMessage msg, string prefix, Command? cmd, string? rawArguments = null)
+        /// <returns>Created fake context.</returns>
+        public CommandContext CreateFakeContext(DiscordUser actor, DiscordChannel channel, string messageContents, string prefix, Command cmd, string? rawArguments = null)
         {
+            var epoch = new DateTimeOffset(2015, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            var now = DateTimeOffset.UtcNow;
+            var timeSpan = (ulong)(now - epoch).TotalMilliseconds;
+
+            // create fake message
+            var msg = new DiscordMessage
+            {
+                Discord = Client,
+                Author = actor,
+                ChannelId = channel.Id,
+                Content = messageContents,
+                Id = timeSpan << 22,
+                Pinned = false,
+                MentionEveryone = messageContents.Contains("@everyone"),
+                IsTTS = false,
+                _attachments = new List<DiscordAttachment>(),
+                _embeds = new List<DiscordEmbed>(),
+                TimestampRaw = now,
+                _reactions = new List<DiscordReaction>(),
+            };
+
+            var mentionedUsers = new List<DiscordUser>();
+            var mentionedRoles = msg.Channel.Guild != null ? new List<DiscordRole>() : null;
+            var mentionedChannels = msg.Channel.Guild != null ? new List<DiscordChannel>() : null;
+
+            if (!string.IsNullOrWhiteSpace(msg.Content))
+            {
+                if (msg.Channel.Guild != null)
+                {
+                    mentionedUsers = Utilities.GetUserMentions(msg).Select(xid => msg.Channel.Guild._members.TryGetValue(xid, out var member) ? member : null).Cast<DiscordUser>().ToList();
+                    mentionedRoles = Utilities.GetRoleMentions(msg).Select(xid => msg.Channel.Guild.GetRole(xid)).ToList();
+                    mentionedChannels = Utilities.GetChannelMentions(msg).Select(xid => msg.Channel.Guild.GetChannel(xid)).ToList();
+                }
+                else
+                    mentionedUsers = Utilities.GetUserMentions(msg).Select(Client.GetCachedOrEmptyUserInternal).ToList();
+            }
+
+            msg._mentionedUsers = mentionedUsers;
+            msg._mentionedRoles = mentionedRoles;
+            msg._mentionedChannels = mentionedChannels;
+
             var ctx = new CommandContext
             {
                 Client = Client,
@@ -327,10 +279,10 @@ namespace DSharpPlus.CommandsNext
                 RawArgumentString = rawArguments ?? "",
                 Prefix = prefix,
                 CommandsNext = this,
-                Services = Services
+                Services = Services,
             };
 
-            if (cmd is not null && (cmd.Module is TransientCommandModule || cmd.Module == null))
+            if (cmd is not null && (cmd.Module is TransientCommandModule || cmd.Module is null))
             {
                 var scope = ctx.Services.CreateScope();
                 ctx.ServiceScopeContext = new CommandContext.ServiceContext(ctx.Services, scope);
@@ -340,337 +292,31 @@ namespace DSharpPlus.CommandsNext
             return ctx;
         }
 
-        /// <summary>
-        /// Executes specified command from given context.
-        /// </summary>
-        /// <param name="ctx">Context to execute command from.</param>
-        /// <returns></returns>
-        public async Task ExecuteCommandAsync(CommandContext ctx)
-        {
-            try
-            {
-                var cmd = ctx.Command;
-
-                if (cmd is null)
-                    return;
-
-                await RunAllChecksAsync(cmd, ctx).ConfigureAwait(false);
-
-                var res = await cmd.ExecuteAsync(ctx).ConfigureAwait(false);
-
-                if (res.IsSuccessful)
-                    await _executed.InvokeAsync(this, new CommandExecutionEventArgs { Context = res.Context }).ConfigureAwait(false);
-                else
-                    await _error.InvokeAsync(this, new CommandErrorEventArgs { Context = res.Context, Exception = res.Exception }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                await _error.InvokeAsync(this, new CommandErrorEventArgs { Context = ctx, Exception = ex }).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (ctx.ServiceScopeContext.IsInitialized)
-                    ctx.ServiceScopeContext.Dispose();
-            }
-        }
-
-        private async Task RunAllChecksAsync(Command cmd, CommandContext ctx)
-        {
-            if (cmd.Parent is not null)
-                await RunAllChecksAsync(cmd.Parent, ctx).ConfigureAwait(false);
-
-            var fchecks = await cmd.RunChecksAsync(ctx, false).ConfigureAwait(false);
-            if (fchecks.Any())
-                throw new ChecksFailedException(cmd, ctx, fchecks);
-        }
         #endregion
 
-        #region Command Registration
-        /// <summary>
-        /// Gets a dictionary of registered top-level commands.
-        /// </summary>
-        public IReadOnlyDictionary<string, Command> RegisteredCommands
-            => _registeredCommandsLazy.Value;
-
-        private Dictionary<string, Command> TopLevelCommands { get; set; }
-        private readonly Lazy<IReadOnlyDictionary<string, Command>> _registeredCommandsLazy;
+        #region Helpers
 
         /// <summary>
-        /// Registers all commands from a given assembly. The command classes need to be public to be considered for registration.
+        ///     Gets the configuration-specific string comparer. This returns <see cref="StringComparer.Ordinal" /> or
+        ///     <see cref="StringComparer.OrdinalIgnoreCase" />,
+        ///     depending on whether <see cref="CommandsNextConfiguration.CaseSensitive" /> is set to <see langword="true" /> or
+        ///     <see langword="false" />.
         /// </summary>
-        /// <param name="assembly">Assembly to register commands from.</param>
-        public void RegisterCommands(Assembly assembly)
-        {
-            var types = assembly.ExportedTypes.Where(xt =>
-            {
-                var xti = xt.GetTypeInfo();
-                return xti.IsModuleCandidateType() && !xti.IsNested;
-            });
-            foreach (var xt in types)
-                RegisterCommands(xt);
-        }
+        /// <returns>A string comparer.</returns>
+        internal IEqualityComparer<string> GetStringComparer()
+            => Config.CaseSensitive
+                ? StringComparer.Ordinal
+                : StringComparer.OrdinalIgnoreCase;
 
-        /// <summary>
-        /// Registers all commands from a given command class.
-        /// </summary>
-        /// <typeparam name="T">Class which holds commands to register.</typeparam>
-        public void RegisterCommands<T>() where T : BaseCommandModule
-        {
-            var t = typeof(T);
-            RegisterCommands(t);
-        }
-
-        /// <summary>
-        /// Registers all commands from a given command class.
-        /// </summary>
-        /// <param name="t">Type of the class which holds commands to register.</param>
-        public void RegisterCommands(Type t)
-        {
-            if (t is null)
-                throw new ArgumentNullException(nameof(t), "Type cannot be null.");
-
-            if (!t.IsModuleCandidateType())
-                throw new ArgumentNullException(nameof(t), "Type must be a class, which cannot be abstract or static.");
-
-            RegisterCommands(t, null, Enumerable.Empty<CheckBaseAttribute>(), out var tempCommands);
-
-            if (tempCommands != null)
-                foreach (var command in tempCommands)
-                    AddToCommandDictionary(command.Build(null));
-        }
-
-        private void RegisterCommands(Type t, CommandGroupBuilder? currentParent, IEnumerable<CheckBaseAttribute> inheritedChecks, out List<CommandBuilder> foundCommands)
-        {
-            var ti = t.GetTypeInfo();
-
-            var lifespan = ti.GetCustomAttribute<ModuleLifespanAttribute>();
-            var moduleLifespan = lifespan != null ? lifespan.Lifespan : ModuleLifespan.Singleton;
-
-            var module = new CommandModuleBuilder()
-                .WithType(t)
-                .WithLifespan(moduleLifespan)
-                .Build(Services);
-
-            // restrict parent lifespan to more or equally restrictive
-            if (currentParent?.Module is TransientCommandModule && moduleLifespan != ModuleLifespan.Transient)
-                throw new InvalidOperationException("In a transient module, child modules can only be transient.");
-
-            // check if we are anything
-            var groupBuilder = new CommandGroupBuilder(module);
-            var isModule = false;
-            var moduleAttributes = ti.GetCustomAttributes();
-            var moduleHidden = false;
-            var moduleChecks = new List<CheckBaseAttribute>();
-
-            foreach (var xa in moduleAttributes)
-            {
-                switch (xa)
-                {
-                    case GroupAttribute g:
-                        isModule = true;
-                        var moduleName = g.Name;
-                        if (moduleName is null)
-                        {
-                            moduleName = ti.Name;
-
-                            if (moduleName.EndsWith("Group") && moduleName != "Group")
-                                moduleName = moduleName.Substring(0, moduleName.Length - 5);
-                            else if (moduleName.EndsWith("Module") && moduleName != "Module")
-                                moduleName = moduleName.Substring(0, moduleName.Length - 6);
-                            else if (moduleName.EndsWith("Commands") && moduleName != "Commands")
-                                moduleName = moduleName.Substring(0, moduleName.Length - 8);
-                        }
-
-                        if (!Config.CaseSensitive)
-                            moduleName = moduleName.ToLowerInvariant();
-
-                        groupBuilder.WithName(moduleName);
-
-                        foreach (var chk in inheritedChecks)
-                            groupBuilder.WithExecutionCheck(chk);
-
-                        foreach (var mi in ti.DeclaredMethods.Where(x => x.IsCommandCandidate(out _) && x.GetCustomAttribute<GroupCommandAttribute>() != null))
-                            groupBuilder.WithOverload(new CommandOverloadBuilder(mi));
-                        break;
-
-                    case AliasesAttribute a:
-                        foreach (var xalias in a.Aliases)
-                            groupBuilder.WithAlias(Config.CaseSensitive ? xalias : xalias.ToLowerInvariant());
-                        break;
-
-                    case HiddenAttribute h:
-                        groupBuilder.WithHiddenStatus(true);
-                        moduleHidden = true;
-                        break;
-
-                    case DescriptionAttribute d:
-                        groupBuilder.WithDescription(d.Description);
-                        break;
-
-                    case CheckBaseAttribute c:
-                        moduleChecks.Add(c);
-                        groupBuilder.WithExecutionCheck(c);
-                        break;
-
-                    default:
-                        groupBuilder.WithCustomAttribute(xa);
-                        break;
-                }
-            }
-
-            if (!isModule)
-            {
-                groupBuilder = null;
-                if (!inheritedChecks.Any())
-                    moduleChecks.AddRange(inheritedChecks);
-            }
-
-            // candidate methods
-            var methods = ti.DeclaredMethods;
-            var commands = new List<CommandBuilder>();
-            var commandBuilders = new Dictionary<string, CommandBuilder>();
-            foreach (var m in methods)
-            {
-                if (!m.IsCommandCandidate(out _))
-                    continue;
-
-                var attrs = m.GetCustomAttributes();
-                if (attrs.FirstOrDefault(xa => xa is CommandAttribute) is not CommandAttribute cattr)
-                    continue;
-
-                var commandName = cattr.Name;
-                if (commandName is null)
-                {
-                    commandName = m.Name;
-                    if (commandName.EndsWith("Async") && commandName != "Async")
-                        commandName = commandName.Substring(0, commandName.Length - 5);
-                }
-
-                if (!Config.CaseSensitive)
-                    commandName = commandName.ToLowerInvariant();
-
-                if (!commandBuilders.TryGetValue(commandName, out var commandBuilder))
-                {
-                    commandBuilders.Add(commandName, commandBuilder = new CommandBuilder(module).WithName(commandName));
-
-                    if (!isModule)
-                        if (currentParent != null)
-                            currentParent.WithChild(commandBuilder);
-                        else
-                            commands.Add(commandBuilder);
-                    else
-                        groupBuilder?.WithChild(commandBuilder);
-                }
-
-                commandBuilder.WithOverload(new CommandOverloadBuilder(m));
-
-                if (!isModule && moduleChecks.Any())
-                    foreach (var chk in moduleChecks)
-                        commandBuilder.WithExecutionCheck(chk);
-
-                foreach (var xa in attrs)
-                {
-                    switch (xa)
-                    {
-                        case AliasesAttribute a:
-                            foreach (var xalias in a.Aliases)
-                                commandBuilder.WithAlias(Config.CaseSensitive ? xalias : xalias.ToLowerInvariant());
-                            break;
-
-                        case CheckBaseAttribute p:
-                            commandBuilder.WithExecutionCheck(p);
-                            break;
-
-                        case DescriptionAttribute d:
-                            commandBuilder.WithDescription(d.Description);
-                            break;
-
-                        case HiddenAttribute h:
-                            commandBuilder.WithHiddenStatus(true);
-                            break;
-
-                        default:
-                            commandBuilder.WithCustomAttribute(xa);
-                            break;
-                    }
-                }
-
-                if (!isModule && moduleHidden)
-                    commandBuilder.WithHiddenStatus(true);
-            }
-
-            // candidate types
-            var types = ti.DeclaredNestedTypes
-                .Where(xt => xt.IsModuleCandidateType() && xt.DeclaredConstructors.Any(xc => xc.IsPublic));
-            foreach (var type in types)
-            {
-                RegisterCommands(type.AsType(),
-                    groupBuilder,
-                    !isModule ? moduleChecks : Enumerable.Empty<CheckBaseAttribute>(),
-                    out var tempCommands);
-
-                if (isModule && groupBuilder is not null)
-                    foreach (var chk in moduleChecks)
-                        groupBuilder.WithExecutionCheck(chk);
-
-                if (isModule && tempCommands is not null && groupBuilder is not null)
-                    foreach (var xtcmd in tempCommands)
-                        groupBuilder.WithChild(xtcmd);
-                else if (tempCommands != null)
-                    commands.AddRange(tempCommands);
-            }
-
-            if (isModule && currentParent is null && groupBuilder is not null)
-                commands.Add(groupBuilder);
-            else if (isModule && currentParent is not null && groupBuilder is not null)
-                currentParent.WithChild(groupBuilder);
-            foundCommands = commands;
-        }
-
-        /// <summary>
-        /// Builds and registers all supplied commands.
-        /// </summary>
-        /// <param name="cmds">Commands to build and register.</param>
-        public void RegisterCommands(params CommandBuilder[] cmds)
-        {
-            foreach (var cmd in cmds)
-                AddToCommandDictionary(cmd.Build(null));
-        }
-
-        /// <summary>
-        /// Unregisters specified commands from CommandsNext.
-        /// </summary>
-        /// <param name="cmds">Commands to unregister.</param>
-        public void UnregisterCommands(params Command[] cmds)
-        {
-            if (cmds.Any(x => x.Parent is not null))
-                throw new InvalidOperationException("Cannot unregister nested commands.");
-
-            var keys = RegisteredCommands.Where(x => cmds.Contains(x.Value)).Select(x => x.Key).ToList();
-            foreach (var key in keys)
-                TopLevelCommands.Remove(key);
-        }
-
-        private void AddToCommandDictionary(Command cmd)
-        {
-            if (cmd.Parent is not null)
-                return;
-
-            if (TopLevelCommands.ContainsKey(cmd.Name) || cmd.Aliases.Any(xs => TopLevelCommands.ContainsKey(xs)))
-                throw new DuplicateCommandException(cmd.QualifiedName);
-
-            TopLevelCommands[cmd.Name] = cmd;
-
-            foreach (var xs in cmd.Aliases)
-                TopLevelCommands[xs] = cmd;
-        }
         #endregion
 
         #region Default Help
+
         [ModuleLifespan(ModuleLifespan.Transient)]
         public class DefaultHelpModule : BaseCommandModule
         {
-            [Command("help"), Description("Displays command help.")]
+            [Command("help")]
+            [Description("Displays command help.")]
             public async Task DefaultHelpAsync(CommandContext ctx, [Description("Command to provide help for.")] params string[] command)
             {
                 var topLevel = ctx.CommandsNext.TopLevelCommands.Values.Distinct();
@@ -690,8 +336,8 @@ namespace DSharpPlus.CommandsNext
 
                         var (comparison, comparer) = ctx.Config.CaseSensitive switch
                         {
-                            true  => (StringComparison.InvariantCulture, StringComparer.InvariantCulture),
-                            false => (StringComparison.InvariantCultureIgnoreCase, StringComparer.InvariantCultureIgnoreCase)
+                            true => (StringComparison.InvariantCulture, StringComparer.InvariantCulture),
+                            false => (StringComparison.InvariantCultureIgnoreCase, StringComparer.InvariantCultureIgnoreCase),
                         };
                         cmd = searchIn.FirstOrDefault(xc => xc.Name.Equals(c, comparison) || xc.Aliases.Contains(c, comparer));
 
@@ -762,64 +408,119 @@ namespace DSharpPlus.CommandsNext
                     await ctx.Member.SendMessageAsync(builder).ConfigureAwait(false);
             }
         }
+
         #endregion
 
-        #region Sudo
-        /// <summary>
-        /// Creates a fake command context to execute commands with.
-        /// </summary>
-        /// <param name="actor">The user or member to use as message author.</param>
-        /// <param name="channel">The channel the message is supposed to appear from.</param>
-        /// <param name="messageContents">Contents of the message.</param>
-        /// <param name="prefix">Command prefix, used to execute commands.</param>
-        /// <param name="cmd">Command to execute.</param>
-        /// <param name="rawArguments">Raw arguments to pass to command.</param>
-        /// <returns>Created fake context.</returns>
-        public CommandContext CreateFakeContext(DiscordUser actor, DiscordChannel channel, string messageContents, string prefix, Command cmd, string? rawArguments = null)
+        #region Command Handling
+
+        private async Task HandleCommandsAsync(DiscordClient sender, MessageCreateEventArgs e)
         {
-            var epoch = new DateTimeOffset(2015, 1, 1, 0, 0, 0, TimeSpan.Zero);
-            var now = DateTimeOffset.UtcNow;
-            var timeSpan = (ulong)(now - epoch).TotalMilliseconds;
+            if (e.Author.IsBot) // bad bot
+                return;
 
-            // create fake message
-            var msg = new DiscordMessage
+            if (!Config.EnableDms && e.Channel.IsPrivate)
+                return;
+
+            var mpos = -1;
+            if (Config.EnableMentionPrefix)
+                mpos = e.Message.GetMentionPrefixLength(Client.CurrentUser);
+
+            if (Config.StringPrefixes.Any())
+                foreach (var pfix in Config.StringPrefixes)
+                    if (mpos == -1 && !string.IsNullOrWhiteSpace(pfix))
+                        mpos = e.Message.GetStringPrefixLength(pfix, Config.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+
+            if (mpos == -1 && Config.PrefixResolver != null)
+                mpos = await Config.PrefixResolver(e.Message).ConfigureAwait(false);
+
+            if (mpos == -1)
+                return;
+
+            var pfx = e.Message.Content.Substring(0, mpos);
+            var cnt = e.Message.Content.Substring(mpos);
+
+            var __ = 0;
+            var fname = cnt.ExtractNextArgument(ref __);
+
+            var cmd = FindCommand(cnt, out var args);
+            var ctx = CreateContext(e.Message, pfx, cmd, args);
+
+            if (cmd is null)
             {
-                Discord = Client,
-                Author = actor,
-                ChannelId = channel.Id,
-                Content = messageContents,
-                Id = timeSpan << 22,
-                Pinned = false,
-                MentionEveryone = messageContents.Contains("@everyone"),
-                IsTTS = false,
-                _attachments = new List<DiscordAttachment>(),
-                _embeds = new List<DiscordEmbed>(),
-                TimestampRaw = now,
-                _reactions = new List<DiscordReaction>()
-            };
+                await _error.InvokeAsync(this, new CommandErrorEventArgs { Context = ctx, Exception = new CommandNotFoundException(fname ?? "UnknownCmd") }).ConfigureAwait(false);
+                return;
+            }
 
-            var mentionedUsers = new List<DiscordUser>();
-            var mentionedRoles = msg.Channel.Guild != null ? new List<DiscordRole>() : null;
-            var mentionedChannels = msg.Channel.Guild != null ? new List<DiscordChannel>() : null;
+            await Config.CommandExecutor.ExecuteAsync(ctx).ConfigureAwait(false);
+        }
 
-            if (!string.IsNullOrWhiteSpace(msg.Content))
+        /// <summary>
+        ///     Finds a specified command by its qualified name, then separates arguments.
+        /// </summary>
+        /// <param name="commandString">Qualified name of the command, optionally with arguments.</param>
+        /// <param name="rawArguments">Separated arguments.</param>
+        /// <returns>Found command or null if none was found.</returns>
+        public Command? FindCommand(string commandString, out string? rawArguments)
+        {
+            rawArguments = null;
+
+            var ignoreCase = !Config.CaseSensitive;
+            var pos = 0;
+            var next = commandString.ExtractNextArgument(ref pos);
+            if (next is null)
+                return null;
+
+            if (!RegisteredCommands.TryGetValue(next, out var cmd))
             {
-                if (msg.Channel.Guild != null)
+                if (!ignoreCase)
+                    return null;
+
+                var cmdKvp = RegisteredCommands.FirstOrDefault(x => x.Key.Equals(next, StringComparison.InvariantCultureIgnoreCase));
+                if (cmdKvp.Value is null)
+                    return null;
+
+                cmd = cmdKvp.Value;
+            }
+
+            if (cmd is not CommandGroup)
+            {
+                rawArguments = commandString.Substring(pos).Trim();
+                return cmd;
+            }
+
+            while (cmd is CommandGroup)
+            {
+                var cm2 = cmd as CommandGroup;
+                var oldPos = pos;
+                next = commandString.ExtractNextArgument(ref pos);
+                if (next is null)
+                    break;
+
+                var comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+                cmd = cm2?.Children.FirstOrDefault(x => x.Name.Equals(next, comparison) || x.Aliases.Any(xx => xx.Equals(next, comparison)));
+
+                if (cmd is null)
                 {
-                    mentionedUsers = Utilities.GetUserMentions(msg).Select(xid => msg.Channel.Guild._members.TryGetValue(xid, out var member) ? member : null).Cast<DiscordUser>().ToList();
-                    mentionedRoles = Utilities.GetRoleMentions(msg).Select(xid => msg.Channel.Guild.GetRole(xid)).ToList();
-                    mentionedChannels = Utilities.GetChannelMentions(msg).Select(xid => msg.Channel.Guild.GetChannel(xid)).ToList();
-                }
-                else
-                {
-                    mentionedUsers = Utilities.GetUserMentions(msg).Select(Client.GetCachedOrEmptyUserInternal).ToList();
+                    cmd = cm2;
+                    pos = oldPos;
+                    break;
                 }
             }
 
-            msg._mentionedUsers = mentionedUsers;
-            msg._mentionedRoles = mentionedRoles;
-            msg._mentionedChannels = mentionedChannels;
+            rawArguments = commandString.Substring(pos).Trim();
+            return cmd;
+        }
 
+        /// <summary>
+        ///     Creates a command execution context from specified arguments.
+        /// </summary>
+        /// <param name="msg">Message to use for context.</param>
+        /// <param name="prefix">Command prefix, used to execute commands.</param>
+        /// <param name="cmd">Command to execute.</param>
+        /// <param name="rawArguments">Raw arguments to pass to command.</param>
+        /// <returns>Created command execution context.</returns>
+        public CommandContext CreateContext(DiscordMessage msg, string prefix, Command? cmd, string? rawArguments = null)
+        {
             var ctx = new CommandContext
             {
                 Client = Client,
@@ -829,10 +530,10 @@ namespace DSharpPlus.CommandsNext
                 RawArgumentString = rawArguments ?? "",
                 Prefix = prefix,
                 CommandsNext = this,
-                Services = Services
+                Services = Services,
             };
 
-            if (cmd is not null && (cmd.Module is TransientCommandModule || cmd.Module is null))
+            if (cmd is not null && (cmd.Module is TransientCommandModule || cmd.Module == null))
             {
                 var scope = ctx.Services.CreateScope();
                 ctx.ServiceScopeContext = new CommandContext.ServiceContext(ctx.Services, scope);
@@ -841,11 +542,338 @@ namespace DSharpPlus.CommandsNext
 
             return ctx;
         }
+
+        /// <summary>
+        ///     Executes specified command from given context.
+        /// </summary>
+        /// <param name="ctx">Context to execute command from.</param>
+        /// <returns></returns>
+        public async Task ExecuteCommandAsync(CommandContext ctx)
+        {
+            try
+            {
+                var cmd = ctx.Command;
+
+                if (cmd is null)
+                    return;
+
+                await RunAllChecksAsync(cmd, ctx).ConfigureAwait(false);
+
+                var res = await cmd.ExecuteAsync(ctx).ConfigureAwait(false);
+
+                if (res.IsSuccessful)
+                    await _executed.InvokeAsync(this, new CommandExecutionEventArgs { Context = res.Context }).ConfigureAwait(false);
+                else
+                    await _error.InvokeAsync(this, new CommandErrorEventArgs { Context = res.Context, Exception = res.Exception }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await _error.InvokeAsync(this, new CommandErrorEventArgs { Context = ctx, Exception = ex }).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (ctx.ServiceScopeContext.IsInitialized)
+                    ctx.ServiceScopeContext.Dispose();
+            }
+        }
+
+        private async Task RunAllChecksAsync(Command cmd, CommandContext ctx)
+        {
+            if (cmd.Parent is not null)
+                await RunAllChecksAsync(cmd.Parent, ctx).ConfigureAwait(false);
+
+            var fchecks = await cmd.RunChecksAsync(ctx, false).ConfigureAwait(false);
+            if (fchecks.Any())
+                throw new ChecksFailedException(cmd, ctx, fchecks);
+        }
+
+        #endregion
+
+        #region Command Registration
+
+        /// <summary>
+        ///     Gets a dictionary of registered top-level commands.
+        /// </summary>
+        public IReadOnlyDictionary<string, Command> RegisteredCommands
+            => _registeredCommandsLazy.Value;
+
+        private Dictionary<string, Command> TopLevelCommands { get; }
+
+        private readonly Lazy<IReadOnlyDictionary<string, Command>> _registeredCommandsLazy;
+
+        /// <summary>
+        ///     Registers all commands from a given assembly. The command classes need to be public to be considered for
+        ///     registration.
+        /// </summary>
+        /// <param name="assembly">Assembly to register commands from.</param>
+        public void RegisterCommands(Assembly assembly)
+        {
+            var types = assembly.ExportedTypes.Where(xt =>
+            {
+                var xti = xt.GetTypeInfo();
+                return xti.IsModuleCandidateType() && !xti.IsNested;
+            });
+            foreach (var xt in types)
+                RegisterCommands(xt);
+        }
+
+        /// <summary>
+        ///     Registers all commands from a given command class.
+        /// </summary>
+        /// <typeparam name="T">Class which holds commands to register.</typeparam>
+        public void RegisterCommands<T>() where T : BaseCommandModule
+        {
+            var t = typeof(T);
+            RegisterCommands(t);
+        }
+
+        /// <summary>
+        ///     Registers all commands from a given command class.
+        /// </summary>
+        /// <param name="t">Type of the class which holds commands to register.</param>
+        public void RegisterCommands(Type t)
+        {
+            if (t is null)
+                throw new ArgumentNullException(nameof(t), "Type cannot be null.");
+
+            if (!t.IsModuleCandidateType())
+                throw new ArgumentNullException(nameof(t), "Type must be a class, which cannot be abstract or static.");
+
+            RegisterCommands(t, null, Enumerable.Empty<CheckBaseAttribute>(), out var tempCommands);
+
+            if (tempCommands != null)
+                foreach (var command in tempCommands)
+                    AddToCommandDictionary(command.Build(null));
+        }
+
+        private void RegisterCommands(Type t, CommandGroupBuilder? currentParent, IEnumerable<CheckBaseAttribute> inheritedChecks, out List<CommandBuilder> foundCommands)
+        {
+            var ti = t.GetTypeInfo();
+
+            var lifespan = ti.GetCustomAttribute<ModuleLifespanAttribute>();
+            var moduleLifespan = lifespan?.Lifespan ?? ModuleLifespan.Singleton;
+
+            var module = new CommandModuleBuilder()
+                .WithType(t)
+                .WithLifespan(moduleLifespan)
+                .Build(Services);
+
+            // restrict parent lifespan to more or equally restrictive
+            if (currentParent?.Module is TransientCommandModule && moduleLifespan != ModuleLifespan.Transient)
+                throw new InvalidOperationException("In a transient module, child modules can only be transient.");
+
+            // check if we are anything
+            var groupBuilder = new CommandGroupBuilder(module);
+            var isModule = false;
+            var moduleAttributes = ti.GetCustomAttributes();
+            var moduleHidden = false;
+            var moduleChecks = new List<CheckBaseAttribute>();
+
+            foreach (var xa in moduleAttributes)
+                switch (xa)
+                {
+                    case GroupAttribute g:
+                        isModule = true;
+                        var moduleName = g.Name;
+                        if (moduleName is null)
+                        {
+                            moduleName = ti.Name;
+
+                            if (moduleName.EndsWith("Group") && moduleName != "Group")
+                                moduleName = moduleName.Substring(0, moduleName.Length - 5);
+                            else if (moduleName.EndsWith("Module") && moduleName != "Module")
+                                moduleName = moduleName.Substring(0, moduleName.Length - 6);
+                            else if (moduleName.EndsWith("Commands") && moduleName != "Commands")
+                                moduleName = moduleName.Substring(0, moduleName.Length - 8);
+                        }
+
+                        if (!Config.CaseSensitive)
+                            moduleName = moduleName.ToLowerInvariant();
+
+                        groupBuilder.WithName(moduleName);
+
+                        foreach (var chk in inheritedChecks)
+                            groupBuilder.WithExecutionCheck(chk);
+
+                        foreach (var mi in ti.DeclaredMethods.Where(x => x.IsCommandCandidate(out _) && x.GetCustomAttribute<GroupCommandAttribute>() != null))
+                            groupBuilder.WithOverload(new CommandOverloadBuilder(mi));
+                        break;
+
+                    case AliasesAttribute a:
+                        foreach (var xalias in a.Aliases)
+                            groupBuilder.WithAlias(Config.CaseSensitive ? xalias : xalias.ToLowerInvariant());
+                        break;
+
+                    case HiddenAttribute h:
+                        groupBuilder.WithHiddenStatus(true);
+                        moduleHidden = true;
+                        break;
+
+                    case DescriptionAttribute d:
+                        groupBuilder.WithDescription(d.Description);
+                        break;
+
+                    case CheckBaseAttribute c:
+                        moduleChecks.Add(c);
+                        groupBuilder.WithExecutionCheck(c);
+                        break;
+
+                    default:
+                        groupBuilder.WithCustomAttribute(xa);
+                        break;
+                }
+
+            if (!isModule)
+            {
+                groupBuilder = null;
+                if (!inheritedChecks.Any())
+                    moduleChecks.AddRange(inheritedChecks);
+            }
+
+            // candidate methods
+            var methods = ti.DeclaredMethods;
+            var commands = new List<CommandBuilder>();
+            var commandBuilders = new Dictionary<string, CommandBuilder>();
+            foreach (var m in methods)
+            {
+                if (!m.IsCommandCandidate(out _))
+                    continue;
+
+                var attrs = m.GetCustomAttributes();
+                if (attrs.FirstOrDefault(xa => xa is CommandAttribute) is not CommandAttribute cattr)
+                    continue;
+
+                var commandName = cattr.Name;
+                if (commandName is null)
+                {
+                    commandName = m.Name;
+                    if (commandName.EndsWith("Async") && commandName != "Async")
+                        commandName = commandName.Substring(0, commandName.Length - 5);
+                }
+
+                if (!Config.CaseSensitive)
+                    commandName = commandName.ToLowerInvariant();
+
+                if (!commandBuilders.TryGetValue(commandName, out var commandBuilder))
+                {
+                    commandBuilders.Add(commandName, commandBuilder = new CommandBuilder(module).WithName(commandName));
+
+                    if (!isModule)
+                        if (currentParent != null)
+                            currentParent.WithChild(commandBuilder);
+                        else
+                            commands.Add(commandBuilder);
+                    else
+                        groupBuilder?.WithChild(commandBuilder);
+                }
+
+                commandBuilder.WithOverload(new CommandOverloadBuilder(m));
+
+                if (!isModule && moduleChecks.Any())
+                    foreach (var chk in moduleChecks)
+                        commandBuilder.WithExecutionCheck(chk);
+
+                foreach (var xa in attrs)
+                    switch (xa)
+                    {
+                        case AliasesAttribute a:
+                            foreach (var xalias in a.Aliases)
+                                commandBuilder.WithAlias(Config.CaseSensitive ? xalias : xalias.ToLowerInvariant());
+                            break;
+
+                        case CheckBaseAttribute p:
+                            commandBuilder.WithExecutionCheck(p);
+                            break;
+
+                        case DescriptionAttribute d:
+                            commandBuilder.WithDescription(d.Description);
+                            break;
+
+                        case HiddenAttribute h:
+                            commandBuilder.WithHiddenStatus(true);
+                            break;
+
+                        default:
+                            commandBuilder.WithCustomAttribute(xa);
+                            break;
+                    }
+
+                if (!isModule && moduleHidden)
+                    commandBuilder.WithHiddenStatus(true);
+            }
+
+            // candidate types
+            var types = ti.DeclaredNestedTypes
+                .Where(xt => xt.IsModuleCandidateType() && xt.DeclaredConstructors.Any(xc => xc.IsPublic));
+            foreach (var type in types)
+            {
+                RegisterCommands(type.AsType(),
+                    groupBuilder,
+                    !isModule ? moduleChecks : Enumerable.Empty<CheckBaseAttribute>(),
+                    out var tempCommands);
+
+                if (isModule && groupBuilder is not null)
+                    foreach (var chk in moduleChecks)
+                        groupBuilder.WithExecutionCheck(chk);
+
+                if (isModule && tempCommands is not null && groupBuilder is not null)
+                    foreach (var xtcmd in tempCommands)
+                        groupBuilder.WithChild(xtcmd);
+                else if (tempCommands != null)
+                    commands.AddRange(tempCommands);
+            }
+
+            if (isModule && currentParent is null && groupBuilder is not null)
+                commands.Add(groupBuilder);
+            else if (isModule && currentParent is not null && groupBuilder is not null)
+                currentParent.WithChild(groupBuilder);
+            foundCommands = commands;
+        }
+
+        /// <summary>
+        ///     Builds and registers all supplied commands.
+        /// </summary>
+        /// <param name="cmds">Commands to build and register.</param>
+        public void RegisterCommands(params CommandBuilder[] cmds)
+        {
+            foreach (var cmd in cmds)
+                AddToCommandDictionary(cmd.Build(null));
+        }
+
+        /// <summary>
+        ///     Unregisters specified commands from CommandsNext.
+        /// </summary>
+        /// <param name="cmds">Commands to unregister.</param>
+        public void UnregisterCommands(params Command[] cmds)
+        {
+            if (cmds.Any(x => x.Parent is not null))
+                throw new InvalidOperationException("Cannot unregister nested commands.");
+
+            var keys = RegisteredCommands.Where(x => cmds.Contains(x.Value)).Select(x => x.Key).ToList();
+            foreach (var key in keys)
+                TopLevelCommands.Remove(key);
+        }
+
+        private void AddToCommandDictionary(Command cmd)
+        {
+            if (cmd.Parent is not null)
+                return;
+
+            if (TopLevelCommands.ContainsKey(cmd.Name) || cmd.Aliases.Any(xs => TopLevelCommands.ContainsKey(xs)))
+                throw new DuplicateCommandException(cmd.QualifiedName);
+
+            TopLevelCommands[cmd.Name] = cmd;
+
+            foreach (var xs in cmd.Aliases)
+                TopLevelCommands[xs] = cmd;
+        }
+
         #endregion
 
         #region Type Conversion
+
         /// <summary>
-        /// Converts a string to specified type.
+        ///     Converts a string to specified type.
         /// </summary>
         /// <typeparam name="T">Type to convert to.</typeparam>
         /// <param name="value">Value to convert.</param>
@@ -865,7 +893,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Converts a string to specified type.
+        ///     Converts a string to specified type.
         /// </summary>
         /// <param name="value">Value to convert.</param>
         /// <param name="ctx">Context in which to convert to.</param>
@@ -885,7 +913,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Registers an argument converter for specified type.
+        ///     Registers an argument converter for specified type.
         /// </summary>
         /// <typeparam name="T">Type for which to register the converter.</typeparam>
         /// <param name="converter">Converter to register.</param>
@@ -913,7 +941,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Unregisters an argument converter for specified type.
+        ///     Unregisters an argument converter for specified type.
         /// </summary>
         /// <typeparam name="T">Type for which to unregister the converter.</typeparam>
         public void UnregisterConverter<T>()
@@ -938,7 +966,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Registers a user-friendly type name.
+        ///     Registers a user-friendly type name.
         /// </summary>
         /// <typeparam name="T">Type to register the name for.</typeparam>
         /// <param name="value">Name to register.</param>
@@ -962,7 +990,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Converts a type into user-friendly type name.
+        ///     Converts a type into user-friendly type name.
         /// </summary>
         /// <param name="t">Type to convert.</param>
         /// <returns>User-friendly type name.</returns>
@@ -980,39 +1008,31 @@ namespace DSharpPlus.CommandsNext
 
             return t.Name;
         }
-        #endregion
 
-        #region Helpers
-        /// <summary>
-        /// Gets the configuration-specific string comparer. This returns <see cref="StringComparer.Ordinal"/> or <see cref="StringComparer.OrdinalIgnoreCase"/>,
-        /// depending on whether <see cref="CommandsNextConfiguration.CaseSensitive"/> is set to <see langword="true"/> or <see langword="false"/>.
-        /// </summary>
-        /// <returns>A string comparer.</returns>
-        internal IEqualityComparer<string> GetStringComparer()
-            => Config.CaseSensitive
-                ? StringComparer.Ordinal
-                : StringComparer.OrdinalIgnoreCase;
         #endregion
 
         #region Events
+
         /// <summary>
-        /// Triggered whenever a command executes successfully.
+        ///     Triggered whenever a command executes successfully.
         /// </summary>
         public event AsyncEventHandler<CommandsNextExtension, CommandExecutionEventArgs> CommandExecuted
         {
-            add { _executed.Register(value); }
-            remove { _executed.Unregister(value); }
+            add => _executed.Register(value);
+            remove => _executed.Unregister(value);
         }
+
         private AsyncEvent<CommandsNextExtension, CommandExecutionEventArgs> _executed = null!;
 
         /// <summary>
-        /// Triggered whenever a command throws an exception during execution.
+        ///     Triggered whenever a command throws an exception during execution.
         /// </summary>
         public event AsyncEventHandler<CommandsNextExtension, CommandErrorEventArgs> CommandErrored
         {
-            add { _error.Register(value); }
-            remove { _error.Unregister(value); }
+            add => _error.Register(value);
+            remove => _error.Unregister(value);
         }
+
         private AsyncEvent<CommandsNextExtension, CommandErrorEventArgs> _error = null!;
 
         private Task OnCommandExecuted(CommandExecutionEventArgs e)
@@ -1020,6 +1040,7 @@ namespace DSharpPlus.CommandsNext
 
         private Task OnCommandErrored(CommandErrorEventArgs e)
             => _error.InvokeAsync(this, e);
+
         #endregion
     }
 }

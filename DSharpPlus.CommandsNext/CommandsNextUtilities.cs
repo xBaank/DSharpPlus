@@ -37,14 +37,14 @@ using Microsoft.Extensions.DependencyInjection;
 namespace DSharpPlus.CommandsNext
 {
     /// <summary>
-    /// Various CommandsNext-related utilities.
+    ///     Various CommandsNext-related utilities.
     /// </summary>
     public static class CommandsNextUtilities
     {
-        private static Regex UserRegex { get; } = new Regex(@"<@\!?(\d+?)> ", RegexOptions.ECMAScript);
+        private static Regex UserRegex { get; } = new(@"<@\!?(\d+?)> ", RegexOptions.ECMAScript);
 
         /// <summary>
-        /// Checks whether the message has a specified string prefix.
+        ///     Checks whether the message has a specified string prefix.
         /// </summary>
         /// <param name="msg">Message to check.</param>
         /// <param name="str">String to check for.</param>
@@ -60,7 +60,7 @@ namespace DSharpPlus.CommandsNext
         }
 
         /// <summary>
-        /// Checks whether the message contains a specified mention prefix.
+        ///     Checks whether the message contains a specified mention prefix.
         /// </summary>
         /// <param name="msg">Message to check.</param>
         /// <param name="user">User to check for.</param>
@@ -114,7 +114,7 @@ namespace DSharpPlus.CommandsNext
                     if (!inEscape && !inBacktick && !inTripleBacktick)
                     {
                         inEscape = true;
-                        if (str.IndexOf("\\`", i) == i || str.IndexOf("\\\"", i) == i || str.IndexOf("\\\\", i) == i || (str.Length >= i && char.IsWhiteSpace(str[i + 1])))
+                        if (str.IndexOf("\\`", i) == i || str.IndexOf("\\\"", i) == i || str.IndexOf("\\\\", i) == i || str.Length >= i && char.IsWhiteSpace(str[i + 1]))
                             removeIndices.Add(i - startPosition);
                         i++;
                     }
@@ -189,7 +189,7 @@ namespace DSharpPlus.CommandsNext
 
             return s.Remove(li - ll + 1, ll);
         }
-        
+
         internal static async Task<ArgumentBindingResult> BindArgumentsAsync(CommandContext ctx, bool ignoreSurplus)
         {
             var command = ctx.Command;
@@ -343,17 +343,11 @@ namespace DSharpPlus.CommandsNext
 
             var constructor = constructors[0];
             var constructorArgs = constructor.GetParameters();
-            var args = new object[constructorArgs.Length];
 
             if (constructorArgs.Length != 0 && services == null)
                 throw new InvalidOperationException("Dependency collection needs to be specified for parameterized constructors.");
 
-            // inject via constructor
-            if (constructorArgs.Length != 0)
-                for (var i = 0; i < args.Length; i++)
-                    args[i] = services.GetRequiredService(constructorArgs[i].ParameterType);
-
-            var moduleInstance = Activator.CreateInstance(t, args);
+            var moduleInstance = ActivatorUtilities.CreateInstance(services, t);
 
             // inject into properties
             var props = t.GetRuntimeProperties().Where(xp => xp.CanWrite && xp.SetMethod != null && !xp.SetMethod.IsStatic && xp.SetMethod.IsPublic);

@@ -82,6 +82,7 @@ namespace DSharpPlus.CommandsNext.Builders
             {
                 ModuleLifespan.Singleton => new SingletonCommandModule(Type, services),
                 ModuleLifespan.Transient => new TransientCommandModule(Type),
+                ModuleLifespan.Scoped => new ScopedCommandModule(Type),
                 _ => throw new NotSupportedException("Module lifespans other than transient and singleton are not supported."),
             };
         }
