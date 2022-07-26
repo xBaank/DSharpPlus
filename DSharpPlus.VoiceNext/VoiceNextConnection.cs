@@ -56,7 +56,6 @@ namespace DSharpPlus.VoiceNext
     /// </summary>
     public sealed class VoiceNextConnection : IDisposable
     {
-        private readonly AsyncEvent<VoiceNextConnection, VoiceUserJoinEventArgs> _userJoined;
         private readonly AsyncEvent<VoiceNextConnection, VoiceUserLeaveEventArgs> _userLeft;
         private readonly AsyncEvent<VoiceNextConnection, UserSpeakingEventArgs> _userSpeaking;
         private readonly AsyncEvent<VoiceNextConnection, VoiceReceiveEventArgs> _voiceReceived;
@@ -77,7 +76,6 @@ namespace DSharpPlus.VoiceNext
             TransmittingSSRCs = new ConcurrentDictionary<uint, AudioSender>();
 
             _userSpeaking = new AsyncEvent<VoiceNextConnection, UserSpeakingEventArgs>("VNEXT_USER_SPEAKING", TimeSpan.Zero, Discord.EventErrorHandler);
-            _userJoined = new AsyncEvent<VoiceNextConnection, VoiceUserJoinEventArgs>("VNEXT_USER_JOINED", TimeSpan.Zero, Discord.EventErrorHandler);
             _userLeft = new AsyncEvent<VoiceNextConnection, VoiceUserLeaveEventArgs>("VNEXT_USER_LEFT", TimeSpan.Zero, Discord.EventErrorHandler);
             _voiceReceived = new AsyncEvent<VoiceNextConnection, VoiceReceiveEventArgs>("VNEXT_VOICE_RECEIVED", TimeSpan.Zero, Discord.EventErrorHandler);
             _voiceSocketError = new AsyncEvent<VoiceNextConnection, SocketErrorEventArgs>("VNEXT_WS_ERROR", TimeSpan.Zero, Discord.EventErrorHandler);
@@ -287,15 +285,6 @@ namespace DSharpPlus.VoiceNext
         {
             add => _userSpeaking.Register(value);
             remove => _userSpeaking.Unregister(value);
-        }
-
-        /// <summary>
-        ///     Triggered whenever a user joins voice in the connected guild.
-        /// </summary>
-        public event AsyncEventHandler<VoiceNextConnection, VoiceUserJoinEventArgs> UserJoined
-        {
-            add => _userJoined.Register(value);
-            remove => _userJoined.Unregister(value);
         }
 
         /// <summary>
@@ -956,21 +945,6 @@ namespace DSharpPlus.VoiceNext
                 case 9: // RESUMED
                     Discord.Logger.LogTrace(VoiceNextEvents.VoiceDispatch, "Received RESUMED (OP9)");
                     HeartbeatTask = Task.Run(HeartbeatAsync);
-                    break;
-
-                case 12: // CLIENT_CONNECTED
-                    Discord.Logger.LogTrace(VoiceNextEvents.VoiceDispatch, "Received CLIENT_CONNECTED (OP12)");
-                    var ujpd = opp.ToDiscordObject<VoiceUserJoinPayload>();
-                    var usrj = await Discord.GetUserAsync(ujpd.UserId).ConfigureAwait(false);
-                {
-                    var opus = Opus.CreateDecoder();
-                    var vtx = new AudioSender(ujpd.SSRC, opus) { User = usrj };
-
-                    if (!TransmittingSSRCs.TryAdd(vtx.SSRC, vtx))
-                        Opus.DestroyDecoder(opus);
-                }
-
-                    await _userJoined.InvokeAsync(this, new VoiceUserJoinEventArgs { User = usrj, SSRC = ujpd.SSRC }).ConfigureAwait(false);
                     break;
 
                 case 13: // CLIENT_DISCONNECTED

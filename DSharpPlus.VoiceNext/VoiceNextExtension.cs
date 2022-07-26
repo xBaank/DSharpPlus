@@ -101,16 +101,7 @@ namespace DSharpPlus.VoiceNext
             VoiceStateUpdates[gld.Id] = vstut;
             VoiceServerUpdates[gld.Id] = vsrut;
 
-            var vsd = new VoiceDispatch
-            {
-                OpCode = 4,
-                Payload = new VoiceStateUpdatePayload
-                {
-                    GuildId = gld.Id, ChannelId = channel.Id, Deafened = false, Muted = false,
-                },
-            };
-            var vsj = JsonConvert.SerializeObject(vsd, Formatting.None);
-            await (channel.Discord as DiscordClient).WsSendAsync(vsj).ConfigureAwait(false);
+            await SendVoiceStateUpdate(channel, gld);
 
             var vstu = await vstut.Task.ConfigureAwait(false);
             var vstup = new VoiceStateUpdatePayload { SessionId = vstu.SessionId, UserId = vstu.User.Id };
@@ -123,6 +114,20 @@ namespace DSharpPlus.VoiceNext
             await vnc.WaitForReadyAsync().ConfigureAwait(false);
             ActiveConnections[gld.Id] = vnc;
             return vnc;
+        }
+
+        private static async Task SendVoiceStateUpdate(DiscordChannel channel, DiscordGuild gld)
+        {
+            var vsd = new VoiceDispatch
+            {
+                OpCode = 4,
+                Payload = new VoiceStateUpdatePayload
+                {
+                    GuildId = gld.Id, ChannelId = channel.Id, Deafened = false, Muted = false,
+                },
+            };
+            var vsj = JsonConvert.SerializeObject(vsd, Formatting.None);
+            await (channel.Discord as DiscordClient).WsSendAsync(vsj).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -196,6 +201,8 @@ namespace DSharpPlus.VoiceNext
                 vnc.WebSocketEndpoint = new ConnectionEndpoint { Hostname = eph, Port = epp };
 
                 await vnc.ConnectAsync().ConfigureAwait(false);
+
+                //await SendVoiceStateUpdate(vnc.TargetChannel, gld).ConfigureAwait(false);
             }
 
             if (VoiceServerUpdates.ContainsKey(gld.Id))
