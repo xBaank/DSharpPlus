@@ -127,7 +127,11 @@ namespace DSharpPlus.VoiceNext
                 {
                     if (isOpusPacket)
                     {
-                        await Connection.EnqueuePacketAsync(new RawVoicePacket(buffer.ToArray().AsMemory(), PcmBufferDuration, false, true), cancellationToken).ConfigureAwait(false);
+                        var packet = ArrayPool<byte>.Shared.Rent(buffer.Length);
+                        var packetMemory = packet.AsMemory().Slice(0, buffer.Length);
+                        buffer.CopyTo(packetMemory);
+
+                        await Connection.EnqueuePacketAsync(new RawVoicePacket(packetMemory, PcmBufferDuration, false, packet, true), cancellationToken).ConfigureAwait(false);
                         break;
                     }
                     var len = Math.Min(pcmSpan.Length - PcmBufferLength, remaining);
