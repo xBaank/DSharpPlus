@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus.VoiceNext.Natives" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
     <PackageReference Include="System.Threading.Channels" Version="5.0.0" />
   </ItemGroup>
 

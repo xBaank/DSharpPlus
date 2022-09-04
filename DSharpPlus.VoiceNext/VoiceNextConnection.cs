@@ -54,7 +54,7 @@ namespace DSharpPlus.VoiceNext
     /// <summary>
     ///     VoiceNext connection to a voice channel.
     /// </summary>
-    public sealed class VoiceNextConnection : IDisposable
+    public sealed class VoiceNextConnection : IDisposable, IAsyncDisposable
     {
         private readonly AsyncEvent<VoiceNextConnection, VoiceUserLeaveEventArgs> _userLeft;
         private readonly AsyncEvent<VoiceNextConnection, UserSpeakingEventArgs> _userSpeaking;
@@ -240,6 +240,43 @@ namespace DSharpPlus.VoiceNext
         ///     Gets the channel this voice client is connected to.
         /// </summary>
         public DiscordChannel TargetChannel { get; internal set; }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (IsDisposed)
+                return;
+
+            IsDisposed = true;
+            IsInitialized = false;
+            TokenSource.Cancel();
+            SenderTokenSource.Cancel();
+            ReceiverTokenSource?.Cancel();
+            KeepaliveTokenSource.Cancel();
+
+            TokenSource.Dispose();
+            SenderTokenSource.Dispose();
+            ReceiverTokenSource?.Dispose();
+            KeepaliveTokenSource.Dispose();
+
+            try
+            {
+                await VoiceWs.DisconnectAsync().ConfigureAwait(false);
+                UdpClient.Close();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            Opus?.Dispose();
+            Opus = null;
+            Sodium?.Dispose();
+            Sodium = null;
+            Rtp?.Dispose();
+            Rtp = null;
+
+            VoiceDisconnected?.Invoke(Guild);
+        }
 
         /// <summary>
         ///     Disconnects and disposes this voice connection.
@@ -749,6 +786,9 @@ namespace DSharpPlus.VoiceNext
         /// </summary>
         public void Disconnect()
             => Dispose();
+
+        public ValueTask DisconnectAsync()
+            => DisposeAsync();
 
         private async Task HeartbeatAsync()
         {

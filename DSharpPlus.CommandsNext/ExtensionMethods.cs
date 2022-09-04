@@ -71,7 +71,7 @@ namespace DSharpPlus.CommandsNext
             var modules = new Dictionary<int, CommandsNextExtension>();
             await client.InitializeShardsAsync().ConfigureAwait(false);
 
-            foreach (var shard in client.ShardClients.Select(xkvp => xkvp.Value))
+            foreach (var shard in client.ShardClients.Values)
             {
                 var cnext = shard.GetExtension<CommandsNextExtension>();
                 if (cnext == null)
