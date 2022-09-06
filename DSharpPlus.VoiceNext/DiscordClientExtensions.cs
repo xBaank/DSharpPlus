@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 
@@ -67,7 +66,7 @@ namespace DSharpPlus.VoiceNext
             var modules = new Dictionary<int, VoiceNextExtension>();
             await client.InitializeShardsAsync().ConfigureAwait(false);
 
-            foreach (var shard in client.ShardClients.Select(xkvp => xkvp.Value))
+            foreach (var shard in client.ShardClients.Values)
             {
                 var vnext = shard.GetExtension<VoiceNextExtension>();
                 if (vnext == null)
