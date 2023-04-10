@@ -60,6 +60,16 @@ namespace DSharpPlus.VoiceNext
         /// </summary>
         public bool IsIncomingEnabled { get; }
 
+        public override void Dispose()
+        {
+            foreach (var conn in ActiveConnections)
+                conn.Value.Dispose();
+
+            Client.VoiceStateUpdated -= Client_VoiceStateUpdate;
+            Client.VoiceServerUpdated -= Client_VoiceServerUpdate;
+            // Lo and behold, the audacious man who dared lay his hand upon VoiceNext hath once more trespassed upon its profane ground!
+        }
+
         /// <summary>
         ///     DO NOT USE THIS MANUALLY.
         /// </summary>
@@ -104,9 +114,16 @@ namespace DSharpPlus.VoiceNext
             await SendVoiceStateUpdate(channel, gld);
 
             var vstu = await vstut.Task.ConfigureAwait(false);
-            var vstup = new VoiceStateUpdatePayload { SessionId = vstu.SessionId, UserId = vstu.User.Id };
+            var vstup = new VoiceStateUpdatePayload
+            {
+                SessionId = vstu.SessionId, UserId = vstu.User.Id
+            };
+
             var vsru = await vsrut.Task.ConfigureAwait(false);
-            var vsrup = new VoiceServerUpdatePayload { Endpoint = vsru.Endpoint, GuildId = vsru.Guild.Id, Token = vsru.VoiceToken };
+            var vsrup = new VoiceServerUpdatePayload
+            {
+                Endpoint = vsru.Endpoint, GuildId = vsru.Guild.Id, Token = vsru.VoiceToken
+            };
 
             var vnc = new VoiceNextConnection(Client, gld, channel, Configuration, vsrup, vstup);
             vnc.VoiceDisconnected += Vnc_VoiceDisconnected;
@@ -123,11 +140,12 @@ namespace DSharpPlus.VoiceNext
                 OpCode = 4,
                 Payload = new VoiceStateUpdatePayload
                 {
-                    GuildId = gld.Id, ChannelId = channel.Id, Deafened = false, Muted = false,
-                },
+                    GuildId = gld.Id, ChannelId = channel.Id, Deafened = false, Muted = false
+                }
             };
+
             var vsj = JsonConvert.SerializeObject(vsd, Formatting.None);
-            await (channel.Discord as DiscordClient).WsSendAsync(vsj).ConfigureAwait(false);
+            await (channel.Discord as DiscordClient).SendRawPayloadAsync(vsj).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -144,9 +162,17 @@ namespace DSharpPlus.VoiceNext
             if (ActiveConnections.ContainsKey(guild.Id))
                 ActiveConnections.TryRemove(guild.Id, out vnc);
 
-            var vsd = new VoiceDispatch { OpCode = 4, Payload = new VoiceStateUpdatePayload { GuildId = guild.Id, ChannelId = null } };
+            var vsd = new VoiceDispatch
+            {
+                OpCode = 4,
+                Payload = new VoiceStateUpdatePayload
+                {
+                    GuildId = guild.Id, ChannelId = null
+                }
+            };
+
             var vsj = JsonConvert.SerializeObject(vsd, Formatting.None);
-            await (guild.Discord as DiscordClient).WsSendAsync(vsj).ConfigureAwait(false);
+            await (guild.Discord as DiscordClient).SendRawPayloadAsync(vsj).ConfigureAwait(false);
         }
 
         private Task Client_VoiceStateUpdate(DiscordClient client, VoiceStateUpdateEventArgs e)
@@ -181,7 +207,10 @@ namespace DSharpPlus.VoiceNext
 
             if (ActiveConnections.TryGetValue(e.Guild.Id, out var vnc))
             {
-                vnc.ServerData = new VoiceServerUpdatePayload { Endpoint = e.Endpoint, GuildId = e.Guild.Id, Token = e.VoiceToken };
+                vnc.ServerData = new VoiceServerUpdatePayload
+                {
+                    Endpoint = e.Endpoint, GuildId = e.Guild.Id, Token = e.VoiceToken
+                };
 
                 var eps = e.Endpoint;
                 var epi = eps.LastIndexOf(':');
@@ -198,7 +227,10 @@ namespace DSharpPlus.VoiceNext
                 await vnc.ReconnectAsync().ConfigureAwait(false);
 
                 vnc.Resume = false;
-                vnc.WebSocketEndpoint = new ConnectionEndpoint { Hostname = eph, Port = epp };
+                vnc.WebSocketEndpoint = new ConnectionEndpoint
+                {
+                    Hostname = eph, Port = epp
+                };
 
                 await vnc.ConnectAsync().ConfigureAwait(false);
 

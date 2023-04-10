@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using DSharpPlus.AsyncEvents;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net;
@@ -42,7 +42,6 @@ using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext.Codec;
 using DSharpPlus.VoiceNext.Entities;
 using DSharpPlus.VoiceNext.EventArgs;
-using Emzi0767.Utilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -68,17 +67,18 @@ namespace DSharpPlus.VoiceNext
         private int _udpPing;
         private int _wsPing;
 
-        internal VoiceNextConnection(DiscordClient client, DiscordGuild guild, DiscordChannel channel, VoiceNextConfiguration config, VoiceServerUpdatePayload server, VoiceStateUpdatePayload state)
+        internal VoiceNextConnection(DiscordClient client, DiscordGuild guild, DiscordChannel channel, VoiceNextConfiguration config, VoiceServerUpdatePayload server,
+            VoiceStateUpdatePayload state)
         {
             Discord = client;
             Guild = guild;
             TargetChannel = channel;
             TransmittingSSRCs = new ConcurrentDictionary<uint, AudioSender>();
 
-            _userSpeaking = new AsyncEvent<VoiceNextConnection, UserSpeakingEventArgs>("VNEXT_USER_SPEAKING", TimeSpan.Zero, Discord.EventErrorHandler);
-            _userLeft = new AsyncEvent<VoiceNextConnection, VoiceUserLeaveEventArgs>("VNEXT_USER_LEFT", TimeSpan.Zero, Discord.EventErrorHandler);
-            _voiceReceived = new AsyncEvent<VoiceNextConnection, VoiceReceiveEventArgs>("VNEXT_VOICE_RECEIVED", TimeSpan.Zero, Discord.EventErrorHandler);
-            _voiceSocketError = new AsyncEvent<VoiceNextConnection, SocketErrorEventArgs>("VNEXT_WS_ERROR", TimeSpan.Zero, Discord.EventErrorHandler);
+            _userSpeaking = new AsyncEvent<VoiceNextConnection, UserSpeakingEventArgs>("VNEXT_USER_SPEAKING", Discord.EventErrorHandler);
+            _userLeft = new AsyncEvent<VoiceNextConnection, VoiceUserLeaveEventArgs>("VNEXT_USER_LEFT", Discord.EventErrorHandler);
+            _voiceReceived = new AsyncEvent<VoiceNextConnection, VoiceReceiveEventArgs>("VNEXT_VOICE_RECEIVED", Discord.EventErrorHandler);
+            _voiceSocketError = new AsyncEvent<VoiceNextConnection, SocketErrorEventArgs>("VNEXT_WS_ERROR", Discord.EventErrorHandler);
             TokenSource = new CancellationTokenSource();
 
             Configuration = config;
@@ -100,7 +100,11 @@ namespace DSharpPlus.VoiceNext
             }
             else
                 eph = eps;
-            WebSocketEndpoint = new ConnectionEndpoint { Hostname = eph, Port = epp };
+
+            WebSocketEndpoint = new ConnectionEndpoint
+            {
+                Hostname = eph, Port = epp
+            };
 
             ReadyWait = new TaskCompletionSource<bool>();
             IsInitialized = false;
@@ -364,7 +368,10 @@ namespace DSharpPlus.VoiceNext
         /// <returns>A task representing the connection operation.</returns>
         internal Task ConnectAsync()
         {
-            var gwuri = new UriBuilder { Scheme = "wss", Host = WebSocketEndpoint.Hostname, Query = "encoding=json&v=4" };
+            var gwuri = new UriBuilder
+            {
+                Scheme = "wss", Host = WebSocketEndpoint.Hostname, Query = "encoding=json&v=4"
+            };
 
             return VoiceWs.ConnectAsync(gwuri.Uri);
         }
@@ -381,15 +388,20 @@ namespace DSharpPlus.VoiceNext
                 vdp.OpCode = 0;
                 vdp.Payload = new VoiceIdentifyPayload
                 {
-                    ServerId = ServerData.GuildId, UserId = StateData.UserId.Value, SessionId = StateData.SessionId, Token = ServerData.Token,
+                    ServerId = ServerData.GuildId, UserId = StateData.UserId.Value, SessionId = StateData.SessionId, Token = ServerData.Token
                 };
+
                 Resume = true;
             }
             else
             {
                 vdp.OpCode = 7;
-                vdp.Payload = new VoiceIdentifyPayload { ServerId = ServerData.GuildId, SessionId = StateData.SessionId, Token = ServerData.Token };
+                vdp.Payload = new VoiceIdentifyPayload
+                {
+                    ServerId = ServerData.GuildId, SessionId = StateData.SessionId, Token = ServerData.Token
+                };
             }
+
             var vdj = JsonConvert.SerializeObject(vdp, Formatting.None);
             await WsSendAsync(vdj).ConfigureAwait(false);
         }
@@ -473,7 +485,8 @@ namespace DSharpPlus.VoiceNext
             var synchronizerTicks = (double)Stopwatch.GetTimestamp();
             var synchronizerResolution = Stopwatch.Frequency * 0.005;
             var tickResolution = 10_000_000.0 / Stopwatch.Frequency;
-            Discord.Logger.LogDebug(VoiceNextEvents.Misc, "Timer accuracy: {Frequency}/{Resolution} (high resolution? {IsHighRes})", Stopwatch.Frequency, synchronizerResolution, Stopwatch.IsHighResolution);
+            Discord.Logger.LogDebug(VoiceNextEvents.Misc, "Timer accuracy: {Frequency}/{Resolution} (high resolution? {IsHighRes})", Stopwatch.Frequency, synchronizerResolution,
+                Stopwatch.IsHighResolution);
 
             while (!token.IsCancellationRequested)
             {
@@ -540,7 +553,8 @@ namespace DSharpPlus.VoiceNext
             }
         }
 
-        private bool ProcessPacket(ReadOnlySpan<byte> data, ref Memory<byte> opus, ref Memory<byte> pcm, IList<ReadOnlyMemory<byte>> pcmPackets, out AudioSender voiceSender, out AudioFormat outputFormat)
+        private bool ProcessPacket(ReadOnlySpan<byte> data, ref Memory<byte> opus, ref Memory<byte> pcm, IList<ReadOnlyMemory<byte>> pcmPackets, out AudioSender voiceSender,
+            out AudioFormat outputFormat)
         {
             voiceSender = null;
             outputFormat = default;
@@ -557,13 +571,14 @@ namespace DSharpPlus.VoiceNext
                 vtx = new AudioSender(ssrc, decoder)
                 {
                     // user isn't present as we haven't received a speaking event yet.
-                    User = null,
+                    User = null
                 };
             }
 
             voiceSender = vtx;
             if (sequence <= vtx.LastSequence) // out-of-order packet; discard
                 return false;
+
             var gap = vtx.LastSequence != 0 ? sequence - 1 - vtx.LastSequence : 0;
 
             if (gap >= 5)
@@ -668,7 +683,7 @@ namespace DSharpPlus.VoiceNext
                         PcmData = pcmFiller,
                         OpusData = new byte[0].AsMemory(),
                         AudioFormat = audioFormat,
-                        AudioDuration = audioFormat.CalculateSampleDuration(pcmFiller.Length),
+                        AudioDuration = audioFormat.CalculateSampleDuration(pcmFiller.Length)
                     }).ConfigureAwait(false);
 
                 await _voiceReceived.InvokeAsync(this, new VoiceReceiveEventArgs
@@ -678,7 +693,7 @@ namespace DSharpPlus.VoiceNext
                     PcmData = pcmMem,
                     OpusData = opusMem,
                     AudioFormat = audioFormat,
-                    AudioDuration = audioFormat.CalculateSampleDuration(pcmMem.Length),
+                    AudioDuration = audioFormat.CalculateSampleDuration(pcmMem.Length)
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -734,7 +749,14 @@ namespace DSharpPlus.VoiceNext
             if (_isSpeaking != speaking)
             {
                 _isSpeaking = speaking;
-                var pld = new VoiceDispatch { OpCode = 5, Payload = new VoiceSpeakingPayload { Speaking = speaking, Delay = 0 } };
+                var pld = new VoiceDispatch
+                {
+                    OpCode = 5,
+                    Payload = new VoiceSpeakingPayload
+                    {
+                        Speaking = speaking, Delay = 0
+                    }
+                };
 
                 var plj = JsonConvert.SerializeObject(pld, Formatting.None);
                 await WsSendAsync(plj).ConfigureAwait(false);
@@ -803,7 +825,11 @@ namespace DSharpPlus.VoiceNext
                     var dt = DateTime.Now;
                     Discord.Logger.LogTrace(VoiceNextEvents.VoiceHeartbeat, "Sent heartbeat");
 
-                    var hbd = new VoiceDispatch { OpCode = 3, Payload = UnixTimestamp(dt) };
+                    var hbd = new VoiceDispatch
+                    {
+                        OpCode = 3, Payload = UnixTimestamp(dt)
+                    };
+
                     var hbj = JsonConvert.SerializeObject(hbd);
                     await WsSendAsync(hbj).ConfigureAwait(false);
 
@@ -853,7 +879,11 @@ namespace DSharpPlus.VoiceNext
 
             var ipd = await UdpClient.ReceiveAsync().ConfigureAwait(false);
             ReadPacket(ipd, out var ip, out var port);
-            DiscoveredEndpoint = new IpEndpoint { Address = ip, Port = port };
+            DiscoveredEndpoint = new IpEndpoint
+            {
+                Address = ip, Port = port
+            };
+
             Discord.Logger.LogTrace(VoiceNextEvents.VoiceHandshake, "Endpoint dicovery finished - discovered endpoint is {Ip}:{Port}", ip, port);
 
             void PreparePacket(byte[] packet)
@@ -869,7 +899,7 @@ namespace DSharpPlus.VoiceNext
                 var lengthByte = BitConverter.GetBytes(length);
                 var ssrcByte = BitConverter.GetBytes(ssrc);
 
-                if(BitConverter.IsLittleEndian)
+                if (BitConverter.IsLittleEndian)
                 {
                     Array.Reverse(typeByte);
                     Array.Reverse(lengthByte);
@@ -902,7 +932,19 @@ namespace DSharpPlus.VoiceNext
 
             // Ready
             Discord.Logger.LogTrace(VoiceNextEvents.VoiceHandshake, "Selected encryption mode is {EncryptionMode}", selectedEncryptionMode.Key);
-            var vsp = new VoiceDispatch { OpCode = 1, Payload = new VoiceSelectProtocolPayload { Protocol = "udp", Data = new VoiceSelectProtocolPayloadData { Address = DiscoveredEndpoint.Address.ToString(), Port = (ushort)DiscoveredEndpoint.Port, Mode = selectedEncryptionMode.Key } } };
+            var vsp = new VoiceDispatch
+            {
+                OpCode = 1,
+                Payload = new VoiceSelectProtocolPayload
+                {
+                    Protocol = "udp",
+                    Data = new VoiceSelectProtocolPayloadData
+                    {
+                        Address = DiscoveredEndpoint.Address.ToString(), Port = (ushort)DiscoveredEndpoint.Port, Mode = selectedEncryptionMode.Key
+                    }
+                }
+            };
+
             var vsj = JsonConvert.SerializeObject(vsp, Formatting.None);
             await WsSendAsync(vsj).ConfigureAwait(false);
 
@@ -974,14 +1016,20 @@ namespace DSharpPlus.VoiceNext
                     Discord.Logger.LogTrace(VoiceNextEvents.VoiceDispatch, "Received SPEAKING (OP5)");
                     var spd = opp.ToDiscordObject<VoiceSpeakingPayload>();
                     var foundUserInCache = Discord.TryGetCachedUserInternal(spd.UserId.Value, out var resolvedUser);
-                    var spk = new UserSpeakingEventArgs { Speaking = spd.Speaking, SSRC = spd.SSRC.Value, User = resolvedUser };
+                    var spk = new UserSpeakingEventArgs
+                    {
+                        Speaking = spd.Speaking, SSRC = spd.SSRC.Value, User = resolvedUser
+                    };
 
                     if (foundUserInCache && TransmittingSSRCs.TryGetValue(spk.SSRC, out var txssrc5) && txssrc5.Id == 0)
                         txssrc5.User = spk.User;
                     else
                     {
                         var opus = Opus.CreateDecoder();
-                        var vtx = new AudioSender(spk.SSRC, opus) { User = await Discord.GetUserAsync(spd.UserId.Value).ConfigureAwait(false) };
+                        var vtx = new AudioSender(spk.SSRC, opus)
+                        {
+                            User = await Discord.GetUserAsync(spd.UserId.Value).ConfigureAwait(false)
+                        };
 
                         if (!TransmittingSSRCs.TryAdd(spk.SSRC, vtx))
                             Opus.DestroyDecoder(opus);
@@ -1020,7 +1068,11 @@ namespace DSharpPlus.VoiceNext
                     }
 
                     var usrl = await Discord.GetUserAsync(ulpd.UserId).ConfigureAwait(false);
-                    await _userLeft.InvokeAsync(this, new VoiceUserLeaveEventArgs { User = usrl, SSRC = txssrc.Key }).ConfigureAwait(false);
+                    await _userLeft.InvokeAsync(this, new VoiceUserLeaveEventArgs
+                    {
+                        User = usrl, SSRC = txssrc.Key
+                    }).ConfigureAwait(false);
+
                     break;
 
                 default:
@@ -1090,7 +1142,10 @@ namespace DSharpPlus.VoiceNext
             => StartAsync();
 
         private Task VoiceWs_SocketException(IWebSocketClient client, SocketErrorEventArgs e)
-            => _voiceSocketError.InvokeAsync(this, new SocketErrorEventArgs { Exception = e.Exception });
+            => _voiceSocketError.InvokeAsync(this, new SocketErrorEventArgs
+            {
+                Exception = e.Exception
+            });
 
         private async Task WsSendAsync(string payload)
         {
